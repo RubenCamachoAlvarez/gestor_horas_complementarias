@@ -41,116 +41,145 @@ class LoginWidgetState extends State<LoginWidget> {
 
       body:
 
-        Container(
+        LayoutBuilder(
 
-          width: double.infinity,
+          builder: (context, constraints) {
 
-          height: double.infinity,
+            double ancho = constraints.maxWidth;
 
-          color: Colors.white,
+            double alto = constraints.maxHeight;
 
-          child:
+            double anchoContenedor = ancho * 0.6;
 
-            Center(
+            double altoContenedor = alto * 0.8;
 
-                child:
+            return Center(
 
-                Column(
+              child: Container(
 
-                mainAxisAlignment: MainAxisAlignment.center,
+                width: anchoContenedor,
 
-                children: <Widget>[
+                height: altoContenedor,
+                
+                padding: const EdgeInsets.all(30),
 
-                    Container(
+                decoration: BoxDecoration(
 
-                      width: 400,
+                  color: Colors.white,
 
-                      height: 600,
-                      
-                      padding: EdgeInsets.all(50),
+                  borderRadius: BorderRadius.circular(20),
 
-                      decoration: BoxDecoration(
+                  boxShadow: <BoxShadow> [
 
-                        color: Colors.white,
-                        
-                        borderRadius: BorderRadius.circular(20),
+                    BoxShadow(
 
-                        boxShadow: <BoxShadow>[
+                      color:Colors.grey.withOpacity(0.5),
 
-                          BoxShadow(
+                      spreadRadius: 5,
 
-                            color: Colors.grey.withOpacity(0.8),
+                      blurRadius: 5,
 
-                            spreadRadius: 5,
+                      offset: const Offset(0, 3),
 
-                            blurRadius: 5,
+                      blurStyle: BlurStyle.normal
 
-                            offset: const Offset(0, 3),
+                    )
 
-                          )
+                  ],
 
-                        ],
+                ),
+                
+                child: Center(
+                  
+                  child: Column(
+                    
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    
+                    children: <Widget>[
 
-                      ),
+                      const Text("Sistema de horas complementarias",
 
-                      child: Center(
+                        textAlign: TextAlign.center,
 
-                        child: Column(
+                        style: TextStyle(
 
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          color: Colors.teal,
 
-                          mainAxisSize: MainAxisSize.max,
+                          fontSize: 50,
 
-                          crossAxisAlignment: CrossAxisAlignment.center,
-
-                          children: <Widget>[
-
-                            TextField(
-
-                              decoration:
-
-                                InputDecoration(
-
-                                  labelText: "Usuario",
-                                  
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
-
-                                ),
-
-                            ),
-
-                            SizedBox(height: 20),
-
-                            TextField(
-
-                              decoration:
-
-                              InputDecoration(
-
-                                  labelText: "Contraseña",
-
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
-
-                              ),
-
-                            ),
-
-                          ],
+                          fontWeight: FontWeight.bold
 
                         ),
 
                       ),
 
-                    )
+                      SizedBox(height: altoContenedor * 0.1),
+                      
+                      TextField(
+                        
+                        decoration: InputDecoration(
+                          
+                          labelText: "Usuario",
 
-                  ]
+                          labelStyle: const TextStyle(
 
-                )
+                            fontWeight: FontWeight.bold
 
-            ),
+                          ),
+                          
+                          border: OutlineInputBorder(
+                            
+                            borderRadius: BorderRadius.circular(10)
+                            
+                          ),
+                          
+                        ),
+
+                        textAlign: TextAlign.center,
+                        
+                      ),
+
+                      SizedBox(height: altoContenedor * 0.1),
+                      
+                      TextField(
+
+                        decoration: InputDecoration(
+
+                          labelText: "Contraseña",
+
+                          labelStyle: const TextStyle(
+
+                            fontWeight: FontWeight.bold
+
+                          ),
+
+                          border: OutlineInputBorder(
+
+                              borderRadius: BorderRadius.circular(10)
+
+                          ),
+
+                        ),
+
+                        textAlign: TextAlign.center,
+
+                      )
+                      
+                    ],
+                    
+                  ),
+                  
+                ),
+
+              ),
+
+            );
+
+          },
 
         )
-
 
     );
 
