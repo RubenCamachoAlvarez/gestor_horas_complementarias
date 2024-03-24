@@ -15,24 +15,6 @@ class LoginWidgetState extends State<LoginWidget> {
 
   LoginWidgetState();
 
-  Container contenedorPrincipal = Container(color: Colors.orange,
-
-    child: Column(
-
-      mainAxisAlignment: MainAxisAlignment.center,
-
-
-
-      children: [
-
-
-
-      ],
-
-    ),
-
-  );
-
   @override
 
   Widget build(BuildContext context) {
