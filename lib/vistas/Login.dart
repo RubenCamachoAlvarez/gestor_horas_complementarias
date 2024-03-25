@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 
 class LoginWidget extends StatefulWidget {
-
 
   const LoginWidget({super.key});
 
   State<LoginWidget> createState() => LoginWidgetState();
-
-
 
 }
 
 class LoginWidgetState extends State<LoginWidget> {
 
   LoginWidgetState();
+
+  final TextEditingController campoUsuario = TextEditingController();
+
+  final TextEditingController campoPassword = TextEditingController();
 
   @override
 
@@ -97,7 +99,7 @@ class LoginWidgetState extends State<LoginWidget> {
 
                       ),
 
-                      SizedBox(height: altoContenedor * 0.1),
+                      SizedBox(height: altoContenedor * 0.05),
                       
                       TextField(
                         
@@ -120,10 +122,12 @@ class LoginWidgetState extends State<LoginWidget> {
                         ),
 
                         textAlign: TextAlign.center,
+
+                        controller: campoUsuario,
                         
                       ),
 
-                      SizedBox(height: altoContenedor * 0.1),
+                      SizedBox(height: altoContenedor * 0.03),
                       
                       TextField(
 
@@ -146,6 +150,54 @@ class LoginWidgetState extends State<LoginWidget> {
                         ),
 
                         textAlign: TextAlign.center,
+
+                        controller: campoPassword,
+
+                      ),
+
+                      SizedBox(height: altoContenedor * 0.03),
+
+                      FloatingActionButton(
+
+                        onPressed: () {
+
+                          String numeroCuenta = campoUsuario.value.text;
+
+                          String password = campoPassword.value.text;
+
+                          print("El numero de cuenta es: $numeroCuenta");
+
+                          print("El password es: $password");
+
+                          BaseDeDatos.conexion.collection("Usuarios").doc(numeroCuenta).get().then((value) => {
+
+                            if(value.exists) {
+
+                              print("Acceso correcto")
+
+                            }else{
+
+                              print("Acceso no satisfactorio")
+
+                          }
+
+                          });
+
+                        },
+
+                        child: const Text(
+
+                          "Iniciar sesion",
+
+                          textAlign: TextAlign.center,
+
+                          style: TextStyle(
+
+                            fontWeight: FontWeight.bold
+
+                          ),
+
+                        ),
 
                       )
                       
