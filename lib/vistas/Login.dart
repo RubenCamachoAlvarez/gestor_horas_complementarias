@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
+import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 
 class LoginWidget extends StatefulWidget {
 
@@ -159,29 +161,19 @@ class LoginWidgetState extends State<LoginWidget> {
 
                       FloatingActionButton(
 
-                        onPressed: () {
+                        onPressed: () async {
 
                           String numeroCuenta = campoUsuario.value.text;
 
                           String password = campoPassword.value.text;
 
-                          print("El numero de cuenta es: $numeroCuenta");
+                          bool sesionIniciada = await Sesion.iniciarSesion(numeroCuenta, password);
 
-                          print("El password es: $password");
+                          if(sesionIniciada) {
 
-                          BaseDeDatos.conexion.collection("Usuarios").doc(numeroCuenta).get().then((value) => {
 
-                            if(value.exists) {
-
-                              print("Acceso correcto")
-
-                            }else{
-
-                              print("Acceso no satisfactorio")
 
                           }
-
-                          });
 
                         },
 

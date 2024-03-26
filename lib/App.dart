@@ -21,9 +21,9 @@ class App extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      //home: const LoginWidget(),
+      home: const LoginWidget(),
 
-      home: const Picker(),
+      //home: const Picker(),
 
       debugShowCheckedModeBanner: false,
 
