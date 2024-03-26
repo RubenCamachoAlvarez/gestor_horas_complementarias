@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
+import 'package:gestor_de_horas_complementarias/vistas/Prueba.dart';
 
 class LoginWidget extends StatefulWidget {
 
@@ -172,6 +173,8 @@ class LoginWidgetState extends State<LoginWidget> {
                           if(sesionIniciada) {
 
 
+
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PruebaWidget()));
 
                           }
 

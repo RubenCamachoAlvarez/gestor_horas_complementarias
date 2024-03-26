@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/vistas/Login.dart';
-import 'package:gestor_de_horas_complementarias/vistas/Picker.dart';
 
 class App extends StatelessWidget {
 
@@ -30,6 +29,5 @@ class App extends StatelessWidget {
     );
 
   }
-
 
 }

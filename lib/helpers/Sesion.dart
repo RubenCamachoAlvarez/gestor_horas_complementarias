@@ -25,9 +25,35 @@ class Sesion {
 
         Usuario.fechaNacimiento = (datosPersonales["fecha_nacimiento"] as Timestamp).toDate();
 
+        Usuario.carrera = datos["carrera"];
+
+        Usuario.rol = datos["rol"];
+
       }
 
       return true;
+
+  }
+
+  static bool cerrarSesion(){
+
+    if(Usuario.numero != null) {
+
+      Usuario.numero = null;
+
+      Usuario.nombre = null;
+
+      Usuario.apellidoPaterno = null;
+
+      Usuario.apellidoMaterno = null;
+
+      Usuario.fechaNacimiento = null;
+
+      return true;
+
+    }
+
+    return false;
 
   }
 
