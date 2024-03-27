@@ -3,7 +3,6 @@ import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/vistas/DashboardEncargado.dart';
-import 'package:gestor_de_horas_complementarias/vistas/Picker.dart';
 
 class LoginWidget extends StatefulWidget {
 
@@ -182,6 +181,8 @@ class LoginWidgetState extends State<LoginWidget> {
                               print("Acceso como estudiante");
 
                             }
+
+                            print("Carrera ${Usuario.carrera!.id}");
 
                             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardEncargadoWidget()));
 
