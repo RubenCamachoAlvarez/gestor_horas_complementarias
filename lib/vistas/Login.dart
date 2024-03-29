@@ -3,6 +3,7 @@ import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/vistas/DashboardEncargado.dart';
+import 'package:gestor_de_horas_complementarias/vistas/DashboardEstudiante.dart';
 
 class LoginWidget extends StatefulWidget {
 
@@ -174,17 +175,13 @@ class LoginWidgetState extends State<LoginWidget> {
 
                             if(Usuario.rol == BaseDeDatos.conexion.collection("Roles").doc("Encargado")) {
 
-                              print("Acceso como encargado");
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardEncargadoWidget()));
 
                             }else{
 
-                              print("Acceso como estudiante");
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardEstudianteWidget()));
 
                             }
-
-                            print("Carrera ${Usuario.carrera!.id}");
-
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardEncargadoWidget()));
 
                           }
 

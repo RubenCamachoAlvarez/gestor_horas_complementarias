@@ -66,7 +66,11 @@ class DashboardEncargadoState extends State<DashboardEncargadoWidget> {
 
           Set<Estudiante>? nuevoEstudiantes = await OperacionesArchivos.leer_archivo_csv();
 
-          OperacionesDatos.cargarEstudiantes(nuevoEstudiantes!);
+          if(nuevoEstudiantes != null) {
+
+            OperacionesDatos.cargarEstudiantes(nuevoEstudiantes);
+
+          }
 
         },
 

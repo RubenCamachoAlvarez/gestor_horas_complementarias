@@ -3,10 +3,15 @@ import 'dart:html' as html;
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
 import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
+import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
+import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
+import 'package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart';
 
 class OperacionesArchivos {
 
@@ -95,5 +100,34 @@ class OperacionesArchivos {
     }
 
   }
+
+  static Future<Comprobante?> cargarComprobantePDF() async{
+
+    FilePickerResult? seleccion = await FilePicker.platform.pickFiles(
+
+      type: FileType.custom,
+
+      allowedExtensions: const <String>["pdf"]
+
+    );
+
+    if(seleccion != null) {
+
+      PlatformFile archivoSeleccionado = seleccion.files.first;
+
+      Uint8List bytesArchivo = archivoSeleccionado.bytes!;
+
+      String nombreArchivo = archivoSeleccionado.name;
+
+      Timestamp fechaSubida = Timestamp.now();
+
+      DocumentReference<Map<String, dynamic>> propietario = BaseDeDatos.conexion.collection("Usuarios").doc(Usuario.numero);
+      
+      return Comprobante(nombre: nombreArchivo, bytes: bytesArchivo, propietario: propietario, fechaSubida: fechaSubida, statusComprobante: StatusComprobante.PENDIENTE);
+
+    }
+
+  }
+
 
 }
