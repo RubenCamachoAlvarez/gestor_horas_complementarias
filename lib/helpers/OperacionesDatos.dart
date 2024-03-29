@@ -45,7 +45,7 @@ class OperacionesDatos {
 
           });
 
-
+          //Se crea la carpeta del usuario.
 
         }
 
@@ -65,7 +65,7 @@ class OperacionesDatos {
 
       try {
 
-        await BaseDeDatos.almacenamiento.ref().child("archivos_estudiantes/${Usuario.numero}/${datosComprobante.nombre}").
+        await BaseDeDatos.almacenamiento.ref().child("Comprobantes_estudiantes/${Usuario.numero}/${datosComprobante.nombre}").
 
         putData(datosComprobante.bytes, SettableMetadata(contentType: "application/pdf"));
 

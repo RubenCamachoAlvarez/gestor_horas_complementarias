@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:gestor_de_horas_complementarias/helpers/OperacionesDatos.dart';
 
 class DashboardEstudianteWidget extends StatefulWidget {
 
@@ -67,7 +68,7 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
         onPressed: () {
 
-
+          OperacionesDatos.cargarComprobanteEstudiante();
 
         },
 
