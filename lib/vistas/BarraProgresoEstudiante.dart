@@ -1,5 +1,7 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 
 class BarraProgresoEstudianteWidget extends StatefulWidget {
 
@@ -18,27 +20,53 @@ class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> 
   @override
   Widget build(BuildContext context) {
 
-    return Container(
+    return Column(
 
-      color: Colors.amber,
+      mainAxisAlignment: MainAxisAlignment.center,
 
-      alignment: Alignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
 
-      child:
+      children: <Widget>[
 
-      ListView(
+        Expanded(
 
-        children: const <Widget>[
+          child: ListView(
+            
+            padding: EdgeInsets.all(120),
 
-          Text("Hola mundo", textAlign: TextAlign.center,),
+            children: <Widget>[
 
-          Text("Hola mundo 2"),
+              Column(
 
-          Text("Hola mundo 3"),
+                children: [
 
-        ],
+                  CircularProgressIndicator(
 
-      )
+                      color: Colors.red,
+
+                      backgroundColor: Colors.grey,
+
+                      value: 0.6,
+
+                      strokeWidth: 20,
+
+                      strokeAlign: 10,
+
+                    )
+
+                ],
+
+              )
+
+
+
+            ],
+
+          ),
+
+        )
+
+      ]
 
     );
 

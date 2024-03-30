@@ -41,13 +41,13 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
   final vistas = <Widget>[
 
-    const BarraProgresoEstudianteWidget(),
-
     Container(
 
       color: Colors.green,
 
     ),
+
+    const BarraProgresoEstudianteWidget(),
 
     Container(
 
