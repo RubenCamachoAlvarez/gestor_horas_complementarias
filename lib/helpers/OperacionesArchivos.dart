@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html' as html;
+//import 'dart:html' as html;
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
@@ -29,18 +29,23 @@ class OperacionesArchivos {
 
       String contenidoArchivo = "";
 
-      if (html.window != null) {
+      if (Platform.isAndroid) {
+
+        try {
+
+            File archivo = File(archivoSeleccionado.files.first.path!);
+
+            //Posible error en android
+            contenidoArchivo = archivo.readAsStringSync();
+
+        }catch(e){}
+
+      }/*else if (html.window != null) {*/
+      else {
 
         Uint8List bytesContenidoArchivo = archivoSeleccionado.files.first.bytes!;
 
         contenidoArchivo = utf8.decode(bytesContenidoArchivo);
-
-      } else if (Platform.isAndroid) {
-
-        File archivo = File(archivoSeleccionado.files.first.path!);
-
-        //Posible error en android
-        contenidoArchivo = archivo.readAsStringSync();
 
       }
 

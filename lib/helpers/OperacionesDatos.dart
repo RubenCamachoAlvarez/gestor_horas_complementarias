@@ -1,4 +1,4 @@
-import 'dart:html';
+//import 'dart:html';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
@@ -55,7 +55,7 @@ class OperacionesDatos {
 
   }
 
-  static void cargarComprobanteEstudiante() async {
+  static Future<bool?> cargarComprobanteEstudiante() async {
 
     Comprobante? datosComprobante = await OperacionesArchivos.cargarComprobantePDF();
 
@@ -83,10 +83,17 @@ class OperacionesDatos {
 
         print("Terminando subida de archivo");
 
-      } catch(e) {}
+        return true;
+
+      } catch(e) {
+
+        return false;
+
+      }
 
     }
 
+    return null;
 
   }
 

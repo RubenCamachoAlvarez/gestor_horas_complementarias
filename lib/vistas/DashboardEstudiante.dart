@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/helpers/OperacionesDatos.dart';
+import 'package:gestor_de_horas_complementarias/vistas/BarraProgresoEstudiante.dart';
 
 class DashboardEstudianteWidget extends StatefulWidget {
 
@@ -15,12 +16,79 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
   DashboardEstudianteState();
 
-  int indiceSeccion = 1;
+  double ancho = 0;
+
+  double alto = 0;
+
+  @override
+  void initState(){
+
+    super.initState();
+
+    renders.add(Positioned.fill(
+
+      child: Container(
+
+        child: vistas[indiceVista],
+
+      ),
+
+    ));
+
+  }
+
+  int indiceVista = 1;
+
+  final vistas = <Widget>[
+
+    const BarraProgresoEstudianteWidget(),
+
+    Container(
+
+      color: Colors.green,
+
+    ),
+
+    Container(
+
+      color: Colors.red
+
+    )
+
+  ];
+
+  final List<Positioned> renders = <Positioned> [];
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
+
+      body:
+
+      LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+
+        alto = constraints.maxHeight;
+
+        ancho = constraints.maxWidth;
+
+        return Container(
+
+          height: double.infinity,
+
+          width: double.infinity,
+
+          child: Stack(
+
+            alignment: Alignment.center,
+
+            children: renders,
+
+          )
+
+        );
+
+      }),
 
       bottomNavigationBar: BottomNavigationBar(
 
@@ -46,14 +114,25 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
         ],
 
-        currentIndex: indiceSeccion,
+        currentIndex: indiceVista,
 
         onTap: (index) {
 
           setState(() {
 
-            indiceSeccion = index;
+            indiceVista = index;
 
+            renders[0] = Positioned.fill(child: vistas[indiceVista]);
+
+            /*Este metodo no funciona porque desplaza los elementos de la lista hacia la derecha.
+            Recordemos que un widget stack representa apiladamente los diferentes elementos que lo conforman.
+            De esta manera, los elementos que se presentan más arriba en el apilado del stack son los ultimos elementos
+            agregados la lista, con lo cual si al realizar una inserción se recorre el elemento previo a la derecha, entonces por
+            obviedad este elemento desplazado siempre estará en la parte final de la lista con lo cual siempre será visible en los
+            primeros planos de los elementos renderizados por el stack.
+
+            renders.insert(index, element);
+            */
           });
 
         },
@@ -66,11 +145,97 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
       floatingActionButton: FloatingActionButton(
 
-        onPressed: () {
+        onPressed: () async {
 
-          OperacionesDatos.cargarComprobanteEstudiante();
+          bool? operacionRealizada = await OperacionesDatos.cargarComprobanteEstudiante();
 
-        },
+          if(operacionRealizada != null) {
+
+            String mensajeNotificacion = "";
+
+            Color colorNotificacion = Colors.green;
+
+            double opacidadNotificacion = 1.0;
+
+            if (operacionRealizada) {
+
+              mensajeNotificacion = "Los archivos han sido cargados correctamente";
+
+            } else {
+
+              mensajeNotificacion = "Ha ocurrido un error al cargar los archivos";
+
+              colorNotificacion = Colors.red;
+
+            }
+
+            Positioned notificacion = Positioned(
+
+              width: (ancho / 16) * 6,
+
+              height: alto / 8,
+
+              bottom: 10,
+
+              right: 10,
+
+              child: AnimatedOpacity(
+
+                opacity: opacidadNotificacion,
+
+                duration: const Duration(seconds: 1),
+
+                child: Container(
+
+                  decoration: BoxDecoration(
+
+                    borderRadius: BorderRadius.circular(20),
+
+                    color: colorNotificacion,
+
+                  ),
+
+                  alignment: Alignment.center,
+
+                  child: Text(mensajeNotificacion,
+
+                    textAlign: TextAlign.center,
+
+                    style: const TextStyle(
+
+                      color: Colors.white,
+
+                      fontWeight: FontWeight.bold,
+
+                    ),
+
+                  ),
+
+                ),
+
+              )
+
+            );
+
+            setState(() {
+
+              renders.add(notificacion);
+
+            });
+
+            Future.delayed(const Duration(seconds: 3), () {
+
+              setState(() {
+
+                renders.removeLast();
+
+              });
+
+            });
+
+          }
+
+        }, //Fin de la generacion de la notificacion
 
         tooltip: "Subir comprobante",
 
