@@ -26,7 +26,7 @@ class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> 
 
     //Aqui todo el codigo
 
-    Future.delayed(Duration(seconds:2), () {
+    Future.delayed(Duration(seconds:1), () {
 
       setState(() {
 
@@ -93,7 +93,7 @@ class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> 
 
                   SizedBox(
 
-                    height: 150,
+                    height: 200,
 
                   ),
 

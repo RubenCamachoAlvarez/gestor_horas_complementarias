@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/helpers/OperacionesDatos.dart';
 import 'package:gestor_de_horas_complementarias/vistas/BarraProgresoEstudiante.dart';
+import 'package:gestor_de_horas_complementarias/vistas/InformacionUsuario.dart';
 
 class DashboardEstudianteWidget extends StatefulWidget {
 
@@ -49,11 +50,13 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
     const BarraProgresoEstudianteWidget(),
 
-    Container(
+    /*Container(
 
       color: Colors.red
 
-    )
+    )*/
+
+    const InformacionUsuarioWidget(),
 
   ];
 

@@ -17,23 +17,31 @@ class InformacionUsuarioState extends State<InformacionUsuarioWidget> {
   @override
   Widget build(BuildContext context) {
 
-    return Column(
+    return ListView(
 
-      mainAxisAlignment: MainAxisAlignment.center,
+      padding: EdgeInsets.all(0),
 
-      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
 
-      children: <Widget>[
+        Image.asset("assets/Imagen_Usuario.png", width: 512, height: 512 ),
 
-        ListView(
+        SizedBox(height: 20,),
 
-          padding: EdgeInsets.all(100),
+        Text("Nombre completo", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,),),
 
-          children: <Widget> []
+        SizedBox(height: 20,),
 
-        ),
+        Text("Numero de cuenta", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
 
-      ],
+        SizedBox(height: 20,),
+
+        Text("Carrera", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+
+        SizedBox(height: 20,),
+
+        Text("Fecha de nacimiento", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+
+      ]
 
     );
 
