@@ -1,4 +1,6 @@
+import 'package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
 class BarraProgresoEstudianteWidget extends StatefulWidget {
 
@@ -14,120 +16,68 @@ class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> 
 
   BarraProgresoEstudianteState();
 
-  double? valorProgreso = null;
-
-  String mensajeProgreso = "";
+  ValueNotifier<double> notificador = ValueNotifier<double>(10);
 
   @override
-
   void initState() {
 
     super.initState();
-
-    //Aqui todo el codigo
-
-    Future.delayed(Duration(seconds:1), () {
-
-      setState(() {
-
-        valorProgreso = 0.5;
-
-        mensajeProgreso = "120 horas de 480 horas\n\n50%";
-
-      });
-
-    });
 
   }
 
   @override
   Widget build(BuildContext context) {
 
-    return Column(
+    return Container(
 
-      mainAxisAlignment: MainAxisAlignment.center,
+      alignment: Alignment.center,
 
-      crossAxisAlignment: CrossAxisAlignment.center,
+      color: Colors.white,
 
-      children: <Widget>[
+      padding: const EdgeInsets.all(100),
 
-        SizedBox(
-
-          height: 50,
-
-        ),
-
-        Expanded(
-
-          child: ListView(
-
-            shrinkWrap: true,
-
-            padding: EdgeInsets.all(150),
-
-            children: <Widget>[
-
-              Column(
-
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                crossAxisAlignment: CrossAxisAlignment.center,
-
+      child: DashedCircularProgressBar.aspectRatio(
+        aspectRatio: 1, // width ÷ height
+        valueNotifier: notificador,
+        progress: 60,
+        startAngle: 225,
+        sweepAngle: 270,
+        foregroundColor: Colors.blueAccent,
+        backgroundColor: const Color(0xffeeeeee),
+        foregroundStrokeWidth: 15,
+        backgroundStrokeWidth: 15,
+        animation: true,
+        seekSize: 6,
+        seekColor: const Color(0xffeeeeee),
+        child: Center(
+          child: ValueListenableBuilder(
+              valueListenable: notificador,
+              builder: (_, double value, __) => Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-
-                  CircularProgressIndicator(
-
-                    color: Colors.red,
-
-                    backgroundColor: Colors.grey,
-
-                    //value: 0.6,
-
-                    value: valorProgreso,
-
-                    strokeWidth: 20,
-
-                    strokeAlign: 10,
-
-                  ),
-
-                  SizedBox(
-
-                    height: 200,
-
-                  ),
-
-
-                  Text(mensajeProgreso,
-
-                    textAlign: TextAlign.center,
-
+                  const Text(
+                    //'${value.toInt()}%',
+                    '460',
                     style: TextStyle(
-
-                      color: Colors.black,
-
-                      fontWeight: FontWeight.bold,
-
-                      fontSize: 30
-
+                        color: Colors.black,
+                        fontWeight: FontWeight.w300,
+                        fontSize: 60
                     ),
-
                   ),
-
+                  Text(
+                    'Horas',
+                    style: TextStyle(
+                        color: Colors.black.withOpacity(0.5),
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16
+                    ),
+                  ),
                 ],
-
-              ),
-
-            ],
-
+              )
           ),
-
         ),
-
-      ]
-
+      )
     );
-
   }
 
 }

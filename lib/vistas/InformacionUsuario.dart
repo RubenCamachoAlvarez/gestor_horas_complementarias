@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 
 class InformacionUsuarioWidget extends StatefulWidget {
 
@@ -23,24 +24,25 @@ class InformacionUsuarioState extends State<InformacionUsuarioWidget> {
 
       children: [
 
+        /*
         Image.asset("assets/Imagen_Usuario.png", width: 512, height: 512 ),
 
         SizedBox(height: 20,),
 
-        Text("Nombre completo", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,),),
+        Text("${Usuario.nombre} ${Usuario.apellidoPaterno} ${Usuario.apellidoMaterno}", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,),),
 
         SizedBox(height: 20,),
 
-        Text("Numero de cuenta", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+        Text("${Usuario.numero}", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
 
         SizedBox(height: 20,),
 
-        Text("Carrera", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+        Text("${Usuario.carrera!.id}", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
 
         SizedBox(height: 20,),
 
-        Text("Fecha de nacimiento", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
-
+        Text("${Usuario.fechaNacimiento!.day}/${Usuario.fechaNacimiento!.month}/${Usuario.fechaNacimiento!.year}", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+        */
       ]
 
     );

@@ -81,6 +81,8 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
           width: double.infinity,
 
+          alignment: Alignment.center,
+
           child: Stack(
 
             alignment: Alignment.center,
