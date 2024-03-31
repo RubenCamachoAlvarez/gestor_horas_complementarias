@@ -1,7 +1,4 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 class BarraProgresoEstudianteWidget extends StatefulWidget {
 
@@ -17,6 +14,32 @@ class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> 
 
   BarraProgresoEstudianteState();
 
+  double? valorProgreso = null;
+
+  String mensajeProgreso = "";
+
+  @override
+
+  void initState() {
+
+    super.initState();
+
+    //Aqui todo el codigo
+
+    Future.delayed(Duration(seconds:2), () {
+
+      setState(() {
+
+        valorProgreso = 0.5;
+
+        mensajeProgreso = "120 horas de 480 horas\n\n50%";
+
+      });
+
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -28,43 +51,78 @@ class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> 
 
       children: <Widget>[
 
+        SizedBox(
+
+          height: 50,
+
+        ),
+
         Expanded(
 
           child: ListView(
-            
-            padding: EdgeInsets.all(120),
+
+            shrinkWrap: true,
+
+            padding: EdgeInsets.all(150),
 
             children: <Widget>[
 
               Column(
 
+                mainAxisAlignment: MainAxisAlignment.center,
+
+                crossAxisAlignment: CrossAxisAlignment.center,
+
                 children: [
 
                   CircularProgressIndicator(
 
-                      color: Colors.red,
+                    color: Colors.red,
 
-                      backgroundColor: Colors.grey,
+                    backgroundColor: Colors.grey,
 
-                      value: 0.6,
+                    //value: 0.6,
 
-                      strokeWidth: 20,
+                    value: valorProgreso,
 
-                      strokeAlign: 10,
+                    strokeWidth: 20,
 
-                    )
+                    strokeAlign: 10,
+
+                  ),
+
+                  SizedBox(
+
+                    height: 150,
+
+                  ),
+
+
+                  Text(mensajeProgreso,
+
+                    textAlign: TextAlign.center,
+
+                    style: TextStyle(
+
+                      color: Colors.black,
+
+                      fontWeight: FontWeight.bold,
+
+                      fontSize: 30
+
+                    ),
+
+                  ),
 
                 ],
 
-              )
-
-
+              ),
 
             ],
 
           ),
 
-        )
+        ),
 
       ]
 
