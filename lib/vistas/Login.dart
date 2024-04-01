@@ -173,7 +173,7 @@ class LoginWidgetState extends State<LoginWidget> {
 
                           if(sesionIniciada) {
 
-                            if(Sesion.usuario.rol == BaseDeDatos.conexion.collection("Roles").doc("Encargado")) {
+                            if(Sesion.usuario!.rol == BaseDeDatos.conexion.collection("Roles").doc("Encargado")) {
 
                               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardEncargadoWidget()));
 

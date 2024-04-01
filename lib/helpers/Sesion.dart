@@ -1,11 +1,13 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gestor_de_horas_complementarias/datos/Encargado.dart';
+import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
 import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 
 class Sesion {
 
-  static Usuario usuario = Usuario();
+  static Usuario? usuario;
 
   static Future<bool> iniciarSesion(String numero, String password) async {
 
@@ -17,19 +19,23 @@ class Sesion {
 
         Map<String, dynamic> datosPersonales = datos.get("datos_personales");
 
-        usuario.numero = numero;
+        if((datos["rol"] as DocumentReference<Map<String, dynamic>>).id == "Encargado"){
 
-        usuario.nombre = datosPersonales["nombre"];
+          print("Logueado como Encargado");
 
-        usuario.apellidoPaterno = datosPersonales["apellido_paterno"];
+          usuario = Encargado(numero, datosPersonales["nombre"], datosPersonales["apellido_paterno"], datosPersonales["apellido_materno"],
+              (datosPersonales["fecha_nacimiento"] as Timestamp).toDate(), datos["carrera"]);
 
-        usuario.apellidoMaterno = datosPersonales["apellido_materno"];
+        }else{
 
-        usuario.fechaNacimiento = (datosPersonales["fecha_nacimiento"] as Timestamp).toDate();
+          print("Logueado como estudiante");
 
-        usuario.carrera = datos["carrera"];
+          usuario = Estudiante(numero, datosPersonales["nombre"], datosPersonales["apellido_paterno"], datosPersonales["apellido_materno"],
+              (datosPersonales["fecha_nacimiento"] as Timestamp).toDate(), datos["carrera"]);
 
-        usuario.rol = datos["rol"];
+        }
+
+        usuario!.rol = datos["rol"];
 
       }
 
@@ -39,17 +45,9 @@ class Sesion {
 
   static bool cerrarSesion(){
 
-    if(usuario.numero != null) {
+    if(usuario != null) {
 
-      usuario.numero = null;
-
-      usuario.nombre = null;
-
-      usuario.apellidoPaterno = null;
-
-      usuario.apellidoMaterno = null;
-
-      usuario.fechaNacimiento = null;
+      usuario = null;
 
       return true;
 

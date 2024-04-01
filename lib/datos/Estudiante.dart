@@ -89,6 +89,8 @@ class Estudiante extends Usuario{
 
         print("TERMINADA LA SUBIDA DEL COMPROBANTE");
 
+        return true;
+
       } catch(e) {
 
         return false;
