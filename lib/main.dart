@@ -21,7 +21,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  Sesion.iniciarSesion("421084898", "");
+  //Sesion.iniciarSesion("421084898", "");
 
   //Llamada para comenzar la ejecucion de la aplicacion
   runApp(const App());

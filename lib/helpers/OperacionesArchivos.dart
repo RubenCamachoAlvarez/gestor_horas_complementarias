@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class OperacionesArchivos {
 
@@ -23,7 +24,17 @@ class OperacionesArchivos {
 
       String contenidoArchivo = "";
 
-      if (Platform.isAndroid) {
+      if(kIsWeb) {
+
+        print("Ejecutando aplicacion en web");
+
+        Uint8List bytesContenidoArchivo = archivoSeleccionado.files.first.bytes!;
+
+        contenidoArchivo = utf8.decode(bytesContenidoArchivo);
+
+      }else if (Platform.isAndroid) {
+
+        print("Ejecutando aplicacion en Android");
 
         try {
 
@@ -33,12 +44,6 @@ class OperacionesArchivos {
             contenidoArchivo = archivo.readAsStringSync();
 
         }catch(e){}
-
-      }else {
-
-        Uint8List bytesContenidoArchivo = archivoSeleccionado.files.first.bytes!;
-
-        contenidoArchivo = utf8.decode(bytesContenidoArchivo);
 
       }
 
