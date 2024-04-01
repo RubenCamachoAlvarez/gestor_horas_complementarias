@@ -128,7 +128,7 @@ class OperacionesArchivos {
 
       DocumentReference<Map<String, dynamic>> propietario = BaseDeDatos.conexion.collection("Usuarios").doc(Usuario.numero);
       
-      return Comprobante(nombre: nombreArchivo, bytes: bytesArchivo, propietario: propietario, fechaSubida: fechaSubida, statusComprobante: StatusComprobante.PENDIENTE);
+      return Comprobante(nombre: nombreArchivo, bytes: bytesArchivo, propietario: propietario, fechaSubida: fechaSubida, statusComprobante: StatusComprobante.PENDIENTE, horasValidez: 0);
 
     }
 

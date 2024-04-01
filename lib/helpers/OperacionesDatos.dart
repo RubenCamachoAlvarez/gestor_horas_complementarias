@@ -77,7 +77,9 @@ class OperacionesDatos {
 
           "propietario" : datosComprobante.propietario,
 
-          "status_comprobante" : StatusComprobante.PENDIENTE
+          "status_comprobante" : StatusComprobante.PENDIENTE,
+
+          "horas_validez" : datosComprobante.horasValidez,
 
         });
 

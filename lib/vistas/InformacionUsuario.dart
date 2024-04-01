@@ -23,7 +23,7 @@ class InformacionUsuarioState extends State<InformacionUsuarioWidget> {
 
       body: ListView(
 
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
 
         children: [
 

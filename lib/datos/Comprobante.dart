@@ -6,7 +6,7 @@ class Comprobante {
 
   Comprobante({required this.nombre, required this.bytes, required this.propietario, required this.fechaSubida,
 
-    required this.statusComprobante});
+    required this.statusComprobante, required this.horasValidez});
 
   String nombre;
 
@@ -17,5 +17,7 @@ class Comprobante {
   Timestamp fechaSubida;
 
   DocumentReference statusComprobante;
+
+  double horasValidez;
 
 }
