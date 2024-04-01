@@ -7,21 +7,21 @@ class Usuario {
   /// Esta clase contiene campos/atributos estaticos que permiten al programa almacenar
   /// los datos del usuario una vez que este ha iniciado sesion satisfactoriamente.
 
-  static String? numero = null;
+  String? numero;
 
-  static String? nombre = null;
+  String? nombre;
 
-  static String? apellidoPaterno = null;
+  String? apellidoPaterno;
 
-  static String? apellidoMaterno = null;
+  String? apellidoMaterno;
 
-  static DateTime? fechaNacimiento = null;
+  DateTime? fechaNacimiento;
 
-  static DocumentReference? carrera = null;
+  Image? imagenPerfil;
 
-  static DocumentReference? rol = null;
+  DocumentReference<Map<String, dynamic>>? carrera;
 
-  static Image? imagenPerfil = null;
+  DocumentReference<Map<String, dynamic>>? rol;
 
 
 }

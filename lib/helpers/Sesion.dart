@@ -5,29 +5,31 @@ import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 
 class Sesion {
 
+  static Usuario usuario = Usuario();
+
   static Future<bool> iniciarSesion(String numero, String password) async {
 
       DocumentReference<Map<String, dynamic>>? documento = BaseDeDatos.conexion.collection("Usuarios").doc(numero);
 
       DocumentSnapshot<Map<String, dynamic>>? datos = await documento.get();
 
-      if(datos != null && datos.exists) {
+      if(datos.exists) {
 
         Map<String, dynamic> datosPersonales = datos.get("datos_personales");
 
-        Usuario.numero = numero;
+        usuario.numero = numero;
 
-        Usuario.nombre = datosPersonales["nombre"];
+        usuario.nombre = datosPersonales["nombre"];
 
-        Usuario.apellidoPaterno = datosPersonales["apellido_paterno"];
+        usuario.apellidoPaterno = datosPersonales["apellido_paterno"];
 
-        Usuario.apellidoMaterno = datosPersonales["apellido_materno"];
+        usuario.apellidoMaterno = datosPersonales["apellido_materno"];
 
-        Usuario.fechaNacimiento = (datosPersonales["fecha_nacimiento"] as Timestamp).toDate();
+        usuario.fechaNacimiento = (datosPersonales["fecha_nacimiento"] as Timestamp).toDate();
 
-        Usuario.carrera = datos["carrera"];
+        usuario.carrera = datos["carrera"];
 
-        Usuario.rol = datos["rol"];
+        usuario.rol = datos["rol"];
 
       }
 
@@ -37,17 +39,17 @@ class Sesion {
 
   static bool cerrarSesion(){
 
-    if(Usuario.numero != null) {
+    if(usuario.numero != null) {
 
-      Usuario.numero = null;
+      usuario.numero = null;
 
-      Usuario.nombre = null;
+      usuario.nombre = null;
 
-      Usuario.apellidoPaterno = null;
+      usuario.apellidoPaterno = null;
 
-      Usuario.apellidoMaterno = null;
+      usuario.apellidoMaterno = null;
 
-      Usuario.fechaNacimiento = null;
+      usuario.fechaNacimiento = null;
 
       return true;
 

@@ -1,7 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
+import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 
 class InformacionUsuarioWidget extends StatefulWidget {
 
@@ -53,7 +53,7 @@ class InformacionUsuarioState extends State<InformacionUsuarioWidget> {
 
             title: const Text("Nombre"),
 
-            subtitle: Text("${Usuario.nombre} ${Usuario.apellidoPaterno} ${Usuario.apellidoMaterno}"),
+            subtitle: Text("${Sesion.usuario.nombre} ${Sesion.usuario.apellidoPaterno} ${Sesion.usuario.apellidoMaterno}"),
 
             leading: const Icon(CupertinoIcons.person),
 
@@ -79,7 +79,7 @@ class InformacionUsuarioState extends State<InformacionUsuarioWidget> {
 
             title: const Text("Fecha de nacimiento"),
 
-            subtitle: Text("${Usuario.fechaNacimiento!.day}/${Usuario.fechaNacimiento!.month}/${Usuario.fechaNacimiento!.year}"),
+            subtitle: Text("${Sesion.usuario.fechaNacimiento!.day}/${Sesion.usuario.fechaNacimiento!.month}/${Sesion.usuario.fechaNacimiento!.year}"),
 
             leading: const Icon(CupertinoIcons.calendar),
 
@@ -105,7 +105,7 @@ class InformacionUsuarioState extends State<InformacionUsuarioWidget> {
 
             title: const Text("Carrera"),
 
-            subtitle: Text(Usuario.carrera!.id),
+            subtitle: Text(Sesion.usuario.carrera!.id),
 
             leading: const Icon(CupertinoIcons.book),
 
@@ -131,7 +131,7 @@ class InformacionUsuarioState extends State<InformacionUsuarioWidget> {
 
             title: const Text("Ocupación"),
 
-            subtitle: Text(Usuario.rol!.id),
+            subtitle: Text(Sesion.usuario.rol!.id),
 
             leading: const Icon(CupertinoIcons.alarm),
 
@@ -155,9 +155,9 @@ class InformacionUsuarioState extends State<InformacionUsuarioWidget> {
 
           ListTile(
 
-            title: Text("Número de ${Usuario.rol!.id == "Encargado" ? "trabajador" : "cuenta"}"),
+            title: Text("Número de ${Sesion.usuario.rol!.id == "Encargado" ? "trabajador" : "cuenta"}"),
 
-            subtitle: Text(Usuario.numero!),
+            subtitle: Text(Sesion.usuario.numero!),
 
             leading: const Icon(CupertinoIcons.creditcard),
 

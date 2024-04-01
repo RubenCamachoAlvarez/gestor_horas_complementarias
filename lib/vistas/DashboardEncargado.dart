@@ -1,8 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
-import 'package:gestor_de_horas_complementarias/helpers/OperacionesArchivos.dart';
-import 'package:gestor_de_horas_complementarias/helpers/OperacionesDatos.dart';
+import 'package:gestor_de_horas_complementarias/datos/Encargado.dart';
+import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 
 class DashboardEncargadoWidget extends StatefulWidget {
 
@@ -62,15 +61,9 @@ class DashboardEncargadoState extends State<DashboardEncargadoWidget> {
 
       floatingActionButton: FloatingActionButton(
 
-        onPressed: () async {
+        onPressed: () {
 
-          Set<Estudiante>? nuevoEstudiantes = await OperacionesArchivos.leer_archivo_csv();
-
-          if(nuevoEstudiantes != null) {
-
-            OperacionesDatos.cargarEstudiantes(nuevoEstudiantes);
-
-          }
+          (Sesion.usuario as Encargado).cargarEstudiantes();
 
         },
 

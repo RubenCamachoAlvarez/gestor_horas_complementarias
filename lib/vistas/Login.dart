@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/vistas/DashboardEncargado.dart';
@@ -9,6 +8,7 @@ class LoginWidget extends StatefulWidget {
 
   const LoginWidget({super.key});
 
+  @override
   State<LoginWidget> createState() => LoginWidgetState();
 
 }
@@ -173,7 +173,7 @@ class LoginWidgetState extends State<LoginWidget> {
 
                           if(sesionIniciada) {
 
-                            if(Usuario.rol == BaseDeDatos.conexion.collection("Roles").doc("Encargado")) {
+                            if(Sesion.usuario.rol == BaseDeDatos.conexion.collection("Roles").doc("Encargado")) {
 
                               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardEncargadoWidget()));
 
