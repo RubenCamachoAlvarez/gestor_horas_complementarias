@@ -6,10 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
-import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
-import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
-import 'package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart';
 
 class OperacionesArchivos {
 

@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:gestor_de_horas_complementarias/helpers/OperacionesDatos.dart';
+import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
+import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/vistas/BarraProgresoEstudiante.dart';
 import 'package:gestor_de_horas_complementarias/vistas/InformacionUsuario.dart';
 
@@ -152,7 +153,7 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
         onPressed: () async {
 
-          bool? operacionRealizada = await OperacionesDatos.cargarComprobanteEstudiante();
+          bool? operacionRealizada = await (Sesion.usuario as Estudiante).cargarComprobante();
 
           if(operacionRealizada != null) {
 
