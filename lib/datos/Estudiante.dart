@@ -1,3 +1,5 @@
+import 'dart:js_interop_unsafe';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
@@ -100,6 +102,49 @@ class Estudiante extends Usuario{
     }
 
     return null;
+
+  }
+
+  Future<int> calcularHorasProgreso() async {
+
+    int horasTotales = 0;
+
+    CollectionReference coleccionComprobante = BaseDeDatos.conexion.collection("Comprobantes");
+
+    QuerySnapshot consultaDocumentos = await coleccionComprobante.get();
+
+    List<QueryDocumentSnapshot> documentos = consultaDocumentos.docs;
+
+    documentos.forEach((documento) {
+
+      //Casteo opcional = (documento.get("propietario") as DocumentReference)
+      if((documento.get("propietario")) == BaseDeDatos.conexion.collection("Usuarios").doc(numero)) {
+
+        if(documento.get("status_comprobante") == BaseDeDatos.conexion.collection("Status_Comprobante").doc("Aceptado")) {
+
+          horasTotales += (documento.get("horas_validez") as double).toInt();
+
+        }
+
+      }
+
+    });
+
+    return horasTotales;
+
+  }
+
+  Future<double> calcularPorcentajeAvance() async {
+
+    DocumentSnapshot<Map<String, dynamic>> documento = await carrera!.get();
+
+    double horasTotales = documento.get("horas_obligatorias");
+
+    int horasAvance = await calcularHorasProgreso();
+
+    double porcentajeAvance = horasAvance * 100.0 / horasTotales;
+
+    return porcentajeAvance;
 
   }
 

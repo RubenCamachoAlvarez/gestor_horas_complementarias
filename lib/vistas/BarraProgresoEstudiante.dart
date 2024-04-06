@@ -1,5 +1,8 @@
 import 'package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
+import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
+import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
 class BarraProgresoEstudianteWidget extends StatefulWidget {
@@ -14,6 +17,10 @@ class BarraProgresoEstudianteWidget extends StatefulWidget {
 
 class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> {
 
+  double porcentajeProgreso = 0.0;
+
+  int horasProgreso = 0;
+
   BarraProgresoEstudianteState();
 
   ValueNotifier<double> notificador = ValueNotifier<double>(10);
@@ -23,7 +30,24 @@ class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> 
 
     super.initState();
 
+    calcularProgreso().then((value) {
+
+      setState(() {
+
+      });
+
+    });
+
   }
+
+  Future<void> calcularProgreso() async {
+
+    porcentajeProgreso = await (Sesion.usuario as Estudiante).calcularPorcentajeAvance();
+
+    horasProgreso = await (Sesion.usuario as Estudiante).calcularHorasProgreso();
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +63,7 @@ class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> 
       child: DashedCircularProgressBar.aspectRatio(
         aspectRatio: 1, // width ÷ height
         valueNotifier: notificador,
-        progress: 60,
+        progress: porcentajeProgreso,
         startAngle: 225,
         sweepAngle: 270,
         foregroundColor: Colors.blueAccent,
@@ -55,17 +79,16 @@ class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> 
               builder: (_, double value, __) => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    //'${value.toInt()}%',
-                    '460',
-                    style: TextStyle(
+                  Text(
+                    horasProgreso.toString(),
+                    style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w300,
                         fontSize: 60
                     ),
                   ),
                   Text(
-                    'Horas',
+                    (horasProgreso != 1) ? "Horas" : "Hora",
                     style: TextStyle(
                         color: Colors.black.withOpacity(0.5),
                         fontWeight: FontWeight.w400,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/vistas/BarraProgresoEstudiante.dart';
+import 'package:gestor_de_horas_complementarias/vistas/DocumentosEstudiante.dart';
 import 'package:gestor_de_horas_complementarias/vistas/InformacionUsuario.dart';
 
 class DashboardEstudianteWidget extends StatefulWidget {
@@ -43,11 +44,13 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
   final vistas = <Widget>[
 
-    Container(
+    /*Container(
 
       color: Colors.green,
 
-    ),
+    ),*/
+
+    const DocumentosEstudianteWidget(),
 
     const BarraProgresoEstudianteWidget(),
 
