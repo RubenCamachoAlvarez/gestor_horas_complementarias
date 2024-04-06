@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:gestor_de_horas_complementarias/vistas/ListaDocumentos.dart';
 
 class DocumentosEstudianteWidget extends StatefulWidget {
 
@@ -28,6 +29,8 @@ class DocumentosEstudianteState extends State<DocumentosEstudianteWidget> {
 
         appBar: AppBar(
 
+          toolbarHeight: 0,
+
           bottom: const TabBar(
 
             tabs: [
@@ -54,11 +57,15 @@ class DocumentosEstudianteState extends State<DocumentosEstudianteWidget> {
 
           children: [
 
-            Container(
+            /*Container(
 
               color: Colors.red,
 
-            ),
+              child: Icon(Icons.add),
+
+            ),*/
+
+            ListaDocumentosWidget(),
 
             Container(
 

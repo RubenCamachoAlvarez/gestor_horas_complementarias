@@ -1,12 +1,16 @@
 import 'dart:js_interop_unsafe';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
 import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/OperacionesArchivos.dart';
 import 'package:gestor_de_horas_complementarias/valores_asignables/Roles.dart';
 import 'package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart';
+import 'package:http/http.dart' as http;
+
 
 class Estudiante extends Usuario{
 
@@ -145,6 +149,14 @@ class Estudiante extends Usuario{
     double porcentajeAvance = horasAvance * 100.0 / horasTotales;
 
     return porcentajeAvance;
+
+  }
+
+  Future<List<int>> cargarComprobantes() async {
+
+    List<int> comprobantes = [1,2];
+
+    return comprobantes;
 
   }
 
