@@ -20,4 +20,24 @@ class Comprobante {
 
   double horasValidez;
 
+  @override
+  String toString() {
+
+    return "{$nombre, ${propietario.id}, $fechaSubida, ${statusComprobante.id}, $horasValidez";
+
+  }
+
+  @override
+  bool operator==(Object other) {
+
+    return identical(this, other) || (other is Comprobante &&
+
+    runtimeType == other.runtimeType && nombre == other.nombre);
+
+  }
+
+  @override
+  int get hashCode => super.hashCode & nombre!.length & bytes.hashCode;
+
+
 }
