@@ -4,10 +4,13 @@ import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
 import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'dart:async';
+import 'dart:html' as html;
 
 class ListaDocumentosWidget extends StatefulWidget {
 
-  const ListaDocumentosWidget({super.key});
+  ListaDocumentosWidget({super.key});
+
+  Function? obtenerDatos;
 
   @override
   State<ListaDocumentosWidget> createState() => ListaDocumentosState();
@@ -23,7 +26,7 @@ class ListaDocumentosState extends State<ListaDocumentosWidget> {
 
     super.initState();
 
-    comprobantes = (Sesion.usuario as Estudiante).obtenerComprobantesPendientes();
+    comprobantes = (Sesion.usuario as Estudiante).obtenerComprobantes();
 
   }
 
@@ -41,9 +44,41 @@ class ListaDocumentosState extends State<ListaDocumentosWidget> {
 
             if(snapshot.hasData && snapshot.data != null) {
 
+              int numeroComprobantes = snapshot.data!.length;
+
               print(snapshot.data!.length);
 
-              return Text("Datos capturados correctamente");
+              /*Comprobante c = snapshot.data!.elementAt(0);
+
+              final blob = html.Blob([c.bytes], "application/pdf");
+
+              final url = html.Url.createObjectUrlFromBlob(blob);
+
+              html.window.open(url, '_blank');
+
+              html.Url.revokeObjectUrl(url);*/
+
+              return ListView.separated(
+                
+                padding: EdgeInsets.all(30),
+
+                itemBuilder: (context, index) {
+
+                  return ListTile(
+
+                    title: Text("Hello there"),
+
+                    tileColor: Colors.blue,
+
+                  );
+
+                },
+
+                separatorBuilder: (context, index) => SizedBox(height: 20,),
+
+                itemCount: numeroComprobantes,
+
+              );
 
             }else if(snapshot.hasError) {
 
