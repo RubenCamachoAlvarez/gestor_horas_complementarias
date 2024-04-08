@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
 import 'dart:async';
+
+import 'package:gestor_de_horas_complementarias/vistas/VisorComprobante.dart';
 //import 'dart:html' as html;
 
 class ListaDocumentosWidget extends StatefulWidget {
@@ -82,6 +84,8 @@ class ListaDocumentosState extends State<ListaDocumentosWidget> {
                     onTap: () {
 
                       print("Nombre del documento: ${comprobantes.elementAt(index).nombre}");
+                      
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => VisorComprobanteWidget(comprobante: comprobantes.elementAt(index)),));
 
                     },
 
