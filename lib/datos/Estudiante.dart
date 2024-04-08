@@ -62,7 +62,6 @@ class Estudiante extends Usuario {
         .seleccionarComprobantePDF();
 
     if (datosComprobante != null) {
-      print("INICIANDO SUBIDA DE COMPROBANTE");
 
       try {
         await BaseDeDatos.almacenamiento.ref().child(
@@ -84,8 +83,6 @@ class Estudiante extends Usuario {
           "horas_validez": 0
         });
 
-        print("TERMINADA LA SUBIDA DEL COMPROBANTE");
-
         return true;
       } catch (e) {
         return false;
@@ -96,23 +93,26 @@ class Estudiante extends Usuario {
   }
 
   Future<int> calcularHorasProgreso() async {
+
     int horasTotales = 0;
 
-    CollectionReference coleccionComprobante = BaseDeDatos.conexion.collection(
+    CollectionReference<Map<String, dynamic>> coleccionComprobante = BaseDeDatos.conexion.collection(
         "Comprobantes");
 
-    QuerySnapshot consultaDocumentos = await coleccionComprobante.get();
+    QuerySnapshot<Map<String, dynamic>> consultaDocumentos = await coleccionComprobante.get();
 
-    List<QueryDocumentSnapshot> documentos = consultaDocumentos.docs;
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> documentos = consultaDocumentos.docs;
+
 
     documentos.forEach((documento) {
+
       //Casteo opcional = (documento.get("propietario") as DocumentReference)
-      if ((documento.get("propietario")) ==
+      if ((documento.data()["propietario"]) ==
           BaseDeDatos.conexion.collection("Usuarios").doc(numero)) {
-        if (documento.get("status_comprobante") ==
+        if (documento.data()["status_comprobante"] ==
             BaseDeDatos.conexion.collection("Status_Comprobante").doc(
                 "Aceptado")) {
-          horasTotales += (documento.get("horas_validez") as double).toInt();
+          horasTotales += (documento.data()["horas_validez"] as int);
         }
       }
     });
@@ -123,7 +123,7 @@ class Estudiante extends Usuario {
   Future<double> calcularPorcentajeAvance() async {
     DocumentSnapshot<Map<String, dynamic>> documento = await carrera!.get();
 
-    double horasTotales = documento.get("horas_obligatorias");
+    int horasTotales = documento.data()?["horas_obligatorias"];
 
     int horasAvance = await calcularHorasProgreso();
 
@@ -136,23 +136,33 @@ class Estudiante extends Usuario {
 
     Set<Comprobante> comprobantesEstudiante = <Comprobante>{};
 
-    CollectionReference referenciaColeccionComprobantes = BaseDeDatos.conexion.collection("Comprobantes");
+    CollectionReference<Map<String, dynamic>> referenciaColeccionComprobantes = BaseDeDatos.conexion.collection("Comprobantes");
 
-    QuerySnapshot consultaDocumentos = await referenciaColeccionComprobantes.get();
+    QuerySnapshot<Map<String,dynamic>> consultaDocumentos = await referenciaColeccionComprobantes.get();
 
-    List<QueryDocumentSnapshot> listaComprobantes = consultaDocumentos.docs;
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> listaComprobantes = consultaDocumentos.docs;
 
-    for(QueryDocumentSnapshot comprobante in listaComprobantes) {
+    for(QueryDocumentSnapshot<Map<String, dynamic>> comprobante in listaComprobantes) {
 
       try {
 
-        Uint8List? bytes = await BaseDeDatos.almacenamiento.ref().child("Comprobantes_estudiantes/$numero/${comprobante.get("nombre")}").getData();
+        Uint8List? bytes = await BaseDeDatos.almacenamiento.ref().child("Comprobantes_estudiantes/$numero/${comprobante.data()["nombre"]}").getData();
 
         if(bytes != null) {
 
+          final nombre = comprobante.data()["nombre"];
+
+          final propietario = comprobante.data()["propietario"];
+
+          final fechaSubida = comprobante.data()["fecha_subida"];
+
+          final statusComprobante = comprobante.data()["status_comprobante"];
+
+          final horasValidez = comprobante.data()["horas_validez"];
+
           comprobantesEstudiante.add(
 
-              Comprobante(nombre: comprobante.get("nombre"), bytes: bytes, propietario: comprobante.get("propietario"), fechaSubida: comprobante.get("fecha_subida"), statusComprobante: comprobante.get("status_comprobante"), horasValidez: comprobante.get("horas_validez"))
+              Comprobante(nombre: nombre, bytes: bytes, propietario: propietario, fechaSubida: fechaSubida, statusComprobante: statusComprobante, horasValidez: horasValidez)
 
           );
 
@@ -163,6 +173,8 @@ class Estudiante extends Usuario {
         print("No se pudo descargar el archivo");
 
         print("Error $e");
+
+        print("---------------------------------------------------------------------------");
 
       }
 

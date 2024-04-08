@@ -18,7 +18,7 @@ class Comprobante {
 
   DocumentReference statusComprobante;
 
-  double horasValidez;
+  int horasValidez;
 
   @override
   String toString() {

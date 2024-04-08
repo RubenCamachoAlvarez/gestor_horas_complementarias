@@ -40,7 +40,7 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
   }
 
-  int indiceVista = 0;
+  int indiceVista = 1;
 
   final vistas = <Widget>[
 

@@ -1,5 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
+import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
+import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/vistas/ListaDocumentos.dart';
 
 class DocumentosEstudianteWidget extends StatefulWidget {
@@ -39,11 +42,15 @@ class DocumentosEstudianteState extends State<DocumentosEstudianteWidget> {
 
                 icon: Icon(Icons.cloud_download_rounded),
 
+                text: "Pendientes",
+
               ),
 
               Tab(
 
                 icon: Icon(Icons.account_circle),
+
+                text: "Revisados"
 
               )
 
@@ -65,13 +72,9 @@ class DocumentosEstudianteState extends State<DocumentosEstudianteWidget> {
 
             ),*/
 
-            ListaDocumentosWidget(),
+            ListaDocumentosWidget(funcionObtenerComprobantes: (Sesion.usuario as Estudiante).obtenerComprobantesPendientes,),
 
-            Container(
-
-              color: Colors.yellow,
-
-            ),
+            ListaDocumentosWidget(funcionObtenerComprobantes: (Sesion.usuario as Estudiante).obtenerComprobantesRevisados),
 
           ],
 

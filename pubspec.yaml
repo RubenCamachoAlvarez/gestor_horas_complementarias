@@ -43,6 +43,7 @@ dependencies:
   firebase_storage: ^11.6.11
   dashed_circular_progress_bar: ^0.0.6
   http: ^1.2.1
+  syncfusion_flutter_pdf: ^25.1.38
 
 dev_dependencies:
   flutter_test:

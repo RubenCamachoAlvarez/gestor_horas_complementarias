@@ -1,16 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
-import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
-import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'dart:async';
-import 'dart:html' as html;
+//import 'dart:html' as html;
 
 class ListaDocumentosWidget extends StatefulWidget {
 
-  ListaDocumentosWidget({super.key});
+  ListaDocumentosWidget({super.key, required this.funcionObtenerComprobantes});
 
-  Function? obtenerDatos;
+  Future<Set<Comprobante>> Function() funcionObtenerComprobantes;
 
   @override
   State<ListaDocumentosWidget> createState() => ListaDocumentosState();
@@ -26,13 +23,13 @@ class ListaDocumentosState extends State<ListaDocumentosWidget> {
 
     super.initState();
 
-    comprobantes = (Sesion.usuario as Estudiante).obtenerComprobantes();
+    comprobantes = widget.funcionObtenerComprobantes();
 
   }
 
 
   @override
-  Widget build(BuildContext contexto) {
+  Widget build(BuildContext context) {
 
     return FutureBuilder(
 
@@ -46,7 +43,7 @@ class ListaDocumentosState extends State<ListaDocumentosWidget> {
 
               int numeroComprobantes = snapshot.data!.length;
 
-              print(snapshot.data!.length);
+              Set<Comprobante> comprobantes = snapshot.data!;
 
               /*Comprobante c = snapshot.data!.elementAt(0);
 
@@ -60,21 +57,38 @@ class ListaDocumentosState extends State<ListaDocumentosWidget> {
 
               return ListView.separated(
                 
-                padding: EdgeInsets.all(30),
+                padding: const EdgeInsets.all(30),
 
                 itemBuilder: (context, index) {
 
                   return ListTile(
 
-                    title: Text("Hello there"),
+                    title: Text(comprobantes.elementAt(index).nombre),
 
-                    tileColor: Colors.blue,
+                    leading: const Icon(Icons.picture_as_pdf),
+
+                    trailing: const Icon(Icons.play_arrow_sharp),
+
+                    shape: RoundedRectangleBorder(
+
+                      borderRadius: BorderRadius.circular(10)
+
+                    ),
+
+                    titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+
+                    horizontalTitleGap: 30,
+
+                    onTap: () {
+
+                      print("Nombre del documento: ${comprobantes.elementAt(index).nombre}");
+
+                    },
 
                   );
-
                 },
 
-                separatorBuilder: (context, index) => SizedBox(height: 20,),
+                separatorBuilder: (context, index) => const SizedBox(height: 20,),
 
                 itemCount: numeroComprobantes,
 
@@ -87,8 +101,6 @@ class ListaDocumentosState extends State<ListaDocumentosWidget> {
             }
 
           }
-
-          print("Esperando");
 
           return Container(
 
