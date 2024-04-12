@@ -1,25 +1,24 @@
 
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
-import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
-import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
-import 'package:gestor_de_horas_complementarias/vistas/ListaDocumentos.dart';
+import 'package:gestor_de_horas_complementarias/vistas/ListaComprobantes.dart';
 
-class DocumentosEstudianteWidget extends StatefulWidget {
+class SeccionComprobantesEstudianteWidget extends StatefulWidget {
 
+  Estudiante estudiante;
 
-  const DocumentosEstudianteWidget({super.key});
+  SeccionComprobantesEstudianteWidget({super.key, required this.estudiante});
 
   @override
 
-  State<DocumentosEstudianteWidget> createState() => DocumentosEstudianteState();
+  State<SeccionComprobantesEstudianteWidget> createState() => SeccionComprobantesEstudianteState();
 
 
 }
 
-class DocumentosEstudianteState extends State<DocumentosEstudianteWidget> {
+class SeccionComprobantesEstudianteState extends State<SeccionComprobantesEstudianteWidget> {
 
-  DocumentosEstudianteState();
+  SeccionComprobantesEstudianteState();
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +71,9 @@ class DocumentosEstudianteState extends State<DocumentosEstudianteWidget> {
 
             ),*/
 
-            ListaDocumentosWidget(funcionObtenerComprobantes: (Sesion.usuario as Estudiante).obtenerComprobantesPendientes,),
+            ListaComprobantesWidget(funcionObtenerComprobantes: widget.estudiante.obtenerComprobantesPendientes,),
 
-            ListaDocumentosWidget(funcionObtenerComprobantes: (Sesion.usuario as Estudiante).obtenerComprobantesRevisados),
+            ListaComprobantesWidget(funcionObtenerComprobantes: widget.estudiante.obtenerComprobantesRevisados),
 
           ],
 

@@ -5,18 +5,18 @@ import 'dart:async';
 import 'package:gestor_de_horas_complementarias/vistas/VisorComprobante.dart';
 //import 'dart:html' as html;
 
-class ListaDocumentosWidget extends StatefulWidget {
+class ListaComprobantesWidget extends StatefulWidget {
 
-  ListaDocumentosWidget({super.key, required this.funcionObtenerComprobantes});
+  ListaComprobantesWidget({super.key, required this.funcionObtenerComprobantes});
 
   Future<Set<Comprobante>> Function() funcionObtenerComprobantes;
 
   @override
-  State<ListaDocumentosWidget> createState() => ListaDocumentosState();
+  State<ListaComprobantesWidget> createState() => ListaComprobantesState();
 
 }
 
-class ListaDocumentosState extends State<ListaDocumentosWidget> {
+class ListaComprobantesState extends State<ListaComprobantesWidget> {
 
   late Future<Set<Comprobante>> comprobantes;
 

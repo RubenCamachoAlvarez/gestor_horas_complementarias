@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/vistas/BarraProgresoEstudiante.dart';
-import 'package:gestor_de_horas_complementarias/vistas/DocumentosEstudiante.dart';
+import 'package:gestor_de_horas_complementarias/vistas/SeccionComprobantesEstudiante.dart';
 import 'package:gestor_de_horas_complementarias/vistas/InformacionUsuario.dart';
 
 class DashboardEstudianteWidget extends StatefulWidget {
@@ -50,7 +50,7 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
     ),*/
 
-    const DocumentosEstudianteWidget(),
+    SeccionComprobantesEstudianteWidget(estudiante: (Sesion.usuario as Estudiante),),
 
     const BarraProgresoEstudianteWidget(),
 
