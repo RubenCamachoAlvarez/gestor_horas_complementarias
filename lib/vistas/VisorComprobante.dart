@@ -48,12 +48,43 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
       body:
 
-        Center(
+      Center(
 
-          child: SfPdfViewer.memory(widget.comprobante.bytes),
+        child: SfPdfViewer.memory(widget.comprobante.bytes),
 
-        )
-      ,
+      ),
+
+      floatingActionButton: FloatingActionButton(
+
+        child: Icon(Icons.send),
+
+        onPressed: () {
+
+          showModalBottomSheet(context: context, builder: (context) => Container(
+
+            color: Colors.red,
+
+            width: double.infinity,
+
+            child: Column(
+
+              children: [
+
+                Switch(value: false, onChanged: (value) {
+
+                  print("Nuevo valor");
+
+                }),
+
+              ],
+
+            ),
+
+          ),);
+
+        },
+
+      ),
 
     );
 
