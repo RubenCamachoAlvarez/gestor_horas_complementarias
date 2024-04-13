@@ -9,13 +9,14 @@ class VisorComprobanteWidget extends StatefulWidget {
   Comprobante comprobante;
 
   @override
-
   State<VisorComprobanteWidget> createState() => VisorComprobanteState();
 
 
 }
 
 class VisorComprobanteState extends State<VisorComprobanteWidget> {
+
+  bool statusComprobante = false;
 
   VisorComprobanteState();
 
@@ -56,40 +57,187 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
       floatingActionButton: FloatingActionButton(
 
-        child: Icon(Icons.send),
+        child: const Icon(Icons.send),
 
         onPressed: () {
 
-          showModalBottomSheet(context: context, builder: (context) => Container(
+          showModalBottomSheet(context: context,
+            
+            shape: const RoundedRectangleBorder(
+              
+              borderRadius: BorderRadius.only(
 
-            color: Colors.red,
+                topLeft: Radius.circular(20),
 
-            width: double.infinity,
+                topRight: Radius.circular(20),
 
-            child: Column(
+              )
+              
+            ),
 
-              children: [
+            builder: (context) =>  StatefulBuilder(
 
-                Switch(value: false, onChanged: (value) {
+              builder: (context, setState) {
 
-                  print("Nuevo valor");
+                print("Ejecutando esto");
 
-                }),
+                List<Widget> elementosBottomSheet = <Widget> [];
 
-              ],
+                elementosBottomSheet.add(
+
+                  Switch(value: statusComprobante,
+
+                    onChanged: (bool nuevoValor){
+
+                      setState((){
+
+                        statusComprobante = nuevoValor;
+
+                      });
+
+                    },
+
+                    activeTrackColor: Colors.green,
+
+                    inactiveThumbColor: Colors.white,
+
+                    inactiveTrackColor: Colors.red,
+
+                  )
+
+                );
+
+                late String mensajeBoton;
+
+                late Color colorBoton;
+
+                if(statusComprobante) {
+
+                  mensajeBoton = "Aprobar comprobante";
+
+                  colorBoton = Colors.green;
+
+                }else{
+
+                  mensajeBoton = "Rechazar comprobante";
+
+                  colorBoton = Colors.red;
+
+                }
+
+                elementosBottomSheet.add(
+
+                  Expanded(child:
+
+                    Container(
+
+                      alignment: Alignment.center,
+
+                      child: TextField(
+
+                        decoration: InputDecoration(
+
+                          labelText: "Justificación",
+
+                          border: OutlineInputBorder(
+
+                            borderRadius: BorderRadius.circular(20),
+
+                          )
+
+                        ),
+
+                      )
+
+
+                    )
+
+                  )
+
+                );
+
+                elementosBottomSheet.add(
+
+                  Container(
+
+                    width: double.infinity,
+
+                    color: Colors.blue,
+
+                    child: ElevatedButton(onPressed: (){
+
+
+
+                    },
+
+                      style: ButtonStyle(
+
+                          backgroundColor: MaterialStatePropertyAll<Color>(colorBoton),
+
+                          alignment: Alignment.center
+
+                      ),
+
+                      child: Text(mensajeBoton,
+
+                        textAlign: TextAlign.center,
+
+                        style: const TextStyle(
+
+                          fontWeight: FontWeight.bold,
+
+                          color: Colors.white,
+
+                        ),
+
+                      ),
+
+                    )
+
+                  )
+
+                );
+
+
+
+                return Container(
+
+                  width: double.infinity,
+
+                  height: 300,
+
+                  decoration: BoxDecoration(
+
+                    borderRadius: BorderRadius.circular(20),
+
+                    color: Colors.transparent,
+
+                  ),
+
+                  padding: const EdgeInsets.all(30),
+
+                  child: Column(
+
+                    children: elementosBottomSheet,
+
+                  ),
+
+                );
+
+              }
 
             ),
 
-          ),);
+            backgroundColor: Colors.white
 
-        },
+          );
 
-      ),
+      },
+
+    ),
 
     );
 
   }
-
-
 
 }
