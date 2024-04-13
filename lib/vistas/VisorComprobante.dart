@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
+import 'package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class VisorComprobanteWidget extends StatefulWidget {
@@ -18,7 +19,15 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
   bool statusComprobante = false;
 
-  VisorComprobanteState();
+  VisorComprobanteState() {
+
+    controladorCampoJustificacionRechazo.text = "mensaje";
+
+  }
+
+  TextEditingController controladorCampoJustificacionRechazo = TextEditingController();
+
+  TextEditingController controladorCampoHorasValidezAceptado = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -57,11 +66,13 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
       floatingActionButton: FloatingActionButton(
 
-        child: const Icon(Icons.send),
+        tooltip: (widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? "Enviar revisión" : "Modificar revisión",
 
-        onPressed: () {
+        onPressed: () async {
 
-          showModalBottomSheet(context: context,
+          //Este await hace que el resto de las lineas de la función llamada, cuando se presiona el FloatingActionButton, se ejecuten hasta que el
+          //BottomSheet se haya cerrado.
+          await showModalBottomSheet(context: context,
             
             shape: const RoundedRectangleBorder(
               
@@ -135,9 +146,13 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
                       child: TextField(
 
+                        controller: (statusComprobante) ? controladorCampoHorasValidezAceptado : controladorCampoJustificacionRechazo,
+
                         decoration: InputDecoration(
 
-                          labelText: "Justificación",
+                          labelText: (statusComprobante) ? "Horas de validez" : "Justificación de rechazo",
+
+                          hintText: (statusComprobante) ? "Ingresa la cantidad de horas de validez" : "Ingresa el mótivo del rechazo del comprobante",
 
                           border: OutlineInputBorder(
 
@@ -162,11 +177,12 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
                     width: double.infinity,
 
-                    color: Colors.blue,
-
                     child: ElevatedButton(onPressed: (){
 
+                      //AQUI VAN LAS INSTRUCCIONES PARA ACTUALIZAR EL ESTADO DEL DOCUMENTO EN LA BASE DE DATOS Y EN EL COMPROBANTE RECIBIDO COMO ARGUMENTO
+                      //A FIN DE MODIFICAR LOS DATOS MOSTRADOS EN EL WIDGET UNA VEZ QUE SEA CERRADO EL BOTTOMSHEET.
 
+                      Navigator.of(context).pop();
 
                     },
 
@@ -199,7 +215,7 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
                 );
 
 
-
+                //Forma del BottomSheet.
                 return Container(
 
                   width: double.infinity,
@@ -232,7 +248,17 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
           );
 
+
+
+          setState((){
+
+            print("AQUI DESPUES DE ACTUALIZAR EL STATUS DEL DOCUMENTO ASEGURARSE QUE EL ICONO Y TOOLTIP DEL FLOATING ACTION BUTTON SE HAYA MODIFICADO");
+
+          });
+
       },
+
+      child: (widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? const Icon(Icons.send) : const Icon(Icons.edit),
 
     ),
 
