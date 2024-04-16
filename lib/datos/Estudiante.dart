@@ -80,7 +80,6 @@ class Estudiante extends Usuario {
 
           "status_comprobante": StatusComprobante.PENDIENTE,
 
-          "horas_validez": 0
         });
 
         return true;
@@ -109,10 +108,13 @@ class Estudiante extends Usuario {
       //Casteo opcional = (documento.get("propietario") as DocumentReference)
       if ((documento.data()["propietario"]) ==
           BaseDeDatos.conexion.collection("Usuarios").doc(numero)) {
+
         if (documento.data()["status_comprobante"] ==
             BaseDeDatos.conexion.collection("Status_Comprobante").doc(
                 "Aceptado")) {
+
           horasTotales += (documento.data()["horas_validez"] as int);
+
         }
       }
     });
@@ -142,27 +144,41 @@ class Estudiante extends Usuario {
 
     List<QueryDocumentSnapshot<Map<String, dynamic>>> listaComprobantes = consultaDocumentos.docs;
 
-    for(QueryDocumentSnapshot<Map<String, dynamic>> comprobante in listaComprobantes) {
+    for(QueryDocumentSnapshot<Map<String, dynamic>> datosComprobante in listaComprobantes) {
 
       try {
 
-        Uint8List? bytes = await BaseDeDatos.almacenamiento.ref().child("Comprobantes_estudiantes/$numero/${comprobante.data()["nombre"]}").getData();
+        Uint8List? bytes = await BaseDeDatos.almacenamiento.ref().child("Comprobantes_estudiantes/$numero/${datosComprobante.data()["nombre"]}").getData();
 
         if(bytes != null) {
 
-          final nombre = comprobante.data()["nombre"];
+          final nombre = datosComprobante.data()["nombre"];
 
-          final propietario = comprobante.data()["propietario"];
+          final propietario = datosComprobante.data()["propietario"];
 
-          final fechaSubida = comprobante.data()["fecha_subida"];
+          final fechaSubida = datosComprobante.data()["fecha_subida"];
 
-          final statusComprobante = comprobante.data()["status_comprobante"];
+          final statusComprobante = datosComprobante.data()["status_comprobante"];
 
-          final horasValidez = comprobante.data()["horas_validez"];
+          Comprobante comprobante = Comprobante(nombre: nombre, bytes: bytes, propietario: propietario, fechaSubida: fechaSubida, statusComprobante: statusComprobante);
+
+          if(comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
+
+            final horasValidez = datosComprobante.data()["horas_validez"];
+
+            comprobante.horasValidez = horasValidez;
+
+          }else{
+
+            final justificacionRechazo = datosComprobante.data()["justificacion_rechazo"];
+
+            comprobante.justificacionRechazo = justificacionRechazo;
+
+          }
 
           comprobantesEstudiante.add(
 
-              Comprobante(nombre: nombre, bytes: bytes, propietario: propietario, fechaSubida: fechaSubida, statusComprobante: statusComprobante, horasValidez: horasValidez)
+            comprobante
 
           );
 

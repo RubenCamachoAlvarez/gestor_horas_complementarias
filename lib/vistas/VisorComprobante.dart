@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
+import 'package:gestor_de_horas_complementarias/datos/Encargado.dart';
+import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
+import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -19,15 +22,25 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
   bool statusComprobante = false;
 
-  VisorComprobanteState() {
-
-    controladorCampoJustificacionRechazo.text = "mensaje";
-
-  }
-
   TextEditingController controladorCampoJustificacionRechazo = TextEditingController();
 
   TextEditingController controladorCampoHorasValidezAceptado = TextEditingController();
+
+  VisorComprobanteState();
+
+  @override
+
+  void initState() {
+
+    super.initState();
+
+    if(widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
+
+      statusComprobante = true;
+
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +77,9 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
       ),
 
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: (Sesion.usuario is! Encargado && widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? null : FloatingActionButton(
 
-        tooltip: (widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? "Enviar revisión" : "Modificar revisión",
+        tooltip: (Sesion.usuario is Encargado) ? ((widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? "Enviar revisión" : "Modificar revisión") : "Visualizar revisión",
 
         onPressed: () async {
 
@@ -94,29 +107,57 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
                 List<Widget> elementosBottomSheet = <Widget> [];
 
-                elementosBottomSheet.add(
+                if(Sesion.usuario is Encargado) {
 
-                  Switch(value: statusComprobante,
+                  elementosBottomSheet.add(
 
-                    onChanged: (bool nuevoValor){
+                      Switch(value: statusComprobante,
 
-                      setState((){
+                        onChanged: (bool nuevoValor) {
+                          setState(() {
+                            statusComprobante = nuevoValor;
+                          });
+                        },
 
-                        statusComprobante = nuevoValor;
+                        activeTrackColor: Colors.green,
 
-                      });
+                        inactiveThumbColor: Colors.white,
 
-                    },
+                        inactiveTrackColor: Colors.red,
 
-                    activeTrackColor: Colors.green,
+                      )
 
-                    inactiveThumbColor: Colors.white,
+                  );
 
-                    inactiveTrackColor: Colors.red,
+                }else{
 
-                  )
+                  elementosBottomSheet.add(
 
-                );
+                      Container(
+
+                        alignment: Alignment.center,
+                        
+                        padding: const EdgeInsets.all(20),
+
+                        child: Text((statusComprobante) ? "Comprobante aprobado" : "Comprobante rechazado",
+
+                          style: TextStyle(
+
+                            fontWeight: FontWeight.bold,
+
+                            color: (statusComprobante) ? Colors.green : Colors.red,
+
+                            fontSize: 20,
+
+                          ),
+
+                        ),
+
+                      )
+
+                  );
+
+                }
 
                 late String mensajeBoton;
 
@@ -136,6 +177,7 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
                 }
 
+
                 elementosBottomSheet.add(
 
                   Expanded(child:
@@ -148,9 +190,19 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
                         controller: (statusComprobante) ? controladorCampoHorasValidezAceptado : controladorCampoJustificacionRechazo,
 
+                        readOnly: (Sesion.usuario is Estudiante) ? true : false,
+
+                        maxLines: (statusComprobante) ? 1 : 5,
+
                         decoration: InputDecoration(
 
                           labelText: (statusComprobante) ? "Horas de validez" : "Justificación de rechazo",
+
+                          labelStyle: const TextStyle(
+
+                            fontWeight: FontWeight.bold,
+
+                          ),
 
                           hintText: (statusComprobante) ? "Ingresa la cantidad de horas de validez" : "Ingresa el mótivo del rechazo del comprobante",
 
@@ -171,49 +223,52 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
                 );
 
-                elementosBottomSheet.add(
+                if(Sesion.usuario is Encargado) {
 
-                  Container(
+                  elementosBottomSheet.add(
 
-                    width: double.infinity,
+                      Container(
 
-                    child: ElevatedButton(onPressed: (){
+                          width: double.infinity,
 
-                      //AQUI VAN LAS INSTRUCCIONES PARA ACTUALIZAR EL ESTADO DEL DOCUMENTO EN LA BASE DE DATOS Y EN EL COMPROBANTE RECIBIDO COMO ARGUMENTO
-                      //A FIN DE MODIFICAR LOS DATOS MOSTRADOS EN EL WIDGET UNA VEZ QUE SEA CERRADO EL BOTTOMSHEET.
+                          child: ElevatedButton(onPressed: (){
 
-                      Navigator.of(context).pop();
+                            //AQUI VAN LAS INSTRUCCIONES PARA ACTUALIZAR EL ESTADO DEL DOCUMENTO EN LA BASE DE DATOS Y EN EL COMPROBANTE RECIBIDO COMO ARGUMENTO
+                            //A FIN DE MODIFICAR LOS DATOS MOSTRADOS EN EL WIDGET UNA VEZ QUE SEA CERRADO EL BOTTOMSHEET.
 
-                    },
+                            Navigator.of(context).pop();
 
-                      style: ButtonStyle(
+                          },
 
-                          backgroundColor: MaterialStatePropertyAll<Color>(colorBoton),
+                            style: ButtonStyle(
 
-                          alignment: Alignment.center
+                                backgroundColor: MaterialStatePropertyAll<Color>(colorBoton),
 
-                      ),
+                                alignment: Alignment.center
 
-                      child: Text(mensajeBoton,
+                            ),
 
-                        textAlign: TextAlign.center,
+                            child: Text(mensajeBoton,
 
-                        style: const TextStyle(
+                              textAlign: TextAlign.center,
 
-                          fontWeight: FontWeight.bold,
+                              style: const TextStyle(
 
-                          color: Colors.white,
+                                fontWeight: FontWeight.bold,
 
-                        ),
+                                color: Colors.white,
 
-                      ),
+                              ),
 
-                    )
+                            ),
 
-                  )
+                          )
 
-                );
+                      )
 
+                  );
+
+                }
 
                 //Forma del BottomSheet.
                 return Container(
@@ -230,7 +285,7 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
                   ),
 
-                  padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(20),
 
                   child: Column(
 
@@ -258,7 +313,7 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
       },
 
-      child: (widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? const Icon(Icons.send) : const Icon(Icons.edit),
+      child: (Sesion.usuario is Encargado) ? ((widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? const Icon(Icons.send) : const Icon(Icons.edit)) : const Icon(Icons.remove_red_eye),
 
     ),
 

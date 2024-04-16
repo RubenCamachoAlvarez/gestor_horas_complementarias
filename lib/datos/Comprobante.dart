@@ -6,7 +6,7 @@ class Comprobante {
 
   Comprobante({required this.nombre, required this.bytes, required this.propietario, required this.fechaSubida,
 
-    required this.statusComprobante, required this.horasValidez});
+    required this.statusComprobante, this.horasValidez, this.justificacionRechazo});
 
   String nombre;
 
@@ -18,7 +18,9 @@ class Comprobante {
 
   DocumentReference statusComprobante;
 
-  int horasValidez;
+  int? horasValidez;
+
+  DocumentReference<Map<String, dynamic>>? justificacionRechazo;
 
   @override
   String toString() {
