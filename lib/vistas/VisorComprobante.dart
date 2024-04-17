@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
 import 'package:gestor_de_horas_complementarias/datos/Encargado.dart';
@@ -26,6 +27,8 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
   TextEditingController controladorCampoHorasValidezAceptado = TextEditingController();
 
+  late Future<void> consulta;
+
   VisorComprobanteState();
 
   @override
@@ -34,9 +37,27 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
     super.initState();
 
+    consulta = consultarDatosComprobante();
+
+  }
+
+  Future<void> consultarDatosComprobante() async {
+
     if(widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
 
       statusComprobante = true;
+
+      controladorCampoHorasValidezAceptado.text = widget.comprobante.horasValidez!.toString();
+
+    }else if(widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO) {
+
+      DocumentSnapshot<Map<String, dynamic>> datos = await widget.comprobante.justificacionRechazo!.get();
+
+      if(datos.exists) {
+
+        controladorCampoJustificacionRechazo.text = datos.data()!["mensaje_justificacion"];
+
+      }
 
     }
 
@@ -81,11 +102,11 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
         tooltip: (Sesion.usuario is Encargado) ? ((widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? "Enviar revisión" : "Modificar revisión") : "Visualizar revisión",
 
-        onPressed: () async {
+        onPressed: () {
 
           //Este await hace que el resto de las lineas de la función llamada, cuando se presiona el FloatingActionButton, se ejecuten hasta que el
           //BottomSheet se haya cerrado.
-          await showModalBottomSheet(context: context,
+          showModalBottomSheet(context: context,
             
             shape: const RoundedRectangleBorder(
               
@@ -99,178 +120,222 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
               
             ),
 
-            builder: (context) =>  StatefulBuilder(
+            builder: (context) =>  FutureBuilder(
 
-              builder: (context, setState) {
+              future: consulta,
 
-                print("Ejecutando esto");
+              builder: (context, snapshot) {
 
-                List<Widget> elementosBottomSheet = <Widget> [];
+                if(snapshot.connectionState == ConnectionState.done) {
 
-                if(Sesion.usuario is Encargado) {
+                  print("Datos cargados correctamente");
 
-                  elementosBottomSheet.add(
+                  return StatefulBuilder(
 
-                      Switch(value: statusComprobante,
+                      builder: (context, setState) {
 
-                        onChanged: (bool nuevoValor) {
-                          setState(() {
-                            statusComprobante = nuevoValor;
-                          });
-                        },
+                        print("Ejecutando esto");
 
-                        activeTrackColor: Colors.green,
+                        List<Widget> elementosBottomSheet = <Widget> [];
 
-                        inactiveThumbColor: Colors.white,
+                        if(Sesion.usuario is Encargado) {
 
-                        inactiveTrackColor: Colors.red,
+                          elementosBottomSheet.add(
 
-                      )
+                              Switch(value: statusComprobante,
 
-                  );
+                                onChanged: (bool nuevoValor) {
+                                  setState(() {
+                                    statusComprobante = nuevoValor;
+                                  });
+                                },
 
-                }else{
+                                activeTrackColor: Colors.green,
 
-                  elementosBottomSheet.add(
+                                inactiveThumbColor: Colors.white,
 
-                      Container(
+                                inactiveTrackColor: Colors.red,
 
-                        alignment: Alignment.center,
-                        
-                        padding: const EdgeInsets.all(20),
+                              )
 
-                        child: Text((statusComprobante) ? "Comprobante aprobado" : "Comprobante rechazado",
+                          );
 
-                          style: TextStyle(
+                        }else{
 
-                            fontWeight: FontWeight.bold,
+                          elementosBottomSheet.add(
 
-                            color: (statusComprobante) ? Colors.green : Colors.red,
+                              Container(
 
-                            fontSize: 20,
+                                alignment: Alignment.center,
 
-                          ),
+                                padding: const EdgeInsets.all(20),
 
-                        ),
+                                child: Text((statusComprobante) ? "Comprobante aprobado" : "Comprobante rechazado",
 
-                      )
+                                  style: TextStyle(
 
-                  );
+                                    fontWeight: FontWeight.bold,
 
-                }
+                                    color: (statusComprobante) ? Colors.green : Colors.red,
 
-                late String mensajeBoton;
+                                    fontSize: 20,
 
-                late Color colorBoton;
+                                  ),
 
-                if(statusComprobante) {
+                                ),
 
-                  mensajeBoton = "Aprobar comprobante";
+                              )
 
-                  colorBoton = Colors.green;
+                          );
 
-                }else{
+                        }
 
-                  mensajeBoton = "Rechazar comprobante";
+                        late String mensajeBoton;
 
-                  colorBoton = Colors.red;
+                        late Color colorBoton;
 
-                }
+                        if(statusComprobante) {
 
+                          mensajeBoton = "Aprobar comprobante";
 
-                elementosBottomSheet.add(
+                          colorBoton = Colors.green;
 
-                  Expanded(child:
+                        }else{
 
-                    Container(
+                          mensajeBoton = "Rechazar comprobante";
 
-                      alignment: Alignment.center,
+                          colorBoton = Colors.red;
 
-                      child: TextField(
-
-                        controller: (statusComprobante) ? controladorCampoHorasValidezAceptado : controladorCampoJustificacionRechazo,
-
-                        readOnly: (Sesion.usuario is Estudiante) ? true : false,
-
-                        maxLines: (statusComprobante) ? 1 : 5,
-
-                        decoration: InputDecoration(
-
-                          labelText: (statusComprobante) ? "Horas de validez" : "Justificación de rechazo",
-
-                          labelStyle: const TextStyle(
-
-                            fontWeight: FontWeight.bold,
-
-                          ),
-
-                          hintText: (statusComprobante) ? "Ingresa la cantidad de horas de validez" : "Ingresa el mótivo del rechazo del comprobante",
-
-                          border: OutlineInputBorder(
-
-                            borderRadius: BorderRadius.circular(20),
-
-                          )
-
-                        ),
-
-                      )
+                        }
 
 
-                    )
+                        elementosBottomSheet.add(
 
-                  )
+                            Expanded(child:
 
-                );
+                            Container(
 
-                if(Sesion.usuario is Encargado) {
+                                alignment: Alignment.center,
 
-                  elementosBottomSheet.add(
+                                child: TextField(
 
-                      Container(
+                                  controller: (statusComprobante) ? controladorCampoHorasValidezAceptado : controladorCampoJustificacionRechazo,
+
+                                  textAlign: (statusComprobante) ? TextAlign.center : TextAlign.left,
+
+                                  readOnly: (Sesion.usuario is Estudiante) ? true : false,
+
+                                  maxLines: (statusComprobante) ? 1 : 5,
+
+                                  decoration: InputDecoration(
+
+                                      labelText: (statusComprobante) ? "Horas de validez" : "Justificación de rechazo",
+
+                                      labelStyle: const TextStyle(
+
+                                        fontWeight: FontWeight.bold,
+
+                                      ),
+
+                                      hintText: (statusComprobante) ? "Ingresa la cantidad de horas de validez" : "Ingresa el mótivo del rechazo del comprobante",
+
+                                      border: OutlineInputBorder(
+
+                                        borderRadius: BorderRadius.circular(20),
+
+                                      )
+
+                                  ),
+
+                                )
+
+
+                            )
+
+                            )
+
+                        );
+
+                        if(Sesion.usuario is Encargado) {
+
+                          elementosBottomSheet.add(
+
+                              Container(
+
+                                  width: double.infinity,
+
+                                  child: ElevatedButton(onPressed: (){
+
+                                    //AQUI VAN LAS INSTRUCCIONES PARA ACTUALIZAR EL ESTADO DEL DOCUMENTO EN LA BASE DE DATOS Y EN EL COMPROBANTE RECIBIDO COMO ARGUMENTO
+                                    //A FIN DE MODIFICAR LOS DATOS MOSTRADOS EN EL WIDGET UNA VEZ QUE SEA CERRADO EL BOTTOMSHEET.
+
+                                    Navigator.of(context).pop();
+
+                                  },
+
+                                    style: ButtonStyle(
+
+                                        backgroundColor: MaterialStatePropertyAll<Color>(colorBoton),
+
+                                        alignment: Alignment.center
+
+                                    ),
+
+                                    child: Text(mensajeBoton,
+
+                                      textAlign: TextAlign.center,
+
+                                      style: const TextStyle(
+
+                                        fontWeight: FontWeight.bold,
+
+                                        color: Colors.white,
+
+                                      ),
+
+                                    ),
+
+                                  )
+
+                              )
+
+                          );
+
+                        }
+
+                        //Forma del BottomSheet.
+                        return Container(
 
                           width: double.infinity,
 
-                          child: ElevatedButton(onPressed: (){
+                          height: 300,
 
-                            //AQUI VAN LAS INSTRUCCIONES PARA ACTUALIZAR EL ESTADO DEL DOCUMENTO EN LA BASE DE DATOS Y EN EL COMPROBANTE RECIBIDO COMO ARGUMENTO
-                            //A FIN DE MODIFICAR LOS DATOS MOSTRADOS EN EL WIDGET UNA VEZ QUE SEA CERRADO EL BOTTOMSHEET.
+                          decoration: BoxDecoration(
 
-                            Navigator.of(context).pop();
+                            borderRadius: BorderRadius.circular(20),
 
-                          },
+                            color: Colors.transparent,
 
-                            style: ButtonStyle(
+                          ),
 
-                                backgroundColor: MaterialStatePropertyAll<Color>(colorBoton),
+                          padding: const EdgeInsets.all(20),
 
-                                alignment: Alignment.center
+                          child: Column(
 
-                            ),
+                            children: elementosBottomSheet,
 
-                            child: Text(mensajeBoton,
+                          ),
 
-                              textAlign: TextAlign.center,
+                        );
 
-                              style: const TextStyle(
-
-                                fontWeight: FontWeight.bold,
-
-                                color: Colors.white,
-
-                              ),
-
-                            ),
-
-                          )
-
-                      )
+                      }
 
                   );
 
                 }
 
-                //Forma del BottomSheet.
+                print("Cargando datos");
+
                 return Container(
 
                   width: double.infinity,
@@ -287,15 +352,10 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
                   padding: const EdgeInsets.all(20),
 
-                  child: Column(
-
-                    children: elementosBottomSheet,
-
-                  ),
-
                 );
 
-              }
+              },
+
 
             ),
 
@@ -303,13 +363,15 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
 
           );
 
-
-
           setState((){
 
             print("AQUI DESPUES DE ACTUALIZAR EL STATUS DEL DOCUMENTO ASEGURARSE QUE EL ICONO Y TOOLTIP DEL FLOATING ACTION BUTTON SE HAYA MODIFICADO");
 
           });
+
+          //
+
+          consulta = consultarDatosComprobante();
 
       },
 
