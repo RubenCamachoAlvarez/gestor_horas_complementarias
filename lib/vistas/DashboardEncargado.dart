@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Encargado.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
+import 'package:gestor_de_horas_complementarias/vistas/InformacionUsuario.dart';
 
 class DashboardEncargadoWidget extends StatefulWidget {
 
@@ -18,6 +19,16 @@ class DashboardEncargadoWidget extends StatefulWidget {
 
 class DashboardEncargadoState extends State<DashboardEncargadoWidget> {
 
+  final List<Widget> vistas = <Widget>[
+
+    Container(),
+
+    const InformacionUsuarioWidget(),
+
+  ];
+
+  int indiceVista = 0;
+
   DashboardEncargadoState();
 
   @override
@@ -25,33 +36,41 @@ class DashboardEncargadoState extends State<DashboardEncargadoWidget> {
 
     return Scaffold(
 
+      body: vistas[indiceVista],
+
       bottomNavigationBar: BottomNavigationBar(
 
         items: const <BottomNavigationBarItem>[
 
           BottomNavigationBarItem(
 
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.groups),
 
-            label: "Primero"
+            label: "Estudiantes"
 
           ),
 
           BottomNavigationBarItem(
 
-              icon: Icon(Icons.abc),
+              icon: Icon(Icons.account_circle),
 
-              label: "Segunda"
+              label: "Usuario"
 
           ),
 
         ],
 
-        currentIndex: 0,
+        currentIndex: indiceVista,
 
         onTap: (index) {
 
           print("Se selecciono el indice $index");
+
+          setState(() {
+
+            indiceVista = index;
+
+          });
 
         },
 

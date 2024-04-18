@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:http/http.dart';
 
 class OperacionesArchivos {
 
@@ -24,17 +25,13 @@ class OperacionesArchivos {
 
       String contenidoArchivo = "";
 
-      if(kIsWeb) {
-
-        print("Ejecutando aplicacion en web");
+      if(kIsWeb) { //Se ejecuta cuando es aplicación web.
 
         Uint8List bytesContenidoArchivo = archivoSeleccionado.files.first.bytes!;
 
         contenidoArchivo = utf8.decode(bytesContenidoArchivo);
 
-      }else if (Platform.isAndroid) {
-
-        print("Ejecutando aplicacion en Android");
+      }else if (Platform.isAndroid) { //Se ejecuta cuando es aplicación Android.
 
         try {
 
@@ -43,7 +40,11 @@ class OperacionesArchivos {
             //Posible error en Android
             contenidoArchivo = archivo.readAsStringSync();
 
-        }catch(e){}
+        }catch(e){
+
+          print("Error: $e");
+
+        }
 
       }
 
@@ -101,11 +102,21 @@ class OperacionesArchivos {
 
       PlatformFile archivoSeleccionado = seleccion.files.first;
 
-      Uint8List bytesArchivo = archivoSeleccionado.bytes!;
-
       String nombreArchivo = archivoSeleccionado.name;
 
       Timestamp fechaSubida = Timestamp.now();
+
+      late Uint8List bytesArchivo;
+
+      if(Platform.isAndroid) { //Cuando el código se ejecuta en un dispositivo Android.
+
+        bytesArchivo = File(archivoSeleccionado.path!).readAsBytesSync();
+
+      }else if(kIsWeb) { //Cuando el código se ejecuta en una plataforma web.
+
+        bytesArchivo = archivoSeleccionado.bytes!;
+
+      }
 
       return {
 
