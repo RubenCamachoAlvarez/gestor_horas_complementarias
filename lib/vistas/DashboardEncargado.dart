@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Encargado.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/vistas/InformacionUsuario.dart';
+import 'package:gestor_de_horas_complementarias/vistas/SeccionEstudiantes.dart';
 
 class DashboardEncargadoWidget extends StatefulWidget {
 
@@ -21,7 +21,9 @@ class DashboardEncargadoState extends State<DashboardEncargadoWidget> {
 
   final List<Widget> vistas = <Widget>[
 
-    Container(),
+    //Container(),
+
+    const SeccionEstudiantesWidget(),
 
     const InformacionUsuarioWidget(),
 

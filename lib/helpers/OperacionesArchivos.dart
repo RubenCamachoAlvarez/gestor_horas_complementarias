@@ -7,7 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:http/http.dart';
+//import 'package:http/http.dart';
 
 class OperacionesArchivos {
 
@@ -42,7 +42,7 @@ class OperacionesArchivos {
 
         }catch(e){
 
-          print("Error: $e");
+          print("Error: $e"); //Cuando se suscita un error esta parte del catch se ejecuta.
 
         }
 
