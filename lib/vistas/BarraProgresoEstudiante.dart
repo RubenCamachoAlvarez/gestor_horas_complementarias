@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
+import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
+import 'package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart';
 
 class BarraProgresoEstudianteWidget extends StatefulWidget {
 
@@ -15,149 +17,139 @@ class BarraProgresoEstudianteWidget extends StatefulWidget {
 
 class BarraProgresoEstudianteState extends State<BarraProgresoEstudianteWidget> {
 
-  double porcentajeProgreso = 0.0;
-
-  int horasProgreso = 0;
-
   BarraProgresoEstudianteState();
+
+  DocumentReference referenciaEstudiante = BaseDeDatos.conexion.collection("Usuarios").doc(Sesion.usuario!.numero);
 
   ValueNotifier<double> notificador = ValueNotifier<double>(10);
 
-  late Future<void> resultadoTarea;
+  double porcentajeProgreso = 0.0;
+
+  int horasProgreso = 0;
 
   @override
   void initState() {
 
     super.initState();
 
-    resultadoTarea = calcularProgreso();
-
   }
-
-  Future<void> calcularProgreso() async {
-
-    porcentajeProgreso = await (Sesion.usuario as Estudiante).calcularPorcentajeAvance();
-
-    horasProgreso = await (Sesion.usuario as Estudiante).calcularHorasProgreso();
-
-  }
-
 
   @override
   Widget build(BuildContext context) {
 
-    return FutureBuilder(
+    return StreamBuilder(
 
-      future: resultadoTarea,
+        stream: BaseDeDatos.conexion.collection("Comprobantes").where("propietario", isEqualTo: referenciaEstudiante).where("status_comprobante", isEqualTo: StatusComprobante.ACEPTADO).snapshots(),
 
-      builder: (context, snapshot) {
+        builder: (context, snapshot) {
 
-        if(snapshot.connectionState == ConnectionState.done) {
+          if(snapshot.connectionState == ConnectionState.waiting) {
 
-          return Container(
+            return Container(
 
               alignment: Alignment.center,
 
-              color: Colors.white,
+              child: const CircularProgressIndicator(),
 
-              padding: const EdgeInsets.all(100),
+            );
 
-              child: DashedCircularProgressBar.aspectRatio(
-                aspectRatio: 1, // width ÷ height
-                valueNotifier: notificador,
-                progress: porcentajeProgreso,
-                startAngle: 225,
-                sweepAngle: 270,
-                foregroundColor: Colors.blueAccent,
-                backgroundColor: const Color(0xffeeeeee),
-                foregroundStrokeWidth: 15,
-                backgroundStrokeWidth: 15,
-                animation: true,
-                seekSize: 6,
-                seekColor: const Color(0xffeeeeee),
-                child: Center(
-                  child: ValueListenableBuilder(
-                      valueListenable: notificador,
-                      builder: (_, double value, __) => Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            horasProgreso.toString(),
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w300,
-                                fontSize: 60
-                            ),
+          }else{
+
+            horasProgreso = 0;
+
+            List<QueryDocumentSnapshot<Map<String, dynamic>>> comprobantes = snapshot.data!.docs;
+
+            comprobantes.forEach((element) {
+
+              horasProgreso += (element.data()["horas_validez"] as int);
+
+            });
+
+            return FutureBuilder(
+
+              future: Sesion.usuario!.carrera!.get(),
+
+              builder: (context, snapshot) {
+
+                if(snapshot.connectionState == ConnectionState.done) {
+
+                  int horasObligatorias = snapshot.data!.data()!["horas_obligatorias"];
+
+                  porcentajeProgreso = horasProgreso * 100 / horasObligatorias;
+
+                  return Container(
+
+                      alignment: Alignment.center,
+
+                      color: Colors.white,
+
+                      padding: const EdgeInsets.all(100),
+
+                      child: DashedCircularProgressBar.aspectRatio(
+                        animationDuration: const Duration(seconds: 1),
+                        aspectRatio: 1, // width ÷ height
+                        valueNotifier: notificador,
+                        progress: porcentajeProgreso,
+                        startAngle: 225,
+                        sweepAngle: 270,
+                        foregroundColor: Colors.blueAccent,
+                        backgroundColor: const Color(0xffeeeeee),
+                        foregroundStrokeWidth: 15,
+                        backgroundStrokeWidth: 15,
+                        animation: true,
+                        seekSize: 6,
+                        seekColor: const Color(0xffeeeeee),
+                        child: Center(
+                          child: ValueListenableBuilder(
+                              valueListenable: notificador,
+                              builder: (_, double value, __) => Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    horasProgreso.toString(),
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w300,
+                                        fontSize: 60
+                                    ),
+                                  ),
+                                  Text(
+                                    (horasProgreso != 1) ? "Horas" : "Hora",
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.5),
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 16
+                                    ),
+                                  ),
+                                ],
+                              )
                           ),
-                          Text(
-                            (horasProgreso != 1) ? "Horas" : "Hora",
-                            style: TextStyle(
-                                color: Colors.black.withOpacity(0.5),
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16
-                            ),
-                          ),
-                        ],
+                        ),
                       )
-                  ),
-                ),
-              )
-          );
 
-        }
+                  );
 
-        return Container(
+                }else{
 
-            alignment: Alignment.center,
+                  return Container(
 
-            color: Colors.white,
+                    alignment: Alignment.center,
 
-            padding: const EdgeInsets.all(100),
+                    child:
 
-            child: DashedCircularProgressBar.aspectRatio(
-              animationDuration: const Duration(seconds: 1),
-              aspectRatio: 1, // width ÷ height
-              valueNotifier: notificador,
-              progress: porcentajeProgreso,
-              startAngle: 225,
-              sweepAngle: 270,
-              foregroundColor: Colors.blueAccent,
-              backgroundColor: const Color(0xffeeeeee),
-              foregroundStrokeWidth: 15,
-              backgroundStrokeWidth: 15,
-              animation: true,
-              seekSize: 6,
-              seekColor: const Color(0xffeeeeee),
-              child: Center(
-                child: ValueListenableBuilder(
-                    valueListenable: notificador,
-                    builder: (_, double value, __) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          horasProgreso.toString(),
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w300,
-                              fontSize: 60
-                          ),
-                        ),
-                        Text(
-                          (horasProgreso != 1) ? "Horas" : "Hora",
-                          style: TextStyle(
-                              color: Colors.black.withOpacity(0.5),
-                              fontWeight: FontWeight.w400,
-                              fontSize: 16
-                          ),
-                        ),
-                      ],
-                    )
-                ),
-              ),
-            )
-        );
+                      const CircularProgressIndicator(),
 
-      },
+                  );
+
+                }
+
+              },
+
+            );
+
+          }
+
+        },
 
     );
 
