@@ -1,27 +1,36 @@
 
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 
-class Usuario {
+abstract class Usuario {
 
   /// Esta clase contiene campos/atributos estaticos que permiten al programa almacenar
   /// los datos del usuario una vez que este ha iniciado sesion satisfactoriamente.
 
-  String? numero;
+  String numero;
 
-  String? nombre;
+  String nombre;
 
-  String? apellidoPaterno;
+  String apellidoPaterno;
 
-  String? apellidoMaterno;
+  String apellidoMaterno;
 
-  DateTime? fechaNacimiento;
+  DateTime fechaNacimiento;
 
   Image? imagenPerfil;
 
-  DocumentReference<Map<String, dynamic>>? carrera;
+  DocumentReference<Map<String, dynamic>> carrera;
 
-  DocumentReference<Map<String, dynamic>>? rol;
+  late DocumentReference<Map<String, dynamic>> rol;
+
+  late DocumentReference<Map<String, dynamic>> referenciaUsuario;
+
+  Usuario({required this.numero, required this.nombre, required this.apellidoPaterno, required this.apellidoMaterno, required this.fechaNacimiento, required this.carrera}) {
+
+    referenciaUsuario = BaseDeDatos.conexion.collection("Usuarios").doc(numero);
+
+  }
 
 
 }

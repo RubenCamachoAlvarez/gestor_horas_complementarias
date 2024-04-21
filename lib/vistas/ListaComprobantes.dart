@@ -1,15 +1,20 @@
+import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
+import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
+import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
+import 'package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart';
 import 'dart:async';
-
 import 'package:gestor_de_horas_complementarias/vistas/VisorComprobante.dart';
-//import 'dart:html' as html;
 
 class ListaComprobantesWidget extends StatefulWidget {
 
-  ListaComprobantesWidget({super.key, required this.funcionObtenerComprobantes});
+  ListaComprobantesWidget({super.key, required this.estudiante, required this.filtroStatusComprobante});
 
-  Future<Set<Comprobante>> Function() funcionObtenerComprobantes;
+  DocumentReference filtroStatusComprobante;
+
+  Estudiante estudiante;
 
   @override
   State<ListaComprobantesWidget> createState() => ListaComprobantesState();
@@ -18,103 +23,148 @@ class ListaComprobantesWidget extends StatefulWidget {
 
 class ListaComprobantesState extends State<ListaComprobantesWidget> {
 
-  late Future<Set<Comprobante>> comprobantes;
-
-  @override
-  void initState() {
-
-    super.initState();
-
-    comprobantes = widget.funcionObtenerComprobantes();
-
-  }
-
-
   @override
   Widget build(BuildContext context) {
 
-    return FutureBuilder(
+    Stream<QuerySnapshot<Map<String, dynamic>>> streamConsulta = widget.estudiante.obtenerComprobantesPendientes();
 
-        future: comprobantes,
+    if(widget.filtroStatusComprobante == StatusComprobante.ACEPTADO) {
 
-        builder: (context, snapshot) {
+      streamConsulta = widget.estudiante.obtenerComprobantesAceptados();
 
-          if(snapshot.connectionState == ConnectionState.done) {
+    }else if(widget.filtroStatusComprobante == StatusComprobante.RECHAZADO) {
 
-            if(snapshot.hasData && snapshot.data != null) {
+      streamConsulta = widget.estudiante.obtenerComprobantesRechazados();
 
-              int numeroComprobantes = snapshot.data!.length;
+    }
 
-              Set<Comprobante> comprobantes = snapshot.data!;
+    return StreamBuilder(
 
-              /*Comprobante c = snapshot.data!.elementAt(0);
+      stream: streamConsulta,
 
-              final blob = html.Blob([c.bytes], "application/pdf");
+      builder: (context, snapshot) {
 
-              final url = html.Url.createObjectUrlFromBlob(blob);
-
-              html.window.open(url, '_blank');
-
-              html.Url.revokeObjectUrl(url);*/
-
-              return ListView.separated(
-                
-                padding: const EdgeInsets.all(30),
-
-                itemBuilder: (context, index) {
-
-                  return ListTile(
-
-                    title: Text(comprobantes.elementAt(index).nombre),
-
-                    leading: const Icon(Icons.picture_as_pdf),
-
-                    trailing: const Icon(Icons.play_arrow_sharp),
-
-                    shape: RoundedRectangleBorder(
-
-                      borderRadius: BorderRadius.circular(10)
-
-                    ),
-
-                    titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-
-                    horizontalTitleGap: 30,
-
-                    onTap: () {
-
-                      print("Nombre del documento: ${comprobantes.elementAt(index).nombre}");
-                      
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => VisorComprobanteWidget(comprobante: comprobantes.elementAt(index)),));
-
-                    },
-
-                  );
-                },
-
-                separatorBuilder: (context, index) => const SizedBox(height: 20,),
-
-                itemCount: numeroComprobantes,
-
-              );
-
-            }else if(snapshot.hasError) {
-
-              return Text("Error esperando los datos");
-
-            }
-
-          }
+        if(snapshot.connectionState == ConnectionState.waiting) {
 
           return Container(
 
-            child:
+            alignment: Alignment.center,
 
-              CircularProgressIndicator()
+            child: const Column(
+
+              mainAxisAlignment: MainAxisAlignment.center,
+
+              crossAxisAlignment: CrossAxisAlignment.center,
+
+              children: <CircularProgressIndicator>[
+
+                CircularProgressIndicator()
+
+              ],
+
+            ),
 
           );
 
-        },);
+        }else{
+
+          List<QueryDocumentSnapshot<Map<String, dynamic>>> consultaComprobantes = snapshot.data!.docs;
+
+          return ListView.separated(
+
+            padding: const EdgeInsets.all(30),
+
+            separatorBuilder: (context, index) => const SizedBox(height: 20,),
+
+            itemCount: consultaComprobantes.length,
+
+            itemBuilder: (context, index) {
+
+              Map<String, dynamic> datosComprobante = consultaComprobantes.elementAt(index).data();
+
+              return FutureBuilder(
+
+                future: BaseDeDatos.almacenamiento.ref().child("Comprobantes_estudiantes/${widget.estudiante.numero}/${datosComprobante["nombre"]}").getData(),
+
+                builder: (context, snapshot) {
+
+                  if(snapshot.connectionState == ConnectionState.done) {
+
+                    Uint8List bytesArchivo = snapshot.data!;
+
+                    Comprobante comprobante = Comprobante(
+
+                        nombre: datosComprobante["nombre"],
+
+                        bytes: bytesArchivo,
+
+                        propietario: datosComprobante["propietario"],
+
+                        fechaSubida: datosComprobante["fecha_subida"],
+
+                        statusComprobante: datosComprobante["status_comprobante"]
+
+                    );
+
+                    if(widget.filtroStatusComprobante == StatusComprobante.ACEPTADO) {
+
+                      comprobante.horasValidez = datosComprobante["horas_validez"];
+
+
+                    }else if(widget.filtroStatusComprobante == StatusComprobante.RECHAZADO) {
+
+                      comprobante.justificacionRechazo = datosComprobante["justificacion_rechazo"];
+
+                    }
+
+                    return ListTile(
+
+                      title: Text(comprobante.nombre, textAlign: TextAlign.center,),
+
+                      leading: const Icon(Icons.picture_as_pdf, color: Color.fromARGB(
+                          255, 194, 2, 2)),
+
+                      trailing: const Icon(Icons.play_arrow_sharp, color: Colors.black),
+
+                      shape: RoundedRectangleBorder(
+
+                          borderRadius: BorderRadius.circular(10)
+
+                      ),
+
+                      titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+
+                      horizontalTitleGap: 30,
+
+                      tileColor: Colors.white24,
+
+                      onTap: () {
+
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => VisorComprobanteWidget(comprobante: comprobante),));
+
+                      },
+
+                    );
+
+                  }else{
+
+                    return Container();
+
+                  }
+
+                },
+
+              );
+
+            },
+
+          );
+
+        }
+
+      },
+
+    );
 
   }
 

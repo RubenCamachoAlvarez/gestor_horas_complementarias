@@ -66,8 +66,6 @@ class DashboardEncargadoState extends State<DashboardEncargadoWidget> {
 
         onTap: (index) {
 
-          print("Se selecciono el indice $index");
-
           setState(() {
 
             indiceVista = index;
@@ -88,13 +86,17 @@ class DashboardEncargadoState extends State<DashboardEncargadoWidget> {
 
         },
 
+        backgroundColor: Colors.purple,
+
+        hoverColor: Colors.pinkAccent,
+
         shape: RoundedRectangleBorder(
 
           borderRadius: BorderRadius.circular(30),
 
         ),
 
-        child: const Icon(Icons.upload)
+        child: const Icon(Icons.upload, color: Colors.white,)
 
       ),
 

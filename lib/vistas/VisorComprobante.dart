@@ -16,7 +16,6 @@ class VisorComprobanteWidget extends StatefulWidget {
   @override
   State<VisorComprobanteWidget> createState() => VisorComprobanteState();
 
-
 }
 
 class VisorComprobanteState extends State<VisorComprobanteWidget> {
@@ -77,8 +76,6 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
         leading: IconButton(
 
           onPressed: () {
-
-            print("Regresar");
 
             Navigator.pop(context);
 
@@ -145,9 +142,12 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
                               Switch(value: statusComprobante,
 
                                 onChanged: (bool nuevoValor) {
+
                                   setState(() {
+
                                     statusComprobante = nuevoValor;
                                   });
+
                                 },
 
                                 activeTrackColor: Colors.green,
@@ -207,7 +207,6 @@ class VisorComprobanteState extends State<VisorComprobanteWidget> {
                           colorBoton = Colors.red;
 
                         }
-
 
                         elementosBottomSheet.add(
 

@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
@@ -7,21 +6,7 @@ import 'package:gestor_de_horas_complementarias/valores_asignables/Roles.dart';
 
 class Encargado extends Usuario {
 
-  Encargado(String numero, String nombre, String apellidoPaterno,
-      String apellidoMaterno, DateTime fechaNacimiento,
-      DocumentReference<Map<String, dynamic>> carrera) {
-
-    this.numero = numero;
-
-    this.nombre = nombre;
-
-    this.apellidoPaterno = apellidoPaterno;
-
-    this.apellidoMaterno = apellidoMaterno;
-
-    this.fechaNacimiento = fechaNacimiento;
-
-    this.carrera = carrera;
+  Encargado(String numero, String nombre, String apellidoPaterno, String apellidoMaterno, DateTime fechaNacimiento, DocumentReference<Map<String, dynamic>> carrera) : super(numero: numero, nombre: nombre, apellidoPaterno: apellidoPaterno, apellidoMaterno: apellidoMaterno, fechaNacimiento: fechaNacimiento, carrera: carrera){
 
     rol = Roles.ENCARGADO;
 

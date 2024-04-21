@@ -1,7 +1,5 @@
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
 import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/OperacionesArchivos.dart';
@@ -10,64 +8,39 @@ import 'package:gestor_de_horas_complementarias/valores_asignables/StatusComprob
 
 class Estudiante extends Usuario {
 
-  Estudiante(String numero, String nombre, String apellidoPaterno,
-      String apellidoMaterno, DateTime fechaNacimiento,
-      DocumentReference<Map<String, dynamic>> carrera) {
-    this.numero = numero;
-
-    this.nombre = nombre;
-
-    this.apellidoPaterno = apellidoPaterno;
-
-    this.apellidoMaterno = apellidoMaterno;
-
-    this.fechaNacimiento = fechaNacimiento;
-
-    this.carrera = carrera;
+  Estudiante(String numero, String nombre, String apellidoPaterno, String apellidoMaterno, DateTime fechaNacimiento, DocumentReference<Map<String, dynamic>> carrera) : super(numero: numero, nombre: nombre, apellidoPaterno: apellidoPaterno, apellidoMaterno: apellidoMaterno, fechaNacimiento: fechaNacimiento, carrera: carrera) {
 
     rol = Roles.ESTUDIANTE;
+
   }
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) || (other is Estudiante &&
 
-        runtimeType == other.runtimeType && numero == other.numero &&
+    return identical(this, other) || (other is Estudiante && runtimeType == other.runtimeType && numero == other.numero && nombre == other.nombre && apellidoPaterno == other.apellidoPaterno && apellidoMaterno == other.apellidoMaterno &&
+        fechaNacimiento.year == other.fechaNacimiento.year && fechaNacimiento.month == other.fechaNacimiento.month && fechaNacimiento.day == other.fechaNacimiento.day);
 
-        nombre == other.nombre && apellidoPaterno == other.apellidoPaterno &&
-
-        apellidoMaterno == other.apellidoMaterno &&
-
-        fechaNacimiento!.year == other.fechaNacimiento!.year &&
-
-        fechaNacimiento!.month == other.fechaNacimiento!.month &&
-
-        fechaNacimiento!.day == other.fechaNacimiento!.day);
   }
 
   @override
-  int get hashCode =>
-      nombre!.length ^ apellidoPaterno!.length ^ apellidoMaterno!.length ^
-
-      fechaNacimiento!.year ^ fechaNacimiento!.month ^ fechaNacimiento!.day;
+  int get hashCode => nombre.length ^ apellidoPaterno.length ^ apellidoMaterno.length ^ fechaNacimiento.year ^ fechaNacimiento.month ^ fechaNacimiento.day;
 
   @override
   String toString() {
-    return "[$numero, $nombre, $apellidoPaterno, $apellidoMaterno : ${fechaNacimiento!
-        .day}/${fechaNacimiento!.month}/${fechaNacimiento!.year}]";
+
+    return "[$numero, $nombre, $apellidoPaterno, $apellidoMaterno : ${fechaNacimiento.day}/${fechaNacimiento.month}/${fechaNacimiento.year}]";
+
   }
 
   Future<bool?> cargarComprobante() async {
-    Map<String, dynamic>? datosComprobante = await OperacionesArchivos
-        .seleccionarComprobantePDF();
+
+    Map<String, dynamic>? datosComprobante = await OperacionesArchivos.seleccionarComprobantePDF();
 
     if (datosComprobante != null) {
 
       try {
-        await BaseDeDatos.almacenamiento.ref().child(
-            "Comprobantes_estudiantes/$numero/${datosComprobante["nombre"]}").
-        putData(datosComprobante["bytes"],
-            SettableMetadata(contentType: "application/pdf"));
+
+        await BaseDeDatos.almacenamiento.ref().child("Comprobantes_estudiantes/$numero/${datosComprobante["nombre"]}").putData(datosComprobante["bytes"], SettableMetadata(contentType: "application/pdf"));
 
         await BaseDeDatos.conexion.collection("Comprobantes").add({
 
@@ -75,168 +48,48 @@ class Estudiante extends Usuario {
 
           "fecha_subida": datosComprobante["fecha_subida"],
 
-          "propietario": BaseDeDatos.conexion.collection("Usuarios").doc(
-              numero),
+          "propietario": BaseDeDatos.conexion.collection("Usuarios").doc(numero),
 
           "status_comprobante": StatusComprobante.PENDIENTE,
 
         });
 
         return true;
+
       } catch (e) {
+
         return false;
+
       }
+
     }
 
     return null;
-  }
-
-  Future<int> calcularHorasProgreso() async {
-
-    int horasTotales = 0;
-
-    CollectionReference<Map<String, dynamic>> coleccionComprobante = BaseDeDatos.conexion.collection(
-        "Comprobantes");
-
-    QuerySnapshot<Map<String, dynamic>> consultaDocumentos = await coleccionComprobante.get();
-
-    List<QueryDocumentSnapshot<Map<String, dynamic>>> documentos = consultaDocumentos.docs;
-
-
-    documentos.forEach((documento) {
-
-      //Casteo opcional = (documento.get("propietario") as DocumentReference)
-      if ((documento.data()["propietario"]) ==
-          BaseDeDatos.conexion.collection("Usuarios").doc(numero)) {
-
-        if (documento.data()["status_comprobante"] ==
-            BaseDeDatos.conexion.collection("Status_Comprobante").doc(
-                "Aceptado")) {
-
-          horasTotales += (documento.data()["horas_validez"] as int);
-
-        }
-      }
-    });
-
-    return horasTotales;
-  }
-
-  Future<double> calcularPorcentajeAvance() async {
-    DocumentSnapshot<Map<String, dynamic>> documento = await carrera!.get();
-
-    int horasTotales = documento.data()?["horas_obligatorias"];
-
-    int horasAvance = await calcularHorasProgreso();
-
-    double porcentajeAvance = horasAvance * 100.0 / horasTotales;
-
-    return porcentajeAvance;
-  }
-
-  Future<Set<Comprobante>> obtenerComprobantes() async {
-
-    Set<Comprobante> comprobantesEstudiante = <Comprobante>{};
-
-    CollectionReference<Map<String, dynamic>> referenciaColeccionComprobantes = BaseDeDatos.conexion.collection("Comprobantes");
-
-    QuerySnapshot<Map<String,dynamic>> consultaDocumentos = await referenciaColeccionComprobantes.get();
-
-    List<QueryDocumentSnapshot<Map<String, dynamic>>> listaComprobantes = consultaDocumentos.docs;
-
-    for(QueryDocumentSnapshot<Map<String, dynamic>> datosComprobante in listaComprobantes) {
-
-      try {
-
-        Uint8List? bytes = await BaseDeDatos.almacenamiento.ref().child("Comprobantes_estudiantes/$numero/${datosComprobante.data()["nombre"]}").getData();
-
-        if(bytes != null) {
-
-          final nombre = datosComprobante.data()["nombre"];
-
-          final propietario = datosComprobante.data()["propietario"];
-
-          final fechaSubida = datosComprobante.data()["fecha_subida"];
-
-          final statusComprobante = datosComprobante.data()["status_comprobante"];
-
-          Comprobante comprobante = Comprobante(nombre: nombre, bytes: bytes, propietario: propietario, fechaSubida: fechaSubida, statusComprobante: statusComprobante);
-
-          if(comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
-
-            final horasValidez = datosComprobante.data()["horas_validez"];
-
-            comprobante.horasValidez = horasValidez;
-
-          }else{
-
-            final justificacionRechazo = datosComprobante.data()["justificacion_rechazo"];
-
-            comprobante.justificacionRechazo = justificacionRechazo;
-
-          }
-
-          comprobantesEstudiante.add(
-
-            comprobante
-
-          );
-
-        }
-
-      }catch(e) {
-
-        print("No se pudo descargar el archivo");
-
-        print("Error $e");
-
-        print("---------------------------------------------------------------------------");
-
-      }
-
-    }
-
-    return comprobantesEstudiante;
 
   }
 
-  Future<Set<Comprobante>> obtenerComprobantesPendientes()  async {
+  Stream<QuerySnapshot<Map<String, dynamic>>> obtenerComprobantesAceptados() {
 
-    Set<Comprobante> comprobantesPendientes = <Comprobante>{};
-
-    Set<Comprobante> comprobantesEstudiante = await obtenerComprobantes();
-
-    for(Comprobante comprobante in comprobantesEstudiante) {
-
-      if(comprobante.statusComprobante == StatusComprobante.PENDIENTE) {
-
-        comprobantesPendientes.add(comprobante);
-
-      }
-
-    }
-
-    return comprobantesPendientes;
+    return BaseDeDatos.conexion.collection("Comprobantes").where("propietario", isEqualTo: referenciaUsuario).where("status_comprobante", isEqualTo: StatusComprobante.ACEPTADO).snapshots();
 
   }
 
-  Future<Set<Comprobante>> obtenerComprobantesRevisados() async {
+  Stream<QuerySnapshot<Map<String, dynamic>>> obtenerComprobantesRechazados() {
 
-    Set<Comprobante> comprobantesRevisados = <Comprobante>{};
+    return BaseDeDatos.conexion.collection("Comprobantes").where("propietario", isEqualTo: referenciaUsuario).where("status_comprobante", isEqualTo: StatusComprobante.RECHAZADO).snapshots();
 
-    Set<Comprobante> comprobantesEstudiante = await obtenerComprobantes();
+  }
 
-    for(Comprobante comprobante in comprobantesEstudiante) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> obtenerComprobantesPendientes() {
 
-      if(comprobante.statusComprobante != StatusComprobante.PENDIENTE) {
+    return BaseDeDatos.conexion.collection("Comprobantes").where("propietario", isEqualTo: referenciaUsuario).where("status_comprobante", isEqualTo: StatusComprobante.PENDIENTE).snapshots();
 
-        comprobantesRevisados.add(comprobante);
+  }
 
-      }
+  @override
+  String nombreCompleto() {
 
-    }
-
-    return comprobantesRevisados;
+    return "$nombre $apellidoPaterno $apellidoMaterno";
 
   }
 

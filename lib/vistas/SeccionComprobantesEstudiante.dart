@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
+import 'package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart';
 import 'package:gestor_de_horas_complementarias/vistas/ListaComprobantes.dart';
 
 class SeccionComprobantesEstudianteWidget extends StatefulWidget {
@@ -25,7 +26,7 @@ class SeccionComprobantesEstudianteState extends State<SeccionComprobantesEstudi
 
     return DefaultTabController(
 
-      length: 2,
+      length: 3,
 
       child: Scaffold(
 
@@ -33,13 +34,35 @@ class SeccionComprobantesEstudianteState extends State<SeccionComprobantesEstudi
 
           toolbarHeight: 0,
 
-          bottom: const TabBar(
+          bottom: TabBar(
 
-            tabs: [
+            dividerColor: Colors.grey[300],
+
+            dividerHeight: 2,
+
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
+
+            indicatorSize: TabBarIndicatorSize.tab,
+
+            indicator: BoxDecoration(
+
+              borderRadius: const BorderRadius.only(
+
+                topLeft: Radius.circular(20),
+
+                topRight: Radius.circular(20)
+
+              ),
+
+              color: Colors.grey[200],
+
+            ),
+
+            tabs: const [
 
               Tab(
 
-                icon: Icon(Icons.cloud_download_rounded),
+                icon: Icon(Icons.timelapse_rounded, color: Colors.brown),
 
                 text: "Pendientes",
 
@@ -47,13 +70,30 @@ class SeccionComprobantesEstudianteState extends State<SeccionComprobantesEstudi
 
               Tab(
 
-                icon: Icon(Icons.account_circle),
+                icon: Icon(Icons.check_circle_rounded, color: Colors.green),
 
-                text: "Revisados"
+                text: "Aceptados"
+
+              ),
+
+              Tab(
+
+                icon: Icon(Icons.remove_circle_rounded, color: Colors.red),
+
+                text: "Rechazados",
 
               )
 
-            ]
+            ],
+
+            labelStyle: const TextStyle(
+
+              fontWeight: FontWeight.bold,
+
+              color: Colors.black,
+
+            ),
+
 
           ),
 
@@ -63,17 +103,11 @@ class SeccionComprobantesEstudianteState extends State<SeccionComprobantesEstudi
 
           children: [
 
-            /*Container(
+            ListaComprobantesWidget(estudiante: widget.estudiante , filtroStatusComprobante: StatusComprobante.PENDIENTE,),
 
-              color: Colors.red,
-
-              child: Icon(Icons.add),
-
-            ),*/
-
-            ListaComprobantesWidget(funcionObtenerComprobantes: widget.estudiante.obtenerComprobantesPendientes,),
-
-            ListaComprobantesWidget(funcionObtenerComprobantes: widget.estudiante.obtenerComprobantesRevisados),
+            ListaComprobantesWidget(estudiante: widget.estudiante, filtroStatusComprobante: StatusComprobante.ACEPTADO),
+            
+            ListaComprobantesWidget(estudiante: widget.estudiante, filtroStatusComprobante: StatusComprobante.RECHAZADO,)
 
           ],
 

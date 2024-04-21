@@ -108,13 +108,13 @@ class OperacionesArchivos {
 
       late Uint8List bytesArchivo;
 
-      if(Platform.isAndroid) { //Cuando el código se ejecuta en un dispositivo Android.
-
-        bytesArchivo = File(archivoSeleccionado.path!).readAsBytesSync();
-
-      }else if(kIsWeb) { //Cuando el código se ejecuta en una plataforma web.
+      if(kIsWeb) { //Cuando el código se ejecuta en una plataforma web.
 
         bytesArchivo = archivoSeleccionado.bytes!;
+
+      }else if(Platform.isAndroid) { //Cuando el código se ejecuta en un dispositivo Android.
+
+        bytesArchivo = File(archivoSeleccionado.path!).readAsBytesSync();
 
       }
 
