@@ -22,9 +22,17 @@ class App extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      //home: const LoginWidget(),
+      darkTheme: ThemeData(
 
-      home: const DashboardEstudianteWidget(),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black45),
+
+        useMaterial3: true
+
+      ),
+
+      home: const LoginWidget(),
+
+      //home: const DashboardEstudianteWidget(),
 
       //home: const DashboardEncargadoWidget(),
 

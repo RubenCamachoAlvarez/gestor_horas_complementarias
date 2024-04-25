@@ -17,209 +17,307 @@ class LoginWidgetState extends State<LoginWidget> {
 
   LoginWidgetState();
 
-  final TextEditingController campoUsuario = TextEditingController();
+  TextEditingController controladorCampoUsuario = TextEditingController();
 
-  final TextEditingController campoPassword = TextEditingController();
+  TextEditingController controladorCampoPassword = TextEditingController();
 
   @override
-
   Widget build(BuildContext context) {
+
+    double altoAppBar = MediaQuery.of(context).size.height * 0.3;
+
+    double altoBody = MediaQuery.of(context).size.height * 0.7;
 
     return Scaffold(
 
-      body:
+      body: SingleChildScrollView(
 
-        LayoutBuilder(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
 
-          builder: (context, constraints) {
+        child: Column(
 
-            double ancho = constraints.maxWidth;
+          mainAxisAlignment: MainAxisAlignment.center,
 
-            double alto = constraints.maxHeight;
+          crossAxisAlignment: CrossAxisAlignment.center,
 
-            double anchoContenedor = ancho * 0.6;
+          children: [
 
-            double altoContenedor = alto * 0.8;
+            ClipPath(
 
-            return Center(
+                clipper: CustomClipPath(),
 
-              child: Container(
+                clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                width: anchoContenedor,
+                child: Container(
 
-                height: altoContenedor,
-                
-                padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(30),
 
-                decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
 
-                  color: Colors.white,
+                      gradient: LinearGradient(
 
-                  borderRadius: BorderRadius.circular(20),
+                          colors: [
 
-                  boxShadow: <BoxShadow> [
+                            Color.fromARGB(255, 27, 76, 222),
 
-                    BoxShadow(
+                            Colors.indigo,
 
-                      color:Colors.grey.withOpacity(0.5),
+                          ],
 
-                      spreadRadius: 5,
+                          begin: Alignment.topCenter,
 
-                      blurRadius: 5,
+                          end: Alignment.bottomCenter
 
-                      offset: const Offset(0, 3),
+                      )
 
-                      blurStyle: BlurStyle.normal
+                  ),
+
+                  height: altoAppBar,
+
+                  child: Center(
+
+                      child: Column(
+
+                        crossAxisAlignment: CrossAxisAlignment.center,
+
+                        mainAxisAlignment: MainAxisAlignment.start,
+
+                        children: [
+
+                          Image.asset("assets/images/logo-fes.png"),
+
+                          Padding(
+
+                            padding: EdgeInsets.all(altoAppBar * 0.10),
+
+                            child: const Text(
+
+                              "Sistema de registro de horas completamentarias",
+
+                              maxLines: 2,
+
+                              textAlign: TextAlign.center,
+
+                              overflow: TextOverflow.visible,
+
+                              softWrap: true,
+
+                              style: TextStyle(
+
+                                  color: Colors.white,
+
+                                  fontWeight: FontWeight.bold,
+
+                                  fontSize: 20
+
+                              ),
+
+                            ),
+
+                          )
+
+                        ],
+
+                      )
+
+                  ),
+
+                )
+
+            ),
+
+            Container(
+
+              height: altoBody,
+
+              padding: const EdgeInsets.all(40),
+
+              child: Center(
+
+                child: Column(
+
+                  mainAxisAlignment: MainAxisAlignment.center,
+
+                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                  children: [
+
+                    TextField(
+
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                      textAlign: TextAlign.center,
+
+                      textAlignVertical: TextAlignVertical.center,
+
+                      showCursor: false,
+
+                      controller: controladorCampoUsuario,
+
+                      decoration: InputDecoration(
+
+                        hintTextDirection: TextDirection.ltr,
+
+                        hintText: "Usuario",
+
+                        hintMaxLines: 1,
+
+                        hintFadeDuration: const Duration(
+
+                          milliseconds: 200
+
+                        ),
+
+                        hintStyle: const TextStyle(
+
+                          fontWeight: FontWeight.bold,
+
+                          color: Colors.black
+
+                        ),
+
+                        prefixIcon: const Icon(
+
+                          Icons.person,
+
+                          color: Colors.black,
+
+                        ),
+
+                        filled: true,
+
+                        fillColor: Colors.grey.withOpacity(0.1),
+
+                        border: OutlineInputBorder(
+
+                          borderRadius: BorderRadius.circular(10),
+
+                          borderSide: BorderSide.none
+
+                        )
+
+                      ),
+
+                    ),
+
+                    SizedBox(
+
+                      height: altoBody * 0.05,
+
+                    ),
+
+                    TextField(
+
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                      textAlign: TextAlign.center,
+
+                      textAlignVertical: TextAlignVertical.center,
+
+                      showCursor: false,
+
+                      obscureText: true,
+
+                      obscuringCharacter: "*",
+
+                      controller: controladorCampoPassword,
+
+                      decoration: InputDecoration(
+
+                        hintTextDirection: TextDirection.ltr,
+
+                        hintText: "Contraseña",
+
+                        hintMaxLines: 1,
+
+                        hintFadeDuration: const Duration(
+
+                            milliseconds: 200
+
+                        ),
+
+                        hintStyle: const TextStyle(
+
+                            fontWeight: FontWeight.bold,
+
+                            color: Colors.black
+
+                        ),
+
+                        prefixIcon: const Icon(
+
+                          Icons.info,
+
+                          color: Colors.black,
+
+                        ),
+
+                        filled: true,
+
+                        fillColor: Colors.grey.withOpacity(0.1),
+
+                        border: OutlineInputBorder(
+
+                          borderRadius: BorderRadius.circular(10),
+
+                          borderSide: BorderSide.none
+
+                        )
+
+                      ),
 
                     )
 
                   ],
 
                 ),
-                
-                child: Center(
-                  
-                  child: Column(
-                    
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    
-                    children: <Widget>[
-
-                      const Text("Sistema de horas complementarias",
-
-                        textAlign: TextAlign.center,
-
-                        style: TextStyle(
-
-                          color: Colors.teal,
-
-                          fontSize: 50,
-
-                          fontWeight: FontWeight.bold
-
-                        ),
-
-                      ),
-
-                      SizedBox(height: altoContenedor * 0.05),
-                      
-                      TextField(
-                        
-                        decoration: InputDecoration(
-                          
-                          labelText: "Usuario",
-
-                          labelStyle: const TextStyle(
-
-                            fontWeight: FontWeight.bold
-
-                          ),
-                          
-                          border: OutlineInputBorder(
-                            
-                            borderRadius: BorderRadius.circular(10)
-                            
-                          ),
-                          
-                        ),
-
-                        textAlign: TextAlign.center,
-
-                        controller: campoUsuario,
-                        
-                      ),
-
-                      SizedBox(height: altoContenedor * 0.03),
-                      
-                      TextField(
-
-                        decoration: InputDecoration(
-
-                          labelText: "Contraseña",
-
-                          labelStyle: const TextStyle(
-
-                            fontWeight: FontWeight.bold
-
-                          ),
-
-                          border: OutlineInputBorder(
-
-                              borderRadius: BorderRadius.circular(10)
-
-                          ),
-
-                        ),
-
-                        textAlign: TextAlign.center,
-
-                        controller: campoPassword,
-
-                      ),
-
-                      SizedBox(height: altoContenedor * 0.03),
-
-                      FloatingActionButton(
-
-                        onPressed: () async {
-
-                          String numeroCuenta = campoUsuario.value.text;
-
-                          String password = campoPassword.value.text;
-
-                          bool sesionIniciada = await Sesion.iniciarSesion(numeroCuenta, password);
-
-                          if(sesionIniciada) {
-
-                            if(Sesion.usuario!.rol == BaseDeDatos.conexion.collection("Roles").doc("Encargado")) {
-
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardEncargadoWidget()));
-
-                            }else{
-
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardEstudianteWidget()));
-
-                            }
-
-                          }
-
-                        },
-
-                        child: const Text(
-
-                          "Iniciar sesion",
-
-                          textAlign: TextAlign.center,
-
-                          style: TextStyle(
-
-                            fontWeight: FontWeight.bold
-
-                          ),
-
-                        ),
-
-                      )
-                      
-                    ],
-                    
-                  ),
-                  
-                ),
 
               ),
 
-            );
+            )
 
-          },
+          ],
 
-        )
+        ),
+
+      )
 
     );
 
   }
 
+}
+
+class CustomClipPath extends CustomClipper<Path> {
+
+  @override
+  Path getClip(Size size) {
+
+    double width = size.width;
+
+    double height = size.height;
+
+    final path = Path();
+
+    path.lineTo(0, height * 0.8);
+
+    path.quadraticBezierTo(width * 0.7, height, width, height * 0.9);
+
+    path.lineTo(width, 0);
+
+    path.close();
+
+    return path;
+
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+
+    return false;
+
+  }
+
+  
 
 }
