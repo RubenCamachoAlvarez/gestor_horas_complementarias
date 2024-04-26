@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 import 'package:gestor_de_horas_complementarias/vistas/DashboardEncargado.dart';
@@ -17,9 +18,17 @@ class LoginWidgetState extends State<LoginWidget> {
 
   LoginWidgetState();
 
-  TextEditingController controladorCampoUsuario = TextEditingController();
+  TextEditingController controladorCampoNumero = TextEditingController();
 
   TextEditingController controladorCampoPassword = TextEditingController();
+
+  String mensajeErrorCampoNumero = "";
+
+  String mensajeErrorCampoPassword = "";
+
+  bool campoPasswordSoloLectura = true;
+
+  bool botonIniciarSesionHabilitado = false;
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +139,7 @@ class LoginWidgetState extends State<LoginWidget> {
 
               height: altoBody,
 
-              padding: const EdgeInsets.all(40),
+              padding: const EdgeInsets.all(50),
 
               child: Center(
 
@@ -142,129 +151,326 @@ class LoginWidgetState extends State<LoginWidget> {
 
                   children: [
 
-                    TextField(
+                    Expanded(
 
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      child: Column(
 
-                      textAlign: TextAlign.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
 
-                      textAlignVertical: TextAlignVertical.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
 
-                      showCursor: false,
+                        children: [
 
-                      controller: controladorCampoUsuario,
+                          TextField(
 
-                      decoration: InputDecoration(
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                        hintTextDirection: TextDirection.ltr,
+                            textAlign: TextAlign.center,
 
-                        hintText: "Usuario",
+                            textAlignVertical: TextAlignVertical.center,
 
-                        hintMaxLines: 1,
+                            showCursor: true,
 
-                        hintFadeDuration: const Duration(
+                            controller: controladorCampoNumero,
 
-                          milliseconds: 200
+                            keyboardType: TextInputType.phone,
 
-                        ),
+                            inputFormatters: [
 
-                        hintStyle: const TextStyle(
+                              FilteringTextInputFormatter.digitsOnly,
 
-                          fontWeight: FontWeight.bold,
+                              LengthLimitingTextInputFormatter(9),
 
-                          color: Colors.black
+                              FormateadorNumeroIngreso()
 
-                        ),
+                            ],
 
-                        prefixIcon: const Icon(
+                            onChanged: (value) {
 
-                          Icons.person,
+                              setState(() {
 
-                          color: Colors.black,
+                                if(controladorCampoNumero.text.isEmpty) {
 
-                        ),
+                                  mensajeErrorCampoNumero = "Ingresa un número de cuenta/trabajador de la FES Aragon";
 
-                        filled: true,
+                                  controladorCampoPassword.text = "";
 
-                        fillColor: Colors.grey.withOpacity(0.1),
+                                  mensajeErrorCampoPassword = "";
 
-                        border: OutlineInputBorder(
+                                  campoPasswordSoloLectura = true;
 
-                          borderRadius: BorderRadius.circular(10),
+                                  botonIniciarSesionHabilitado = false;
 
-                          borderSide: BorderSide.none
+                                }else if(controladorCampoNumero.text.length < 8) {
 
-                        )
+                                  mensajeErrorCampoNumero = "Ingresa un número de almenos 8 dígitos";
+
+                                  controladorCampoPassword.text = "";
+
+                                  mensajeErrorCampoPassword = "";
+
+                                  campoPasswordSoloLectura = true;
+
+                                  botonIniciarSesionHabilitado = false;
+
+                                }else{
+
+                                  mensajeErrorCampoNumero = "";
+
+                                  campoPasswordSoloLectura = false;
+
+                                }
+
+                              });
+
+                            },
+
+                            decoration: InputDecoration(
+
+                              error: Center(
+
+                                child: Text(
+
+                                  mensajeErrorCampoNumero,
+
+                                  textAlign: TextAlign.center,
+
+                                  style: const TextStyle(
+
+                                    fontWeight: FontWeight.bold,
+
+                                    color: Colors.red
+
+                                  ),
+
+                                ),
+
+                              ),
+
+                              errorMaxLines: 1,
+
+                              hintTextDirection: TextDirection.ltr,
+
+                              hintText: "Número de cuenta",
+
+                              hintMaxLines: 1,
+
+                              hintFadeDuration: const Duration(
+
+                                  milliseconds: 200
+
+                              ),
+
+                              hintStyle: const TextStyle(
+
+                                  fontWeight: FontWeight.bold,
+
+                                  color: Colors.black
+
+                              ),
+
+                              prefixIcon: const Icon(
+
+                                Icons.person,
+
+                                color: Colors.black,
+
+                              ),
+
+                              filled: true,
+
+                              fillColor: Colors.grey.withOpacity(0.1),
+
+                              border: OutlineInputBorder(
+
+                                  borderRadius: BorderRadius.circular(10),
+
+                                  borderSide: BorderSide.none
+
+                              )
+
+                            ),
+
+                          ),
+
+                          SizedBox(
+
+                            height: altoBody * 0.05,
+
+                          ),
+
+                          TextField(
+
+                            readOnly: campoPasswordSoloLectura,
+
+                            canRequestFocus: !campoPasswordSoloLectura,
+
+                            onChanged: (value) {
+
+                              setState(() {
+
+                                if(value.isEmpty) {
+
+                                  botonIniciarSesionHabilitado = false;
+
+                                  mensajeErrorCampoPassword = "Ingresa una contraseña";
+
+                                }else{
+
+                                  botonIniciarSesionHabilitado = true;
+
+                                  mensajeErrorCampoPassword = "";
+
+                                }
+
+                              });
+
+                            },
+
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                            textAlign: TextAlign.center,
+
+                            textAlignVertical: TextAlignVertical.center,
+
+                            showCursor: true,
+
+                            obscureText: true,
+
+                            obscuringCharacter: "*",
+
+                            controller: controladorCampoPassword,
+
+                            decoration: InputDecoration(
+
+                              error: Center(
+
+                                child: Text(
+
+                                  mensajeErrorCampoPassword,
+
+                                  textAlign: TextAlign.center,
+
+                                  style: const TextStyle(
+
+                                    fontWeight: FontWeight.bold,
+
+                                    color: Colors.red
+
+                                  ),
+
+                                ),
+
+                              ),
+
+                              errorMaxLines: 1,
+
+                              hintTextDirection: TextDirection.ltr,
+
+                              hintText: "Contraseña",
+
+                              hintMaxLines: 1,
+
+                              hintFadeDuration: const Duration(
+
+                                  milliseconds: 200
+
+                              ),
+
+                              hintStyle: const TextStyle(
+
+                                  fontWeight: FontWeight.bold,
+
+                                  color: Colors.black
+
+                              ),
+
+                              prefixIcon: const Icon(
+
+                                Icons.info,
+
+                                color: Colors.black,
+
+                              ),
+
+                              filled: true,
+
+                              fillColor: Colors.grey.withOpacity(0.1),
+
+                              border: OutlineInputBorder(
+
+                                  borderRadius: BorderRadius.circular(10),
+
+                                  borderSide: BorderSide.none
+
+                              )
+
+                            ),
+
+                          )
+
+                        ],
 
                       ),
 
                     ),
 
-                    SizedBox(
+                    Expanded(
 
-                      height: altoBody * 0.05,
+                      child: Column(
 
-                    ),
+                        mainAxisAlignment: MainAxisAlignment.center,
 
-                    TextField(
+                        crossAxisAlignment: CrossAxisAlignment.center,
 
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                        children: [
 
-                      textAlign: TextAlign.center,
+                          ElevatedButton(
 
-                      textAlignVertical: TextAlignVertical.center,
+                            onPressed: botonIniciarSesionHabilitado ? () {
 
-                      showCursor: false,
+                              print("Boton de login");
 
-                      obscureText: true,
+                            } : null,
 
-                      obscuringCharacter: "*",
+                            style: ElevatedButton.styleFrom(
+                              
+                              backgroundColor: Colors.orange,
+                              
+                              shape: RoundedRectangleBorder(
+                                
+                                borderRadius: BorderRadius.circular(15)
+                                
+                              ),
 
-                      controller: controladorCampoPassword,
+                              minimumSize: const Size(double.infinity, 50),
 
-                      decoration: InputDecoration(
+                              disabledBackgroundColor: Colors.orange[200]
+                              
+                            ),
 
-                        hintTextDirection: TextDirection.ltr,
+                            child: const Text(
 
-                        hintText: "Contraseña",
+                              "Iniciar sesion",
 
-                        hintMaxLines: 1,
+                              textAlign: TextAlign.center,
 
-                        hintFadeDuration: const Duration(
+                              style: TextStyle(
 
-                            milliseconds: 200
+                                fontWeight: FontWeight.bold,
 
-                        ),
+                                color: Colors.white,
 
-                        hintStyle: const TextStyle(
+                              ),
 
-                            fontWeight: FontWeight.bold,
+                            )
 
-                            color: Colors.black
 
-                        ),
+                          )
 
-                        prefixIcon: const Icon(
+                        ],
 
-                          Icons.info,
-
-                          color: Colors.black,
-
-                        ),
-
-                        filled: true,
-
-                        fillColor: Colors.grey.withOpacity(0.1),
-
-                        border: OutlineInputBorder(
-
-                          borderRadius: BorderRadius.circular(10),
-
-                          borderSide: BorderSide.none
-
-                        )
-
-                      ),
+                      )
 
                     )
 
@@ -318,6 +524,24 @@ class CustomClipPath extends CustomClipper<Path> {
 
   }
 
-  
+}
 
+class FormateadorNumeroIngreso extends TextInputFormatter{
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+
+    final String nuevoNumero = newValue.text;
+
+    return newValue.copyWith(
+
+      text: nuevoNumero,
+
+      selection: TextSelection.collapsed(offset: nuevoNumero.length)
+
+    );
+
+  }
+  
+  
+  
 }
