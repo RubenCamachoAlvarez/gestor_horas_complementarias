@@ -3,6 +3,7 @@ import 'package:gestor_de_horas_complementarias/vistas/DashboardEncargado.dart';
 import 'package:gestor_de_horas_complementarias/vistas/DashboardEstudiante.dart';
 import 'package:gestor_de_horas_complementarias/vistas/Login.dart';
 import 'package:gestor_de_horas_complementarias/vistas/PerfilUsuario.dart';
+import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
 
 class App extends StatelessWidget {
 
@@ -33,7 +34,7 @@ class App extends StatelessWidget {
 
       //home: const LoginWidget(),
 
-      home: const PerfilUsuarioWidget(),
+      home: PerfilUsuarioWidget(usuario: Sesion.usuario!,),
 
       //home: const DashboardEstudianteWidget(),
 

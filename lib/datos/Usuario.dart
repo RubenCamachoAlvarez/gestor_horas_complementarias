@@ -1,5 +1,4 @@
-
-import 'dart:ui';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 
@@ -18,7 +17,9 @@ abstract class Usuario {
 
   DateTime fechaNacimiento;
 
-  Image? imagenPerfil;
+  Uint8List? imagenPerfil;
+
+  Uint8List? imagenFondo;
 
   DocumentReference<Map<String, dynamic>> carrera;
 
@@ -32,5 +33,16 @@ abstract class Usuario {
 
   }
 
+  String nombreCompleto() {
+
+    return "$nombre $apellidoPaterno $apellidoMaterno";
+
+  }
+
+  String cadenaFechaNacimiento() {
+
+    return "${fechaNacimiento.day}/${fechaNacimiento.month}/${fechaNacimiento.year}";
+
+  }
 
 }

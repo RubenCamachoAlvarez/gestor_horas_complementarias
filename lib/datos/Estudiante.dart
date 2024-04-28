@@ -86,11 +86,4 @@ class Estudiante extends Usuario {
 
   }
 
-  @override
-  String nombreCompleto() {
-
-    return "$nombre $apellidoPaterno $apellidoMaterno";
-
-  }
-
 }
