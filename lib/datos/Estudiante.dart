@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:gestor_de_horas_complementarias/datos/Comprobante.dart';
 import 'package:gestor_de_horas_complementarias/datos/Usuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/OperacionesArchivos.dart';
@@ -83,6 +86,32 @@ class Estudiante extends Usuario {
   Stream<QuerySnapshot<Map<String, dynamic>>> obtenerComprobantesPendientes() {
 
     return BaseDeDatos.conexion.collection("Comprobantes").where("propietario", isEqualTo: referenciaUsuario).where("status_comprobante", isEqualTo: StatusComprobante.PENDIENTE).snapshots();
+
+  }
+
+  Future<Comprobante?> descargarComprobante(String nombre) async{
+
+    Comprobante? comprobante;
+
+    QuerySnapshot<Map<String, dynamic>> conexionDocumento = await BaseDeDatos.conexion.collection("Comprobantes").where("propietario", isEqualTo: referenciaUsuario).where("nombre", isEqualTo: nombre).get();
+
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> consultaDocumento = conexionDocumento.docs;
+
+    if(consultaDocumento.elementAt(0).exists) {
+
+      Map<String, dynamic> datos = consultaDocumento.elementAt(0).data();
+      
+      Uint8List? bytesDocumento = await BaseDeDatos.almacenamiento.ref().child("Comprobantes_estudiantes/$numero/$nombre").getData();
+
+      if(bytesDocumento != null) {
+
+        comprobante = Comprobante(nombre: datos["nombre"], bytes: bytesDocumento, propietario: referenciaUsuario, fechaSubida: datos["fecha_subida"], statusComprobante: datos["status_comprobante"]);
+
+      }
+
+    }
+
+    return comprobante;
 
   }
 

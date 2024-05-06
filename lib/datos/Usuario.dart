@@ -45,4 +45,10 @@ abstract class Usuario {
 
   }
 
+  Future<Uint8List?> cargarImagenUsuario() async {
+
+    return BaseDeDatos.almacenamiento.ref().child("Foto_perfil_usuarios/$numero/Profile.jpg").getData();
+
+  }
+
 }

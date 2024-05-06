@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
 import 'package:gestor_de_horas_complementarias/vistas/DashboardEncargado.dart';
-import 'package:gestor_de_horas_complementarias/vistas/DashboardEstudiante.dart';
+//import 'package:gestor_de_horas_complementarias/vistas/DashboardEstudiante.dart';
 import 'package:gestor_de_horas_complementarias/vistas/Login.dart';
 import 'package:gestor_de_horas_complementarias/vistas/PerfilUsuario.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
+import 'package:gestor_de_horas_complementarias/vistas/NuevoDashboardEstudiante.dart';
 
 class App extends StatelessWidget {
 
@@ -34,7 +36,9 @@ class App extends StatelessWidget {
 
       //home: const LoginWidget(),
 
-      home: PerfilUsuarioWidget(usuario: Sesion.usuario!,),
+      //home: PerfilUsuarioWidget(usuario: Sesion.usuario!,),
+
+      home: DashboardEstudianteWidget(estudiante: (Sesion.usuario! as Estudiante),),
 
       //home: const DashboardEstudianteWidget(),
 

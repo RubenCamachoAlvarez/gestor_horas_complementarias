@@ -7,6 +7,7 @@ import "package:flutter/cupertino.dart";
 import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
 import "package:gestor_de_horas_complementarias/datos/Usuario.dart";
+import "package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
 import "package:gestor_de_horas_complementarias/valores_asignables/Carreras.dart";
 import "package:gestor_de_horas_complementarias/valores_asignables/Roles.dart";
@@ -25,6 +26,19 @@ class PerfilUsuarioWidget extends StatefulWidget {
 class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
   PerfilUsuarioState();
+
+  Future<Map<String, Uint8List?>> cargarImagenesUsuario() async {
+
+    Uint8List? bytesImagenUsuario = null;
+
+    Uint8List? bytesImagenFeed = null;
+
+    Map<String, Uint8List?> imagenesUsuario = <String, Uint8List>{};
+
+    BaseDeDatos.almacenamiento.ref().child("Foto_perfil_usuarios/${widget.usuario.numero}/Profile.jpg");
+
+    return imagenesUsuario;
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -45,6 +45,7 @@ dependencies:
   http: ^1.2.1
   syncfusion_flutter_pdf: ^25.1.38
   syncfusion_flutter_pdfviewer: ^25.1.38
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:
@@ -63,14 +64,19 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
-  assets:
-
-    - assets/images/
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/images/IconoPDF.svg
+    - assets/images/IconoPendiente.svg
+    - assets/images/IconoRechazado.svg
+    - assets/images/IconoAceptado.svg
+    - assets/images/Profile.png
+    - assets/images/logo-fes.png
+    - assets/images/Icono.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
