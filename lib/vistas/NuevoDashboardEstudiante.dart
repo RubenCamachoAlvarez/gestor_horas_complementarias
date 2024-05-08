@@ -54,13 +54,13 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                   double anchoFloatingActionButton = constraints.maxWidth;
 
-                  print("ALTO: $altoFloatingActionButton");
+                  double padding = anchoFloatingActionButton * 0.05;
 
-                  print("ANCHO: $anchoFloatingActionButton");
+                  double anchoContenedor = (anchoFloatingActionButton - (padding * 2));
 
-                  print("PROPORCION PADDING ALTO: ${20/altoFloatingActionButton}");
+                  double altoContenedorIcono = (altoFloatingActionButton - (padding * 2)) * 0.7;
 
-                  print("PROPORCON PADDING ANCHO: ${20/anchoFloatingActionButton}");
+                  double altoContenedorInformacion = (altoFloatingActionButton - (padding * 2)) * 0.3;
 
                   return FloatingActionButton(
 
@@ -122,7 +122,7 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                       child: Padding(
 
-                          padding: const EdgeInsets.all(20),
+                          padding: EdgeInsets.all(padding),
 
                           child: Container(
 
@@ -148,47 +148,15 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                                     Container(
 
-                                      height: altoFloatingActionButton * 0.7,
+                                      height: altoContenedorIcono,
 
-                                      width: anchoFloatingActionButton,
-
-                                      alignment: Alignment.center,
-
-                                      child: SvgPicture.asset("./assets/images/IconoPDF.svg"),
-
-                                    ),
-
-                                    SizedBox(
-
-                                      height: altoFloatingActionButton * 0.1,
-
-                                      width: anchoFloatingActionButton,
-
-                                    ),
-
-                                    Container(
-
-                                      height: altoFloatingActionButton * 0.10,
-
-                                      width: anchoFloatingActionButton,
+                                      width: anchoContenedor,
 
                                       alignment: Alignment.center,
 
-                                      child: Text(
+                                      child: Center(
 
-                                        datosComprobante["nombre"],
-
-                                        textAlign: TextAlign.center,
-
-                                        overflow: TextOverflow.ellipsis,
-
-                                        maxLines: 1,
-
-                                        style: const TextStyle(
-
-                                            fontWeight: FontWeight.bold
-
-                                        ),
+                                        child: SvgPicture.asset("./assets/images/IconoPDF.svg"),
 
                                       ),
 
@@ -196,25 +164,55 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                                     Container(
 
-                                      height: altoFloatingActionButton * 0.10,
+                                      height: altoContenedorInformacion,
 
-                                      width: anchoFloatingActionButton,
+                                      width: anchoContenedor,
 
                                       alignment: Alignment.center,
 
-                                      child: Text(
+                                      child: Center(
 
-                                        "${fechaSubida.day}/${fechaSubida.month}/${fechaSubida.year}",
+                                        child: Column(
 
-                                        textAlign: TextAlign.center,
+                                          children: [
 
-                                        overflow: TextOverflow.ellipsis,
+                                            Text(
 
-                                        maxLines: 1,
+                                              datosComprobante["nombre"],
 
-                                        style: const TextStyle(
+                                              textAlign: TextAlign.center,
 
-                                            fontWeight: FontWeight.bold
+                                              overflow: TextOverflow.ellipsis,
+
+                                              maxLines: 1,
+
+                                              style: const TextStyle(
+
+                                                  fontWeight: FontWeight.bold
+
+                                              ),
+
+                                            ),
+
+                                            Text(
+
+                                              "${fechaSubida.day}/${fechaSubida.month}/${fechaSubida.year}",
+
+                                              textAlign: TextAlign.center,
+
+                                              overflow: TextOverflow.ellipsis,
+
+                                              maxLines: 1,
+
+                                              style: const TextStyle(
+
+                                                  fontWeight: FontWeight.bold
+
+                                              ),
+
+                                            )
+
+                                          ],
 
                                         ),
 
@@ -265,8 +263,10 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
     double alto = MediaQuery.of(context).size.height;
 
+    //El alto del AppBar sera 20% del alto de la pantalla del dispositivo.
     double altoAppBar = alto * 0.2;
 
+    //El alto de la seccion donde sera mostrado el contenido sera el 80% restante del alto de la pantalla.
     double altoContenido = alto * 0.8;
 
     return FutureBuilder(
