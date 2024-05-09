@@ -98,7 +98,7 @@ class ListaComprobantesState extends State<ListaComprobantesWidget> {
 
                         bytes: bytesArchivo,
 
-                        propietario: datosComprobante["propietario"],
+                        estudiantePropietario: widget.estudiante,
 
                         fechaSubida: datosComprobante["fecha_subida"],
 

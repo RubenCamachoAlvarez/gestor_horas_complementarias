@@ -1,5 +1,8 @@
 import "package:flutter/material.dart";
+import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/Comprobante.dart";
+import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
+import "package:syncfusion_flutter_core/theme.dart";
 import "package:syncfusion_flutter_pdfviewer/pdfviewer.dart";
 
 class LectorDocumentoPDFWidget extends StatefulWidget{
@@ -15,13 +18,16 @@ class LectorDocumentoPDFWidget extends StatefulWidget{
 
 class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
+  late double altoBody;
+
+  late double anchoBody;
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
 
       appBar: AppBar(
-
         leading: IconButton(
 
           onPressed: (){
@@ -38,9 +44,279 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
           IconButton(
 
-            onPressed: (){},
+            onPressed: (){
 
-            icon: Icon(Icons.info, color: Colors.grey[400])
+              double medidaLadoCard = anchoBody * 0.5;
+
+              showDialog(
+
+                context: context,
+
+                builder: (context) {
+
+                  return Stack(
+
+                    fit: StackFit.expand,
+
+                    alignment: Alignment.center,
+
+                    children: [
+
+                      Dialog(
+
+                        alignment: Alignment.center,
+
+                        child: Container(
+
+                          padding: const EdgeInsets.all(20),
+
+                          alignment: Alignment.center,
+
+                          width: medidaLadoCard,
+
+                          height: medidaLadoCard,
+
+                          decoration: BoxDecoration(
+
+                              color: Colors.white,
+
+                              borderRadius: BorderRadius.circular(15)
+
+                          ),
+
+                          child: Center(
+
+                            child: Column(
+
+                              mainAxisAlignment: MainAxisAlignment.center,
+
+                              crossAxisAlignment: CrossAxisAlignment.center,
+
+                              children: [
+
+                                Expanded(
+
+                                  child: Theme(
+
+                                    data: ThemeData(
+
+                                      textSelectionTheme: const TextSelectionThemeData(
+
+                                        selectionColor: Colors.amber,
+
+                                      )
+
+                                    ),
+
+                                    child: TextField(
+
+                                      readOnly: true,
+
+                                      maxLines: 1,
+
+                                      minLines: 1,
+
+                                      textAlign: TextAlign.center,
+
+                                      style: TextStyle(
+
+                                          color: Colors.grey[700],
+
+                                          fontWeight: FontWeight.bold
+
+                                      ),
+
+                                      decoration: InputDecoration(
+
+                                        border: OutlineInputBorder(
+
+                                            borderRadius: BorderRadius.circular(10),
+
+                                            borderSide: BorderSide.none
+
+                                        ),
+
+                                        filled: true,
+
+                                        fillColor: Colors.grey[100],
+
+                                        prefixIcon: Icon(Icons.description_rounded, color: DatosApp.colorApp),
+
+                                      ),
+
+                                      controller: TextEditingController(text: widget.comprobante.nombre),
+
+                                    ),
+
+                                  ),
+
+                                ),
+
+                                Expanded(
+
+                                  child: Theme(
+
+                                    data: ThemeData(
+
+                                      textSelectionTheme: const TextSelectionThemeData(
+
+                                        selectionColor: Colors.amber,
+
+                                      ),
+
+                                    ),
+
+                                    child: TextField(
+
+                                      readOnly: true,
+
+                                      maxLines: 1,
+
+                                      minLines: 1,
+
+                                      textAlign: TextAlign.center,
+
+                                      style: TextStyle(
+
+                                          color: Colors.grey[700],
+
+                                          fontWeight: FontWeight.bold
+
+                                      ),
+
+                                      decoration: InputDecoration(
+
+                                        border: OutlineInputBorder(
+
+                                            borderRadius: BorderRadius.circular(15),
+
+                                            borderSide: BorderSide.none
+
+                                        ),
+
+                                        filled: true,
+
+                                        fillColor: Colors.grey[100],
+
+                                        prefixIcon: Icon(Icons.calendar_month, color: DatosApp.colorApp,),
+
+                                      ),
+
+                                      controller: TextEditingController(text: widget.comprobante.cadenaFechaSubida()),
+
+                                    ),
+
+                                  )
+
+                                ),
+
+                                Expanded(
+
+                                  child: Theme(
+
+                                    data: ThemeData(
+
+                                      textSelectionTheme: const TextSelectionThemeData(
+
+                                        selectionColor: Colors.amber
+
+                                      )
+
+                                    ),
+
+                                    child: TextField(
+
+                                      readOnly: true,
+
+                                      maxLines: 1,
+
+                                      minLines: 1,
+
+                                      textAlign: TextAlign.center,
+
+                                      style: TextStyle(
+
+                                          color: Colors.grey[700],
+
+                                          fontWeight: FontWeight.bold
+
+                                      ),
+
+                                      decoration: InputDecoration(
+
+                                        border: OutlineInputBorder(
+
+                                            borderRadius: BorderRadius.circular(15),
+
+                                            borderSide: BorderSide.none
+
+                                        ),
+
+                                        filled: true,
+
+                                        fillColor: Colors.grey[100],
+
+                                        prefixIcon: Icon(Icons.account_circle, color: DatosApp.colorApp),
+
+                                      ),
+
+                                      controller: TextEditingController(text: widget.comprobante.estudiantePropietario.nombreCompleto()),
+
+                                    ),
+
+                                  ),
+
+                                )
+
+                              ],
+
+                            ),
+
+                          ),
+
+                        ),
+
+                      ),
+                      
+                      Positioned(
+
+                        top: (altoBody * 0.5) - (medidaLadoCard * 0.47),
+
+                        left: anchoBody * 0.73,
+
+                        child: GestureDetector(
+
+                          onTap: (){
+
+                            print("Boton presionado");
+
+                            Navigator.of(context).pop();
+
+                          },
+
+                          child: SvgPicture.asset(
+
+                            "./assets/images/IconoBotonCerrar.svg",
+
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                          ),
+
+                        )
+
+                      )
+
+                    ],
+
+                  );
+
+                }
+
+              );
+
+            },
+
+            icon: SvgPicture.asset("./assets/images/LogoInformacion.svg")
 
           )
 
@@ -54,9 +330,9 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
           overflow: TextOverflow.ellipsis,
 
-          style: const TextStyle(
+          style: TextStyle(
 
-            color: Colors.black,
+            color: Colors.grey[800],
 
             fontWeight: FontWeight.bold
 
@@ -64,11 +340,36 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
         ),
 
-        backgroundColor: Colors.white
+        backgroundColor: Colors.grey[200]
 
       ),
 
-      body: SfPdfViewer.memory(widget.comprobante.bytes)
+      body: LayoutBuilder(
+
+        builder: (context, constraints) {
+
+          altoBody = constraints.maxHeight;
+
+          anchoBody = constraints.maxWidth;
+
+          return SfPdfViewerTheme(
+
+            data: SfPdfViewerThemeData(
+
+              backgroundColor: Colors.grey[200]
+            ),
+
+            child: SfPdfViewer.memory(
+
+              widget.comprobante.bytes,
+
+            )
+
+          );
+
+        },
+
+      )
 
     );
 

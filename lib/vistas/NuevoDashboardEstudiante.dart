@@ -289,7 +289,7 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                 toolbarHeight: altoAppBar,
 
-                leading: Container(
+                /*leading: Container(
 
                   height: altoAppBar,
 
@@ -305,59 +305,98 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                   }, icon: const Icon(Icons.arrow_circle_left, color: Colors.white)),
 
-                ),
+                ),*/
 
-                flexibleSpace: Container(
+                flexibleSpace: LayoutBuilder(
 
-                  decoration: const BoxDecoration(
+                  builder: (context, constraints) {
 
-                      gradient: LinearGradient(
+                    double altoRegionFlexible = constraints.maxHeight;
 
-                          colors: [
+                    double anchoRegionFlexible = constraints.maxWidth;
 
-                            Color.fromARGB(255, 27, 76, 222),
+                    double altoTabBar = const Size.fromHeight(kToolbarHeight).height;
 
-                            Colors.indigo,
+                    double radioCircleAvatar = (altoRegionFlexible - altoTabBar) * 0.4;
+
+                    print("ALTO REGION FLEXIBLE: $altoRegionFlexible");
+
+                    print("ANCHO REGION FLEXIBLE: $anchoRegionFlexible");
+
+                    print("ALTO TAB BAR: $altoTabBar");
+
+                    return Container(
+
+                        decoration: const BoxDecoration(
+
+                            gradient: LinearGradient(
+
+                                colors: [
+
+                                  Color.fromARGB(255, 27, 76, 222),
+
+                                  Colors.indigo,
+
+                                ],
+
+                                begin: Alignment.topCenter,
+
+                                end: Alignment.bottomCenter
+
+                            )
+
+                        ),
+
+                        alignment: Alignment.center,
+
+                        child: Stack(
+
+                          children: [
+
+                            Positioned(
+
+                              right: anchoRegionFlexible * 0.5 - radioCircleAvatar,
+
+                              top: (altoRegionFlexible - altoTabBar) * 0.2,
+
+                              child: GestureDetector(
+
+                                onTap: () {
+
+                                  print("Tapeado");
+
+                                },
+
+                                child: CircleAvatar(
+
+                                  foregroundColor: Colors.transparent,
+
+                                  backgroundColor: (snapshot == null) ? Colors.white : Colors.transparent,
+
+                                  radius: radioCircleAvatar,
+
+                                  child: (snapshot.data == null) ? Image.asset("/images/Profile.png", fit: BoxFit.fill) : ClipOval(
+
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                                    child: Image.memory(snapshot.data!, fit: BoxFit.cover),
+
+                                  ),
+
+                                ),
+
+                              ),
+
+                            )
 
                           ],
 
-                          begin: Alignment.topCenter,
+                        )
 
-                          end: Alignment.bottomCenter
+                    );
 
-                      )
+                  },
 
-                  ),
-
-                  alignment: Alignment.center,
-
-                  child: GestureDetector(
-
-                    onTap: () {
-
-                      print("Tapeado");
-
-                    },
-
-                    child: CircleAvatar(
-
-                      foregroundColor: Colors.transparent,
-
-                      backgroundColor: (snapshot == null) ? Colors.white : Colors.transparent,
-
-                      radius: 70,
-
-                      child: (snapshot.data == null) ? Image.asset("/images/Profile.png", fit: BoxFit.fill) : ClipOval(
-
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                        child: Image.memory(snapshot.data!, fit: BoxFit.cover),
-
-                      ),
-
-                    ),
-
-                  )
 
                 ),
 

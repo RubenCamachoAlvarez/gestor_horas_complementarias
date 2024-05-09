@@ -105,7 +105,7 @@ class Estudiante extends Usuario {
 
       if(bytesDocumento != null) {
 
-        comprobante = Comprobante(nombre: datos["nombre"], bytes: bytesDocumento, propietario: referenciaUsuario, fechaSubida: datos["fecha_subida"], statusComprobante: datos["status_comprobante"]);
+        comprobante = Comprobante(nombre: datos["nombre"], bytes: bytesDocumento, estudiantePropietario: this, fechaSubida: datos["fecha_subida"], statusComprobante: datos["status_comprobante"]);
 
       }
 

@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
 
 class Comprobante {
 
-  Comprobante({required this.nombre, required this.bytes, required this.propietario, required this.fechaSubida,
+  Comprobante({required this.nombre, required this.bytes, required this.estudiantePropietario, required this.fechaSubida,
 
     required this.statusComprobante, this.horasValidez, this.justificacionRechazo});
 
@@ -12,7 +13,7 @@ class Comprobante {
 
   Uint8List bytes;
 
-  DocumentReference<Map<String, dynamic>> propietario;
+  Estudiante estudiantePropietario;
 
   Timestamp fechaSubida;
 
@@ -25,7 +26,7 @@ class Comprobante {
   @override
   String toString() {
 
-    return "{$nombre, ${propietario.id}, $fechaSubida, ${statusComprobante.id}, $horasValidez";
+    return "{$nombre, ${estudiantePropietario.referenciaUsuario.id}, $fechaSubida, ${statusComprobante.id}, $horasValidez";
 
   }
 
@@ -40,6 +41,14 @@ class Comprobante {
 
   @override
   int get hashCode => super.hashCode & nombre!.length & bytes.hashCode;
+
+  String cadenaFechaSubida() {
+
+    DateTime fecha = fechaSubida.toDate();
+
+    return "${fecha.day}/${fecha.month}/${fecha.year}";
+
+  }
 
 
 }

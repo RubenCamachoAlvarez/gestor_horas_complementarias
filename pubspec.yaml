@@ -46,6 +46,7 @@ dependencies:
   syncfusion_flutter_pdf: ^25.1.38
   syncfusion_flutter_pdfviewer: ^25.1.38
   flutter_svg: ^2.0.10+1
+  syncfusion_flutter_core: ^25.2.3
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +78,8 @@ flutter:
     - assets/images/Profile.png
     - assets/images/logo-fes.png
     - assets/images/Icono.svg
+    - assets/images/IconoBotonCerrar.svg
+    - assets/images/LogoInformacion.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
