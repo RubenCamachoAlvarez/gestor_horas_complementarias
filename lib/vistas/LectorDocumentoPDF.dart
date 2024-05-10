@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/Comprobante.dart";
 import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
+import "package:gestor_de_horas_complementarias/datos/Encargado.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
 import "package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart";
@@ -377,13 +378,88 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
       floatingActionButton: (Sesion.usuario is Estudiante && widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? null :
 
-        FloatingActionButton(
+        SizedBox(
 
-          onPressed: (){
+          width: 60,
 
-          },
+          height: 60,
 
-          child: (Sesion.usuario is Estudiante) ? SvgPicture.asset("./assets/images/IconoVisualizarRevision.svg") : null,
+          child: FloatingActionButton(
+
+            onPressed: (){
+
+              showModalBottomSheet(
+
+                context: context,
+
+                builder: (context) => Container(
+                  
+                  padding: const EdgeInsets.all(40),
+
+                  height: double.infinity,
+
+                  width: double.infinity,
+
+                  decoration: BoxDecoration(
+                    
+                    borderRadius: BorderRadius.only(
+                      
+                      topRight: Radius.circular(40),
+                      
+                      topLeft: Radius.circular(40)
+                      
+                    ),
+
+
+                    
+                  ),
+                  
+                ),
+
+                backgroundColor: Colors.white,
+
+                shape: const RoundedRectangleBorder(
+
+                  borderRadius: BorderRadius.only(
+
+                    topLeft: Radius.circular(40),
+
+                    topRight: Radius.circular(40)
+
+                  )
+                ),
+
+                constraints: BoxConstraints(
+
+                  maxWidth: anchoBody,
+
+                  maxHeight: altoBody * 0.4,
+
+                ),
+
+              );
+
+            },
+
+            backgroundColor: Colors.white,
+
+            foregroundColor: Colors.white,
+
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+
+            shape: RoundedRectangleBorder(
+
+                borderRadius: BorderRadius.circular(30)
+
+            ),
+
+            child: (Sesion.usuario is Estudiante) ? SvgPicture.asset("./assets/images/IconoEnviarRevision.svg", width: 40, height: 40,) :
+
+            (Sesion.usuario is Encargado && widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE) ?
+
+            SvgPicture.asset("./assets/images/IconoModificarRevision.svg", width: 40, height: 40,) : SvgPicture.asset("./assets/images/IconoEnviarRevision.svg", width: 40, height: 40,),
+
+          ),
 
         ),
 
