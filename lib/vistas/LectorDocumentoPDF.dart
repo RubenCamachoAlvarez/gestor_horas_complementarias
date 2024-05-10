@@ -2,6 +2,9 @@ import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/Comprobante.dart";
 import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
+import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
+import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
+import "package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart";
 import "package:syncfusion_flutter_core/theme.dart";
 import "package:syncfusion_flutter_pdfviewer/pdfviewer.dart";
 
@@ -28,6 +31,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
     return Scaffold(
 
       appBar: AppBar(
+
         leading: IconButton(
 
           onPressed: (){
@@ -36,7 +40,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
           },
 
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.grey[400]),
+          icon: SvgPicture.asset("./assets/images/IconoRetroceso.svg"),
 
         ),
 
@@ -288,8 +292,6 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                           onTap: (){
 
-                            print("Boton presionado");
-
                             Navigator.of(context).pop();
 
                           },
@@ -316,7 +318,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
             },
 
-            icon: SvgPicture.asset("./assets/images/LogoInformacion.svg")
+            icon: SvgPicture.asset("./assets/images/IconoInformacion.svg")
 
           )
 
@@ -339,6 +341,8 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
           ),
 
         ),
+
+        centerTitle: true,
 
         backgroundColor: Colors.grey[200]
 
@@ -369,7 +373,19 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
         },
 
-      )
+      ),
+
+      floatingActionButton: (Sesion.usuario is Estudiante && widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? null :
+
+        FloatingActionButton(
+
+          onPressed: (){
+
+          },
+
+          child: (Sesion.usuario is Estudiante) ? SvgPicture.asset("./assets/images/IconoVisualizarRevision.svg") : null,
+
+        ),
 
     );
 

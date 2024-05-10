@@ -319,12 +319,6 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                     double radioCircleAvatar = (altoRegionFlexible - altoTabBar) * 0.4;
 
-                    print("ALTO REGION FLEXIBLE: $altoRegionFlexible");
-
-                    print("ANCHO REGION FLEXIBLE: $anchoRegionFlexible");
-
-                    print("ALTO TAB BAR: $altoTabBar");
-
                     return Container(
 
                         decoration: const BoxDecoration(

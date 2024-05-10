@@ -79,7 +79,11 @@ flutter:
     - assets/images/logo-fes.png
     - assets/images/Icono.svg
     - assets/images/IconoBotonCerrar.svg
-    - assets/images/LogoInformacion.svg
+    - assets/images/IconoInformacion.svg
+    - assets/images/IconoRetroceso.svg
+    - assets/images/IconoEnviarRevision.svg
+    - assets/images/IconoModificarRevision.svg
+    - assets/images/IconoVisualizarRevision.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
