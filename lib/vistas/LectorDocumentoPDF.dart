@@ -1,9 +1,14 @@
+import "dart:js_interop";
+
+import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/Comprobante.dart";
 import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
 import "package:gestor_de_horas_complementarias/datos/Encargado.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
+import "package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
 import "package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart";
 import "package:syncfusion_flutter_core/theme.dart";
@@ -25,6 +30,26 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
   late double altoBody;
 
   late double anchoBody;
+
+  late double altoBottomSheet;
+
+  late double paddingBottomSheet;
+
+  late double altoAreaUtilBottomSheet;
+
+  bool status = true;
+
+  Color colorFuenteSeleccion = Colors.grey[700]!;
+
+  Color colorFuenteNoSeleccion = Colors.white;
+
+  TextEditingController controladorTextField = TextEditingController();
+
+  String mensajeJustificacionRechazo = "";
+
+  String numeroHorasValidez = "";
+
+  String datosOriginales = "";
 
   @override
   Widget build(BuildContext context) {
@@ -349,26 +374,133 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
       ),
 
-      body: LayoutBuilder(
+      body: StreamBuilder(
 
-        builder: (context, constraints) {
+        stream: BaseDeDatos.conexion.collection("Comprobantes").where("nombre", isEqualTo: widget.comprobante.nombre).snapshots(),
 
-          altoBody = constraints.maxHeight;
+        builder: (context, snapshot) {
 
-          anchoBody = constraints.maxWidth;
+          if(snapshot.connectionState == ConnectionState.active) {
 
-          return SfPdfViewerTheme(
+            List<QueryDocumentSnapshot<Map<String, dynamic>>> consultaDatos = snapshot.data!.docs;
 
-            data: SfPdfViewerThemeData(
+            Map<String, dynamic> datosComprobante = consultaDatos.elementAt(0).data();
 
-              backgroundColor: Colors.grey[200]
-            ),
+            if(datosComprobante["status_comprobante"] == StatusComprobante.ACEPTADO) {
 
-            child: SfPdfViewer.memory(
+              status = true;
 
-              widget.comprobante.bytes,
+              numeroHorasValidez = (datosComprobante["horas_validez"] as int).toString();
 
-            )
+              datosOriginales = controladorTextField.text = numeroHorasValidez;
+
+            }else if(datosComprobante["status_comprobante"] == StatusComprobante.RECHAZADO) {
+
+              status = false;
+
+              return StreamBuilder(
+
+                stream: (datosComprobante["justificacion_rechazo"] as DocumentReference<Map<String, dynamic>>).snapshots(),
+
+                builder: (context, snapshot) {
+
+                  if(snapshot.connectionState == ConnectionState.active){
+
+                    Map<String, dynamic>? datosComprobanteRechazado = snapshot.data!.data();
+
+                    mensajeJustificacionRechazo = datosComprobanteRechazado!["mensaje_justificacion"];
+
+                    datosOriginales = controladorTextField.text = mensajeJustificacionRechazo;
+
+                    return LayoutBuilder(
+
+                      builder: (context, constraints) {
+
+                        altoBody = constraints.maxHeight;
+
+                        anchoBody = constraints.maxWidth;
+
+                        altoBottomSheet = altoBody * 0.3;
+
+                        paddingBottomSheet = altoBottomSheet * 0.1468;
+
+                        altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
+
+                        return SfPdfViewerTheme(
+
+                            data: SfPdfViewerThemeData(
+
+                                backgroundColor: Colors.grey[200]
+                            ),
+
+                            child: SfPdfViewer.memory(
+
+                              widget.comprobante.bytes,
+
+                            )
+
+                        );
+
+                      },
+
+                    );
+
+                  }
+
+                  return Container(
+
+                    alignment: Alignment.center,
+
+                    child: const CircularProgressIndicator(),
+
+                  );
+
+                },
+
+              );
+
+            }
+
+            return LayoutBuilder(
+
+              builder: (context, constraints) {
+
+                altoBody = constraints.maxHeight;
+
+                anchoBody = constraints.maxWidth;
+
+                altoBottomSheet = altoBody * 0.3;
+
+                paddingBottomSheet = altoBottomSheet * 0.1468;
+
+                altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
+
+                return SfPdfViewerTheme(
+
+                    data: SfPdfViewerThemeData(
+
+                        backgroundColor: Colors.grey[200]
+                    ),
+
+                    child: SfPdfViewer.memory(
+
+                      widget.comprobante.bytes,
+
+                    )
+
+                );
+
+              },
+
+            );
+
+          }
+
+          return Container(
+
+            alignment: Alignment.center,
+
+            child: const CircularProgressIndicator()
 
           );
 
@@ -392,28 +524,305 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                 context: context,
 
-                builder: (context) => Container(
-                  
-                  padding: const EdgeInsets.all(40),
+                builder: (context) => StatefulBuilder(
 
-                  height: double.infinity,
+                  builder: (context, setState) {
 
-                  width: double.infinity,
+                    return Container(
 
-                  decoration: BoxDecoration(
-                    
-                    borderRadius: BorderRadius.only(
-                      
-                      topRight: Radius.circular(40),
-                      
-                      topLeft: Radius.circular(40)
-                      
-                    ),
+                      padding: EdgeInsets.only(
+
+                        right: paddingBottomSheet,
+
+                        left: paddingBottomSheet,
+
+                        top: paddingBottomSheet,
+
+                        bottom: paddingBottomSheet * 0.5
+
+                      ),
+
+                      alignment: Alignment.center,
+
+                      decoration: const BoxDecoration(
+
+                        borderRadius: BorderRadius.only(
+
+                            topRight: Radius.circular(50),
+
+                            topLeft: Radius.circular(50)
+
+                        ),
+
+                      ),
+
+                      child: Column(
+
+                        mainAxisAlignment: MainAxisAlignment.center,
+
+                        crossAxisAlignment: CrossAxisAlignment.center,
+
+                        children: [
+
+                          Row(
+
+                            mainAxisAlignment: MainAxisAlignment.center,
+
+                            crossAxisAlignment: CrossAxisAlignment.center,
+
+                            children: [
+
+                              ChoiceChip(
+
+                                label: const Text("Aceptar"),
+
+                                selectedColor: Colors.green,
+
+                                backgroundColor: Colors.grey[200],
+
+                                selected: status,
+
+                                checkmarkColor: Colors.white,
+
+                                labelStyle: TextStyle(
+
+                                    color: (status) ? colorFuenteNoSeleccion : colorFuenteSeleccion,
+
+                                    fontWeight: FontWeight.bold
+
+                                ),
+
+                                onSelected: (_) {
+
+                                  setState((){
+
+                                    status = !status;
+
+                                    controladorTextField.text = numeroHorasValidez;
+
+                                  });
+
+                                },
+
+                              ),
+
+                              SizedBox(
+
+                                width: anchoBody * 0.05,
+
+                              ),
+
+                              ChoiceChip(
+
+                                label: const Text("Rechazar"),
+
+                                selectedColor: Colors.red,
+
+                                backgroundColor: Colors.grey[200],
+
+                                checkmarkColor: Colors.white,
+
+                                labelStyle: TextStyle(
+
+                                    color: (!status) ? colorFuenteNoSeleccion : colorFuenteSeleccion,
+
+                                    fontWeight: FontWeight.bold
+
+                                ),
+
+                                selected: !status,
+
+                                onSelected: (_) {
+
+                                  setState((){
+
+                                    status = !status;
+
+                                    controladorTextField.text = mensajeJustificacionRechazo;
+
+                                  });
+
+                                },
+
+                              )
+
+                            ],
+
+                          ),
+
+                          SizedBox(
+
+                            height: altoAreaUtilBottomSheet * 0.05,
+
+                          ),
+
+                          const Divider(),
+
+                          SizedBox(
+
+                            height: altoAreaUtilBottomSheet * 0.1,
+
+                          ),
+
+                          TextField(
+
+                            maxLines: 1,
+
+                            minLines: 1,
+
+                            controller: controladorTextField,
+
+                            inputFormatters: (status) ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)] : null,
+
+                            onChanged: (entrada){
+
+                              setState((){
+
+                                if(status) {
+
+                                  numeroHorasValidez = entrada;
+
+                                }else{
+
+                                  mensajeJustificacionRechazo = entrada;
+
+                                }
+
+                              });
+
+                            },
+
+                            style: TextStyle(
+
+                                color: Colors.grey[700],
+
+                                fontWeight: FontWeight.bold
+
+                            ),
+
+                            decoration: InputDecoration(
+
+                              prefixIcon: Padding(
+
+                                padding: EdgeInsets.only(
+
+                                  left: (anchoBody - (paddingBottomSheet * 2)) * 0.025,
+
+                                ),
+
+                                child: Icon((status) ? Icons.numbers_rounded : Icons.message, color: DatosApp.colorApp),
+
+                              ),
+
+                              hintText: (status) ? "Cantidad de horas de validez" : "Justificacion de rechazo",
+
+                              hintFadeDuration: const Duration(milliseconds: 200),
+
+                              hintStyle: TextStyle(
+
+                                color: Colors.grey[700],
+
+                                fontWeight: FontWeight.bold
+
+                              ),
+
+                              border: OutlineInputBorder(
+
+                                  borderRadius: BorderRadius.circular(15),
+
+                                  borderSide: BorderSide.none
+
+                              ),
+
+                              filled: true,
+
+                              fillColor: Colors.grey[300],
+
+                              constraints: BoxConstraints(
+
+                                maxHeight: altoAreaUtilBottomSheet * 0.25,
+
+                                maxWidth: double.infinity,
+
+                                minHeight: altoAreaUtilBottomSheet * 0.25,
+
+                                minWidth: double.infinity,
+
+                              )
+
+                            ),
+
+                            textAlign: TextAlign.center,
+
+                            textAlignVertical: TextAlignVertical.center,
+
+                            readOnly: false //Sesion.usuario is Estudiante,
+
+                          ),
+
+                          SizedBox(
+
+                            height: altoAreaUtilBottomSheet * 0.05,
+
+                          ),
+
+                          SizedBox(
+
+                              width: double.infinity,
+
+                              height: altoAreaUtilBottomSheet * 0.25,
+
+                              child: ElevatedButton(
+
+                                onPressed: (controladorTextField.text.isEmpty ||
+                                    ((widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO && controladorTextField.text == datosOriginales) ||
+                                      (widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO && controladorTextField.text == datosOriginales)
+                                    ))
+
+                                    ? null : (){
 
 
-                    
-                  ),
-                  
+
+                                },
+
+                                style: ElevatedButton.styleFrom(
+
+                                  backgroundColor: (status) ? Colors.green : Colors.red,
+
+                                  disabledBackgroundColor: (status) ? Colors.green.shade200 : Colors.red.shade200,
+
+                                  shape: RoundedRectangleBorder(
+
+                                    borderRadius: BorderRadius.circular(15),
+
+                                  ),
+
+                                ),
+
+                                child: Text(
+
+                                  (widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? "Publicar revisión" : "Modificar revisión",
+
+                                  style: const TextStyle(
+
+                                      color: Colors.white
+
+                                  ),
+
+                                ),
+
+                              ),
+
+                          ),
+
+                        ],
+
+                      )
+
+                    );
+
+                  },
+
                 ),
 
                 backgroundColor: Colors.white,
@@ -433,7 +842,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                   maxWidth: anchoBody,
 
-                  maxHeight: altoBody * 0.4,
+                  maxHeight: altoBottomSheet,
 
                 ),
 
