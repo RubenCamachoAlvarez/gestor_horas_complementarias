@@ -35,9 +35,7 @@ class Estudiante extends Usuario {
 
   }
 
-  Future<bool?> cargarComprobante() async {
-
-    Map<String, dynamic>? datosComprobante = await OperacionesArchivos.seleccionarComprobantePDF();
+  Future<bool?> cargarComprobante(Map<String, dynamic>? datosComprobante) async {
 
     if (datosComprobante != null) {
 

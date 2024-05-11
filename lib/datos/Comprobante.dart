@@ -7,7 +7,7 @@ class Comprobante {
 
   Comprobante({required this.nombre, required this.bytes, required this.estudiantePropietario, required this.fechaSubida,
 
-    required this.statusComprobante, this.horasValidez, this.justificacionRechazo});
+    required this.statusComprobante});
 
   String nombre;
 
@@ -19,14 +19,10 @@ class Comprobante {
 
   DocumentReference statusComprobante;
 
-  int? horasValidez;
-
-  DocumentReference<Map<String, dynamic>>? justificacionRechazo;
-
   @override
   String toString() {
 
-    return "{$nombre, ${estudiantePropietario.referenciaUsuario.id}, $fechaSubida, ${statusComprobante.id}, $horasValidez";
+    return "{$nombre, ${estudiantePropietario.referenciaUsuario.id}, $fechaSubida, ${statusComprobante.id}";
 
   }
 

@@ -4,6 +4,7 @@ import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/Comprobante.dart";
 import "package:gestor_de_horas_complementarias/datos/Encargado.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
+import "package:gestor_de_horas_complementarias/helpers/OperacionesArchivos.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
 import "package:gestor_de_horas_complementarias/vistas/LectorDocumentoPDF.dart";
 
@@ -476,37 +477,23 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                 onPressed: () async {
 
-                  bool? operacionRealizada = await widget.estudiante.cargarComprobante();
+                  Map<String, dynamic>? datosComprobante = await OperacionesArchivos.seleccionarComprobantePDF();
 
-                  if(operacionRealizada != null) {
-
-                    String mensajeNotificacion = "";
-
-                    Color colorNotificacion = Colors.green;
-
-                    if (operacionRealizada) {
-
-                      mensajeNotificacion = "Los archivos han sido cargados correctamente";
-
-                    } else {
-
-                      mensajeNotificacion = "Ha ocurrido un error al cargar los archivos";
-
-                      colorNotificacion = Colors.red;
-
-                    }
+                  if(datosComprobante != null) {
 
                     ScaffoldMessenger.of(context).showSnackBar(
 
                         SnackBar(
 
-                          backgroundColor: colorNotificacion,
+                          backgroundColor: Colors.orange,
 
-                          content: Text(
+                          duration: const Duration(seconds: 5),
 
-                            mensajeNotificacion,
+                          content: const Text(
 
-                            style: const TextStyle(
+                            "Subiendo comprobante. Por favor espere.",
+
+                            style: TextStyle(
 
                               fontWeight: FontWeight.bold,
 
@@ -515,8 +502,6 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
                             ),
 
                           ),
-
-                          duration: const Duration(seconds: 3),
 
                           padding: const EdgeInsets.all(20),
 
@@ -531,6 +516,68 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
                         )
 
                     );
+
+                    bool? operacionRealizada = await widget.estudiante.cargarComprobante(datosComprobante);
+
+                    ScaffoldMessenger.of(context).clearSnackBars();
+
+                    if(operacionRealizada != null) {
+
+                      String mensajeNotificacion = "";
+
+                      Color colorNotificacion = Colors.green;
+
+                      if (operacionRealizada) {
+
+                        mensajeNotificacion = "Los archivos han sido cargados correctamente";
+
+                      } else {
+
+                        mensajeNotificacion = "Ha ocurrido un error al cargar los archivos";
+
+                        colorNotificacion = Colors.red;
+
+                      }
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+
+                          SnackBar(
+
+                            backgroundColor: colorNotificacion,
+
+                            content: Text(
+
+                              mensajeNotificacion,
+
+                              textAlign: TextAlign.center,
+
+                              style: const TextStyle(
+
+                                fontWeight: FontWeight.bold,
+
+                                color: Colors.white,
+
+                              ),
+
+                            ),
+
+                            duration: const Duration(seconds: 3),
+
+                            padding: const EdgeInsets.all(20),
+
+                            behavior: SnackBarBehavior.floating,
+
+                            shape: RoundedRectangleBorder(
+
+                                borderRadius: BorderRadius.circular(10)
+
+                            ),
+
+                          )
+
+                      );
+
+                    }
 
                   }
 

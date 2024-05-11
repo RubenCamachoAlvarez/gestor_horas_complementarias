@@ -51,6 +51,8 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
   String datosOriginales = "";
 
+  late DocumentReference<Map<String, dynamic>> referenciaComprobante;
+
   @override
   Widget build(BuildContext context) {
 
@@ -374,125 +376,160 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
       ),
 
-      body: StreamBuilder(
+      body: FutureBuilder(
 
-        stream: BaseDeDatos.conexion.collection("Comprobantes").where("nombre", isEqualTo: widget.comprobante.nombre).snapshots(),
+        future: BaseDeDatos.conexion.collection("Comprobantes").where("nombre", isEqualTo: widget.comprobante.nombre).get(),
 
         builder: (context, snapshot) {
 
-          if(snapshot.connectionState == ConnectionState.active) {
+          if(snapshot.connectionState == ConnectionState.done) {
 
-            List<QueryDocumentSnapshot<Map<String, dynamic>>> consultaDatos = snapshot.data!.docs;
+            referenciaComprobante = snapshot.data!.docs.elementAt(0).reference;
 
-            Map<String, dynamic> datosComprobante = consultaDatos.elementAt(0).data();
+            Map<String, dynamic> datosComprobante = snapshot.data!.docs.elementAt(0).data();
 
-            if(datosComprobante["status_comprobante"] == StatusComprobante.ACEPTADO) {
+            if(datosComprobante["status_comprobante"] != StatusComprobante.PENDIENTE) {
 
-              status = true;
+              if(datosComprobante["status_comprobante"] == StatusComprobante.ACEPTADO) {
 
-              numeroHorasValidez = (datosComprobante["horas_validez"] as int).toString();
+                status = true;
 
-              datosOriginales = controladorTextField.text = numeroHorasValidez;
+                numeroHorasValidez = (datosComprobante["horas_validez"] as int).toString();
 
-            }else if(datosComprobante["status_comprobante"] == StatusComprobante.RECHAZADO) {
+                controladorTextField.text = datosOriginales = numeroHorasValidez;
 
-              status = false;
+                return LayoutBuilder(
 
-              return StreamBuilder(
+                  builder: (context, constraints) {
 
-                stream: (datosComprobante["justificacion_rechazo"] as DocumentReference<Map<String, dynamic>>).snapshots(),
+                    altoBody = constraints.maxHeight;
 
-                builder: (context, snapshot) {
+                    anchoBody = constraints.maxWidth;
 
-                  if(snapshot.connectionState == ConnectionState.active){
+                    altoBottomSheet = altoBody * 0.3;
 
-                    Map<String, dynamic>? datosComprobanteRechazado = snapshot.data!.data();
+                    paddingBottomSheet = altoBottomSheet * 0.1468;
 
-                    mensajeJustificacionRechazo = datosComprobanteRechazado!["mensaje_justificacion"];
+                    altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
 
-                    datosOriginales = controladorTextField.text = mensajeJustificacionRechazo;
+                    return SfPdfViewerTheme(
 
-                    return LayoutBuilder(
+                        data: SfPdfViewerThemeData(
 
-                      builder: (context, constraints) {
+                            backgroundColor: Colors.grey[200]
+                        ),
 
-                        altoBody = constraints.maxHeight;
+                        child: SfPdfViewer.memory(
 
-                        anchoBody = constraints.maxWidth;
+                          widget.comprobante.bytes,
 
-                        altoBottomSheet = altoBody * 0.3;
-
-                        paddingBottomSheet = altoBottomSheet * 0.1468;
-
-                        altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
-
-                        return SfPdfViewerTheme(
-
-                            data: SfPdfViewerThemeData(
-
-                                backgroundColor: Colors.grey[200]
-                            ),
-
-                            child: SfPdfViewer.memory(
-
-                              widget.comprobante.bytes,
-
-                            )
-
-                        );
-
-                      },
+                        )
 
                     );
 
-                  }
-
-                  return Container(
-
-                    alignment: Alignment.center,
-
-                    child: const CircularProgressIndicator(),
-
-                  );
-
-                },
-
-              );
-
-            }
-
-            return LayoutBuilder(
-
-              builder: (context, constraints) {
-
-                altoBody = constraints.maxHeight;
-
-                anchoBody = constraints.maxWidth;
-
-                altoBottomSheet = altoBody * 0.3;
-
-                paddingBottomSheet = altoBottomSheet * 0.1468;
-
-                altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
-
-                return SfPdfViewerTheme(
-
-                    data: SfPdfViewerThemeData(
-
-                        backgroundColor: Colors.grey[200]
-                    ),
-
-                    child: SfPdfViewer.memory(
-
-                      widget.comprobante.bytes,
-
-                    )
+                  },
 
                 );
 
-              },
+              }else if(datosComprobante["status_comprobante"] == StatusComprobante.RECHAZADO){
 
-            );
+                status = false;
+
+                return FutureBuilder(
+
+                  future: (datosComprobante["justificacion_rechazo"] as DocumentReference<Map<String, dynamic>>).get(),
+
+                  builder: (context, snapshot) {
+
+                    if(snapshot.connectionState == ConnectionState.done) {
+
+                      Map<String, dynamic> datosJustificacionRechazo = snapshot.data!.data()!;
+
+                      mensajeJustificacionRechazo = datosJustificacionRechazo["mensaje_justificacion"];
+
+                      controladorTextField.text = datosOriginales = mensajeJustificacionRechazo;
+
+                      return LayoutBuilder(
+
+                        builder: (context, constraints) {
+
+                          altoBody = constraints.maxHeight;
+
+                          anchoBody = constraints.maxWidth;
+
+                          altoBottomSheet = altoBody * 0.3;
+
+                          paddingBottomSheet = altoBottomSheet * 0.1468;
+
+                          altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
+
+                          return SfPdfViewerTheme(
+
+                              data: SfPdfViewerThemeData(
+
+                                  backgroundColor: Colors.grey[200]
+                              ),
+
+                              child: SfPdfViewer.memory(
+
+                                widget.comprobante.bytes,
+
+                              )
+
+                          );
+
+                        },
+
+                      );
+
+                    }
+
+                    return Container(
+
+                        alignment: Alignment.center,
+
+                        child: const CircularProgressIndicator()
+
+                    );
+
+                  },);
+
+              }
+
+            }
+
+           return LayoutBuilder(
+
+             builder: (context, constraints) {
+
+               altoBody = constraints.maxHeight;
+
+               anchoBody = constraints.maxWidth;
+
+               altoBottomSheet = altoBody * 0.3;
+
+               paddingBottomSheet = altoBottomSheet * 0.1468;
+
+               altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
+
+               return SfPdfViewerTheme(
+
+                   data: SfPdfViewerThemeData(
+
+                       backgroundColor: Colors.grey[200]
+                   ),
+
+                   child: SfPdfViewer.memory(
+
+                     widget.comprobante.bytes,
+
+                   )
+
+               );
+
+             },
+
+           );
 
           }
 
@@ -508,7 +545,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
       ),
 
-      floatingActionButton: (Sesion.usuario is Estudiante && widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? null :
+      floatingActionButton: //(Sesion.usuario is Estudiante && widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? null :
 
         SizedBox(
 
@@ -775,15 +812,136 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
                               child: ElevatedButton(
 
                                 onPressed: (controladorTextField.text.isEmpty ||
-                                    ((widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO && controladorTextField.text == datosOriginales) ||
-                                      (widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO && controladorTextField.text == datosOriginales)
-                                    ))
+                                  ((widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO && controladorTextField.text == datosOriginales) ||
+                                    (widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO && controladorTextField.text == datosOriginales)
+                                  ))
 
-                                    ? null : (){
+                                  ? null : () async {
+
+                                    if(widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE) {
+
+                                      //Aqui se inserta el codigo para cuando se hace una modificacion (update) del documento que representa al comprobante en cuestion.
 
 
 
-                                },
+                                    }else{
+
+                                      //Aqui va el codigo cuando se revisa por primera vez el comprobante.
+
+                                      DocumentReference<Map<String, dynamic>> referenciaJustificacion;
+
+                                      Map<String, dynamic> datosActualizacion = <String, dynamic> {};
+
+                                      if(!status) {
+
+                                        referenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({"mensaje_justificacion" : mensajeJustificacionRechazo});
+
+                                        datosActualizacion["justificacion_rechazo"] = referenciaJustificacion;
+
+                                        datosActualizacion["status_comprobante"] = StatusComprobante.RECHAZADO;
+
+                                      }else{
+
+                                        datosActualizacion["horas_validez"] = int.parse(numeroHorasValidez);
+
+                                        datosActualizacion["status_comprobante"] = StatusComprobante.ACEPTADO;
+
+                                      }
+
+                                      referenciaComprobante.update(datosActualizacion).then((_) {
+
+                                        widget.comprobante.statusComprobante = datosActualizacion["status_comprobante"];
+
+
+
+                                        Navigator.of(context).pop();
+
+                                        ScaffoldMessenger.of(context).showSnackBar(
+
+                                            SnackBar(
+
+                                              backgroundColor: Colors.amber,
+
+                                              content: const Text(
+
+                                                "Se ha actualizado el status del comprobante",
+
+                                                textAlign: TextAlign.center,
+
+                                                style: TextStyle(
+
+                                                  fontWeight: FontWeight.bold,
+
+                                                  color: Colors.white,
+
+                                                ),
+
+                                              ),
+
+                                              duration: const Duration(seconds: 3),
+
+                                              padding: const EdgeInsets.all(20),
+
+                                              behavior: SnackBarBehavior.floating,
+
+                                              shape: RoundedRectangleBorder(
+
+                                                  borderRadius: BorderRadius.circular(10)
+
+                                              ),
+
+                                            )
+
+                                        );
+
+                                      }).catchError((error){
+
+                                        Navigator.of(context).pop();
+
+                                        ScaffoldMessenger.of(context).showSnackBar(
+
+                                            SnackBar(
+
+                                              backgroundColor: Colors.orange,
+
+                                              content: const Text(
+
+                                                "Ha ocurrido un error en la revisión",
+
+                                                textAlign: TextAlign.center,
+
+                                                style: TextStyle(
+
+                                                  fontWeight: FontWeight.bold,
+
+                                                  color: Colors.white,
+
+                                                ),
+
+                                              ),
+
+                                              duration: const Duration(seconds: 3),
+
+                                              padding: const EdgeInsets.all(20),
+
+                                              behavior: SnackBarBehavior.floating,
+
+                                              shape: RoundedRectangleBorder(
+
+                                                  borderRadius: BorderRadius.circular(10)
+
+                                              ),
+
+                                            )
+
+                                        );
+
+                                      });
+
+
+                                    }
+
+                                  },
 
                                 style: ElevatedButton.styleFrom(
 
