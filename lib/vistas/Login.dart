@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
-import 'package:gestor_de_horas_complementarias/vistas/DashboardEncargado.dart';
-import 'package:gestor_de_horas_complementarias/vistas/DashboardEstudiante.dart';
 
 class LoginWidget extends StatefulWidget {
 
