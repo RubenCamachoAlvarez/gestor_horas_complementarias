@@ -7,6 +7,7 @@ import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
 import "package:gestor_de_horas_complementarias/helpers/OperacionesArchivos.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
 import "package:gestor_de_horas_complementarias/vistas/LectorDocumentoPDF.dart";
+import "package:gestor_de_horas_complementarias/vistas/PerfilUsuario.dart";
 
 class DashboardEstudianteWidget extends StatefulWidget {
 
@@ -358,7 +359,7 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                                 onTap: () {
 
-                                  print("Tapeado");
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => PerfilUsuarioWidget(usuario: widget.estudiante),));
 
                                 },
 
@@ -366,7 +367,7 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                                   foregroundColor: Colors.transparent,
 
-                                  backgroundColor: (snapshot == null) ? Colors.white : Colors.transparent,
+                                  backgroundColor: (snapshot.data == null) ? Colors.white : Colors.transparent,
 
                                   radius: radioCircleAvatar,
 
@@ -492,6 +493,8 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
                           content: const Text(
 
                             "Subiendo comprobante. Por favor espere.",
+
+                            textAlign: TextAlign.center,
 
                             style: TextStyle(
 

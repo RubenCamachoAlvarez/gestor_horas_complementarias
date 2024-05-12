@@ -1,5 +1,4 @@
 import "dart:typed_data";
-
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart";
 import "package:flutter/material.dart";
@@ -29,13 +28,15 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
   Future<Map<String, Uint8List?>> cargarImagenesUsuario() async {
 
-    Uint8List? bytesImagenUsuario = null;
+    Uint8List? bytesImagenUsuario;
 
-    Uint8List? bytesImagenFeed = null;
+    Uint8List? bytesImagenFeed;
 
     Map<String, Uint8List?> imagenesUsuario = <String, Uint8List>{};
 
-    BaseDeDatos.almacenamiento.ref().child("Foto_perfil_usuarios/${widget.usuario.numero}/Profile.jpg");
+    bytesImagenUsuario = await BaseDeDatos.almacenamiento.ref().child("Foto_perfil_usuarios/${widget.usuario.numero}/Profile.jpg").getData();
+
+    imagenesUsuario["foto_perfil"] = bytesImagenUsuario;
 
     return imagenesUsuario;
   }
@@ -55,736 +56,783 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
     Color temaComponentesInterfaz = DatosApp.colorApp;
 
-    return StreamBuilder(
+    return FutureBuilder(
 
-      stream: (widget.usuario is Estudiante) ? (widget.usuario as Estudiante).obtenerComprobantesAceptados() : null,
+      future: widget.usuario.cargarImagenUsuario(),
 
       builder: (context, snapshot) {
 
-        if(snapshot.connectionState == ConnectionState.active){
+        if(snapshot.connectionState == ConnectionState.done) {
 
-          if(widget.usuario is Estudiante && snapshot.data != null) {
+          Uint8List? imagenUsuario = snapshot.data;
 
-            List<QueryDocumentSnapshot<Map<String, dynamic>>> consulta = snapshot.data!.docs;
 
-            int horasValidadas = 0;
+          return  StreamBuilder(
 
-            consulta.forEach((datosComprobante) {
-
-              horasValidadas += (datosComprobante.data()["horas_validez"] as int);
-
-            });
-
-            notificadorValor.value = horasValidadas.toDouble();
-
-          }
-
-          return FutureBuilder(
-
-            future: Carreras.obtenerNumeroHorasObligatorias(widget.usuario.carrera),
+            stream: (widget.usuario is Estudiante) ? (widget.usuario as Estudiante).obtenerComprobantesAceptados() : null,
 
             builder: (context, snapshot) {
 
-              if(snapshot.connectionState == ConnectionState.done) {
+              if(snapshot.connectionState == ConnectionState.active){
 
+                if(widget.usuario is Estudiante && snapshot.data != null) {
 
-                if(snapshot.data != null) {
+                  List<QueryDocumentSnapshot<Map<String, dynamic>>> consulta = snapshot.data!.docs;
 
-                  horasObligatoriasCarrera = snapshot.data!;
+                  int horasValidadas = 0;
+
+                  consulta.forEach((datosComprobante) {
+
+                    horasValidadas += (datosComprobante.data()["horas_validez"] as int);
+
+                  });
+
+                  notificadorValor.value = horasValidadas.toDouble();
 
                 }
 
-                return Scaffold(
+                return FutureBuilder(
 
-                  body: SingleChildScrollView(
+                  future: Carreras.obtenerNumeroHorasObligatorias(widget.usuario.carrera),
 
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                  builder: (context, snapshot) {
 
-                    child: Center(
-
-                      child: Stack(
-
-                        children: [
-
-                          Column(
-
-                            mainAxisAlignment: MainAxisAlignment.start,
-
-                            crossAxisAlignment: CrossAxisAlignment.center,
-
-                            children: [
-
-                              SizedBox(
-
-                                height: altoEncabezado,
-
-                                width: ancho,
-
-                                child: ClipPath(
-
-                                  clipper: CustomClipperPath(),
-
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                  child: Container(
-
-                                    decoration: BoxDecoration(
-
-                                      color: temaComponentesInterfaz,
-
-                                    ),
-
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                    width: ancho,
-
-                                    child: (widget.usuario.imagenPerfil == null) ? null : Image.asset(
-
-                                      "/images/Paisajes.jpeg",
-
-                                      fit: BoxFit.fill,
-
-                                    ),
-
-                                  ),
+                    if(snapshot.connectionState == ConnectionState.done) {
 
 
-                                ),
+                      if(snapshot.data != null) {
 
-                              ),
+                        horasObligatoriasCarrera = snapshot.data!;
 
-                              Material(
+                      }
 
-                                color: Colors.white,
+                      return Scaffold(
 
-                                child:  ListView(
+                          body: SingleChildScrollView(
 
-                                  shrinkWrap: true,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                  physics: const NeverScrollableScrollPhysics(),
+                            child: Center(
 
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                  padding: const EdgeInsets.only(
-
-                                    right: 30,
-
-                                    left: 30,
-
-                                    top: 60,
-
-                                    bottom: 30,
-
-                                  ),
+                                child: Stack(
 
                                   children: [
 
-                                    ListTile(
+                                    Column(
 
-                                      leading: Icon(CupertinoIcons.person_alt, color: temaComponentesInterfaz),
+                                      mainAxisAlignment: MainAxisAlignment.start,
 
-                                      horizontalTitleGap: 30,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
 
-                                      trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                      children: [
 
-                                      title: const Text("Nombre"),
+                                        SizedBox(
 
-                                      subtitle: Text(widget.usuario.nombreCompleto()),
+                                          height: altoEncabezado,
 
-                                      titleTextStyle: TextStyle(
+                                          width: ancho,
 
-                                          fontWeight: FontWeight.bold,
+                                          child: ClipPath(
 
-                                          color: temaComponentesInterfaz
+                                            clipper: CustomClipperPath(),
 
-                                      ),
+                                            clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                      tileColor: Colors.grey[100],
+                                            child: Container(
 
-                                      shape: RoundedRectangleBorder(
+                                              decoration: const BoxDecoration(
 
-                                          borderRadius: BorderRadius.circular(15)
+                                                  gradient: LinearGradient(
 
-                                      ),
+                                                      colors: [
 
-                                      subtitleTextStyle: const TextStyle(
+                                                        Color.fromARGB(255, 27, 76, 222),
 
-                                        fontWeight: FontWeight.bold,
+                                                        Colors.indigo,
 
-                                        color: Colors.black,
+                                                      ],
 
-                                      ),
+                                                      begin: Alignment.topCenter,
 
-                                    ),
+                                                      end: Alignment.bottomCenter
 
-                                    SizedBox(
+                                                  )
 
-                                      height: altoCuerpo * 0.025,
+                                              ),
 
-                                    ),
+                                              clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                    ListTile(
+                                              width: ancho,
 
-                                      leading: Icon(Icons.calendar_month, color: temaComponentesInterfaz,),
+                                              child: (widget.usuario.imagenPerfil == null) ? null : Image.asset(
 
-                                      horizontalTitleGap: 30,
+                                                "/images/Paisajes.jpeg",
 
-                                      trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                                fit: BoxFit.fill,
 
-                                      title: const Text("Fecha de nacimiento"),
+                                              ),
 
-                                      subtitle: Text(widget.usuario.cadenaFechaNacimiento()),
+                                            ),
 
-                                      titleTextStyle: TextStyle(
-
-                                          fontWeight: FontWeight.bold,
-
-                                          color: temaComponentesInterfaz
-
-                                      ),
-
-                                      tileColor: Colors.grey[100],
-
-                                      shape: RoundedRectangleBorder(
-
-                                          borderRadius: BorderRadius.circular(15)
-
-                                      ),
-
-                                      subtitleTextStyle: const TextStyle(
-
-                                        fontWeight: FontWeight.bold,
-
-                                        color: Colors.black,
-
-                                      ),
-
-                                    ),
-
-                                    SizedBox(
-
-                                      height: altoCuerpo * 0.025,
-
-                                    ),
-
-                                    ListTile(
-
-                                      leading: Icon(CupertinoIcons.book_fill, color: temaComponentesInterfaz,),
-
-                                      horizontalTitleGap: 30,
-
-                                      trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-
-                                      title: const Text("Carrera"),
-
-                                      subtitle: Text(widget.usuario.carrera.id),
-
-                                      titleTextStyle: TextStyle(
-
-                                          fontWeight: FontWeight.bold,
-
-                                          color: temaComponentesInterfaz
-
-                                      ),
-
-                                      tileColor: Colors.grey[100],
-
-                                      shape: RoundedRectangleBorder(
-
-                                          borderRadius: BorderRadius.circular(15)
-
-                                      ),
-
-                                      subtitleTextStyle: const TextStyle(
-
-                                        fontWeight: FontWeight.bold,
-
-                                        color: Colors.black,
-
-                                      ),
-
-                                    ),
-
-                                    SizedBox(
-
-                                      height: altoCuerpo * 0.025,
-
-                                    ),
-
-                                    ListTile(
-
-                                      leading: Icon(CupertinoIcons.alarm_fill, color: temaComponentesInterfaz,),
-
-                                      horizontalTitleGap: 30,
-
-                                      trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-
-                                      title: const Text("Ocupación"),
-
-                                      subtitle: Text(widget.usuario.rol.id),
-
-                                      titleTextStyle: TextStyle(
-
-                                          fontWeight: FontWeight.bold,
-
-                                          color: temaComponentesInterfaz
-
-                                      ),
-
-                                      tileColor: Colors.grey[100],
-
-                                      shape: RoundedRectangleBorder(
-
-                                          borderRadius: BorderRadius.circular(15)
-
-                                      ),
-
-                                      subtitleTextStyle: const TextStyle(
-
-                                        fontWeight: FontWeight.bold,
-
-                                        color: Colors.black,
-
-                                      ),
-
-                                    ),
-
-                                    SizedBox(
-
-                                      height: altoCuerpo * 0.025,
-
-                                    ),
-
-                                    ListTile(
-
-                                      leading: Icon(CupertinoIcons.number_circle_fill, color: temaComponentesInterfaz,),
-
-                                      horizontalTitleGap: 30,
-
-                                      trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-
-                                      title: Text("Número de ${(widget.usuario.rol == Roles.ESTUDIANTE) ? "cuenta" : "trabajador"}"),
-
-                                      subtitle: Text(widget.usuario.numero),
-
-                                      titleTextStyle: TextStyle(
-
-                                          fontWeight: FontWeight.bold,
-
-                                          color: temaComponentesInterfaz
-
-                                      ),
-
-                                      tileColor: Colors.grey[100],
-
-                                      shape: RoundedRectangleBorder(
-
-                                          borderRadius: BorderRadius.circular(15)
-
-                                      ),
-
-                                      subtitleTextStyle: const TextStyle(
-
-                                        fontWeight: FontWeight.bold,
-
-                                        color: Colors.black,
-
-                                      ),
-
-                                    ),
-
-                                    Container(
-
-                                      child: (widget.usuario.rol == Roles.ENCARGADO) ? null : Column(
-
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-
-                                        mainAxisAlignment: MainAxisAlignment.start,
-
-                                        children: [
-
-                                          SizedBox(
-
-                                            height: altoCuerpo * 0.075,
 
                                           ),
 
-                                          SizedBox(
+                                        ),
 
-                                              height: ancho * 0.35,
+                                        Material(
 
-                                              child: DashedCircularProgressBar.aspectRatio(
+                                          color: Colors.white,
 
-                                                aspectRatio: 3, // width ÷ height
+                                          child:  ListView(
 
-                                                valueNotifier: notificadorValor,
+                                            shrinkWrap: true,
 
-                                                progress: notificadorValor.value,
+                                            physics: const NeverScrollableScrollPhysics(),
 
-                                                maxProgress: horasObligatoriasCarrera.toDouble(),
+                                            clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                                corners: StrokeCap.round,
+                                            padding: const EdgeInsets.only(
 
-                                                foregroundColor: Colors.blue,
+                                              right: 30,
 
-                                                backgroundColor: const Color(0xffeeeeee),
+                                              left: 30,
 
-                                                foregroundStrokeWidth: 15,
+                                              top: 60,
 
-                                                backgroundStrokeWidth: 25,
+                                              bottom: 30,
 
-                                                animation: true,
+                                            ),
 
-                                                animationDuration: const Duration(seconds: 2),
+                                            children: [
 
-                                                child: Center(
+                                              ListTile(
 
-                                                  child: ValueListenableBuilder(
+                                                leading: Icon(CupertinoIcons.person_alt, color: temaComponentesInterfaz),
 
-                                                      valueListenable: notificadorValor,
+                                                horizontalTitleGap: 30,
 
-                                                      builder: (_, double value, __) => Column(
+                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
 
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                title: const Text("Nombre"),
 
-                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                subtitle: Text(widget.usuario.nombreCompleto()),
 
-                                                        children: [
+                                                titleTextStyle: TextStyle(
 
-                                                          Text(
+                                                    fontWeight: FontWeight.bold,
 
-                                                            '${value.toInt()}',
+                                                    color: temaComponentesInterfaz
 
-                                                            style: const TextStyle(
+                                                ),
 
-                                                                color: Colors.black,
+                                                tileColor: Colors.grey[100],
 
-                                                                fontWeight: FontWeight.bold,
+                                                shape: RoundedRectangleBorder(
 
-                                                                fontSize: 25
+                                                    borderRadius: BorderRadius.circular(15)
+
+                                                ),
+
+                                                subtitleTextStyle: const TextStyle(
+
+                                                  fontWeight: FontWeight.bold,
+
+                                                  color: Colors.black,
+
+                                                ),
+
+                                              ),
+
+                                              SizedBox(
+
+                                                height: altoCuerpo * 0.025,
+
+                                              ),
+
+                                              ListTile(
+
+                                                leading: Icon(Icons.calendar_month, color: temaComponentesInterfaz,),
+
+                                                horizontalTitleGap: 30,
+
+                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+
+                                                title: const Text("Fecha de nacimiento"),
+
+                                                subtitle: Text(widget.usuario.cadenaFechaNacimiento()),
+
+                                                titleTextStyle: TextStyle(
+
+                                                    fontWeight: FontWeight.bold,
+
+                                                    color: temaComponentesInterfaz
+
+                                                ),
+
+                                                tileColor: Colors.grey[100],
+
+                                                shape: RoundedRectangleBorder(
+
+                                                    borderRadius: BorderRadius.circular(15)
+
+                                                ),
+
+                                                subtitleTextStyle: const TextStyle(
+
+                                                  fontWeight: FontWeight.bold,
+
+                                                  color: Colors.black,
+
+                                                ),
+
+                                              ),
+
+                                              SizedBox(
+
+                                                height: altoCuerpo * 0.025,
+
+                                              ),
+
+                                              ListTile(
+
+                                                leading: Icon(CupertinoIcons.book_fill, color: temaComponentesInterfaz,),
+
+                                                horizontalTitleGap: 30,
+
+                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+
+                                                title: const Text("Carrera"),
+
+                                                subtitle: Text(widget.usuario.carrera.id),
+
+                                                titleTextStyle: TextStyle(
+
+                                                    fontWeight: FontWeight.bold,
+
+                                                    color: temaComponentesInterfaz
+
+                                                ),
+
+                                                tileColor: Colors.grey[100],
+
+                                                shape: RoundedRectangleBorder(
+
+                                                    borderRadius: BorderRadius.circular(15)
+
+                                                ),
+
+                                                subtitleTextStyle: const TextStyle(
+
+                                                  fontWeight: FontWeight.bold,
+
+                                                  color: Colors.black,
+
+                                                ),
+
+                                              ),
+
+                                              SizedBox(
+
+                                                height: altoCuerpo * 0.025,
+
+                                              ),
+
+                                              ListTile(
+
+                                                leading: Icon(CupertinoIcons.alarm_fill, color: temaComponentesInterfaz,),
+
+                                                horizontalTitleGap: 30,
+
+                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+
+                                                title: const Text("Ocupación"),
+
+                                                subtitle: Text(widget.usuario.rol.id),
+
+                                                titleTextStyle: TextStyle(
+
+                                                    fontWeight: FontWeight.bold,
+
+                                                    color: temaComponentesInterfaz
+
+                                                ),
+
+                                                tileColor: Colors.grey[100],
+
+                                                shape: RoundedRectangleBorder(
+
+                                                    borderRadius: BorderRadius.circular(15)
+
+                                                ),
+
+                                                subtitleTextStyle: const TextStyle(
+
+                                                  fontWeight: FontWeight.bold,
+
+                                                  color: Colors.black,
+
+                                                ),
+
+                                              ),
+
+                                              SizedBox(
+
+                                                height: altoCuerpo * 0.025,
+
+                                              ),
+
+                                              ListTile(
+
+                                                leading: Icon(CupertinoIcons.number_circle_fill, color: temaComponentesInterfaz,),
+
+                                                horizontalTitleGap: 30,
+
+                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+
+                                                title: Text("Número de ${(widget.usuario.rol == Roles.ESTUDIANTE) ? "cuenta" : "trabajador"}"),
+
+                                                subtitle: Text(widget.usuario.numero),
+
+                                                titleTextStyle: TextStyle(
+
+                                                    fontWeight: FontWeight.bold,
+
+                                                    color: temaComponentesInterfaz
+
+                                                ),
+
+                                                tileColor: Colors.grey[100],
+
+                                                shape: RoundedRectangleBorder(
+
+                                                    borderRadius: BorderRadius.circular(15)
+
+                                                ),
+
+                                                subtitleTextStyle: const TextStyle(
+
+                                                  fontWeight: FontWeight.bold,
+
+                                                  color: Colors.black,
+
+                                                ),
+
+                                              ),
+
+                                              Container(
+
+                                                child: (widget.usuario.rol == Roles.ENCARGADO) ? null : Column(
+
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+
+                                                  children: [
+
+                                                    SizedBox(
+
+                                                      height: altoCuerpo * 0.075,
+
+                                                    ),
+
+                                                    SizedBox(
+
+                                                        height: ancho * 0.35,
+
+                                                        child: DashedCircularProgressBar.aspectRatio(
+
+                                                          aspectRatio: 3, // width ÷ height
+
+                                                          valueNotifier: notificadorValor,
+
+                                                          progress: notificadorValor.value,
+
+                                                          maxProgress: horasObligatoriasCarrera.toDouble(),
+
+                                                          corners: StrokeCap.round,
+
+                                                          foregroundColor: Colors.blue,
+
+                                                          backgroundColor: const Color(0xffeeeeee),
+
+                                                          foregroundStrokeWidth: 15,
+
+                                                          backgroundStrokeWidth: 25,
+
+                                                          animation: true,
+
+                                                          animationDuration: const Duration(seconds: 2),
+
+                                                          child: Center(
+
+                                                            child: ValueListenableBuilder(
+
+                                                                valueListenable: notificadorValor,
+
+                                                                builder: (_, double value, __) => Column(
+
+                                                                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
+
+                                                                  children: [
+
+                                                                    Text(
+
+                                                                      '${value.toInt()}',
+
+                                                                      style: const TextStyle(
+
+                                                                          color: Colors.black,
+
+                                                                          fontWeight: FontWeight.bold,
+
+                                                                          fontSize: 25
+
+                                                                      ),
+
+                                                                    ),
+
+                                                                    Text(
+
+                                                                      (notificadorValor.value == 1) ? "hora" : "horas",
+
+                                                                      style: const TextStyle(
+
+                                                                          color: Colors.grey,
+
+                                                                          fontWeight: FontWeight.bold,
+
+                                                                          fontSize: 10
+
+                                                                      ),
+
+                                                                    ),
+
+                                                                  ],
+
+                                                                )
 
                                                             ),
 
                                                           ),
 
-                                                          Text(
+                                                        )
 
-                                                            (notificadorValor.value == 1) ? "hora" : "horas",
+                                                    )
 
-                                                            style: const TextStyle(
-
-                                                                color: Colors.grey,
-
-                                                                fontWeight: FontWeight.bold,
-
-                                                                fontSize: 10
-
-                                                            ),
-
-                                                          ),
-
-                                                        ],
-
-                                                      )
-
-                                                  ),
+                                                  ],
 
                                                 ),
 
                                               )
 
-                                          )
+                                            ],
 
-                                        ],
+                                          ),
+
+                                        )
+
+                                      ],
+
+                                    ),
+
+                                    Positioned(
+
+                                      right: ancho * 0.5 - 60,
+
+                                      top: altoEncabezado * 0.60,
+
+                                      child: CircleAvatar(
+
+                                        foregroundColor: Colors.transparent,
+
+                                        backgroundColor: (imagenUsuario == null) ? Colors.white : Colors.transparent,
+
+                                        radius: 60,
+
+                                        child: (imagenUsuario == null) ? Image.asset("./assets/images/Profile.png", fit: BoxFit.fill) : ClipOval(
+
+                                          clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                                          child: Image.memory(imagenUsuario, fit: BoxFit.cover),
+
+                                        ),
 
                                       ),
 
-                                    )
+                                    ),
 
                                   ],
 
-                                ),
-
-                              )
-
-                            ],
-
-                          ),
-
-                          Positioned(
-
-                            right: ancho * 0.5 - 60,
-
-                            top: altoEncabezado * 0.60,
-
-                            child: CircleAvatar(
-
-                              backgroundImage: ((widget.usuario.imagenPerfil == null) ? const AssetImage("assets/images/ImagenUsuario.png") : null) as ImageProvider<Object>,
-
-                              radius: 60,
-
-                              backgroundColor: Colors.white,
+                                )
 
                             ),
 
                           ),
 
-                        ],
+                          bottomSheet: (widget.usuario != Sesion.usuario) ? null : DraggableScrollableSheet(
 
-                      )
+                            maxChildSize: 0.3,
 
-                    ),
+                            minChildSize: 0.03,
 
-                  ),
+                            initialChildSize: 0.03,
 
-                  bottomSheet: (widget.usuario != Sesion.usuario) ? null : DraggableScrollableSheet(
+                            expand: false,
 
-                    maxChildSize: 0.3,
+                            snap: true,
 
-                    minChildSize: 0.03,
+                            builder: (context, scrollController) {
 
-                    initialChildSize: 0.03,
+                              return DecoratedBox(
 
-                    expand: false,
+                                decoration: const BoxDecoration(
 
-                    snap: true,
+                                    color: Colors.white,
 
-                    builder: (context, scrollController) {
+                                    boxShadow: [
 
-                      return DecoratedBox(
+                                      BoxShadow(
 
-                        decoration: const BoxDecoration(
+                                        color: Colors.black,
 
-                          color: Colors.white,
+                                        blurRadius: 10,
 
-                          boxShadow: [
+                                        spreadRadius: 1,
 
-                            BoxShadow(
+                                        offset: Offset(0, 1),
 
-                              color: Colors.black,
+                                      )
 
-                              blurRadius: 10,
+                                    ],
 
-                              spreadRadius: 1,
+                                    borderRadius: BorderRadius.only(
 
-                              offset: Offset(0, 1),
+                                        topLeft: Radius.circular(22),
 
-                            )
+                                        topRight: Radius.circular(22)
 
-                          ],
+                                    )
 
-                          borderRadius: BorderRadius.only(
+                                ),
 
-                            topLeft: Radius.circular(22),
+                                child: CustomScrollView(
 
-                            topRight: Radius.circular(22)
+                                    controller: scrollController,
+
+                                    shrinkWrap: true,
+
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                                    physics: const AlwaysScrollableScrollPhysics(),
+
+                                    slivers: [
+
+                                      SliverToBoxAdapter(
+
+                                        child: Padding(
+
+                                          padding: const EdgeInsets.only(
+
+                                              top: 30,
+
+                                              left: 30,
+
+                                              right: 30
+
+                                          ),
+
+                                          child: ElevatedButton(
+
+                                            onPressed: () {
+
+                                            },
+
+                                            style: ElevatedButton.styleFrom(
+
+                                                shape: RoundedRectangleBorder(
+
+                                                    borderRadius: BorderRadius.circular(10)
+
+                                                ),
+
+                                                backgroundColor: Colors.grey[100]
+
+                                            ),
+
+                                            child: const Text(
+
+                                              "Seleccionar foto de perfil",
+
+                                              style: TextStyle(
+
+                                                fontWeight: FontWeight.bold,
+
+                                              ),
+
+                                            ),
+
+                                          ),
+
+                                        ),
+
+                                      ),
+
+                                      SliverToBoxAdapter(
+
+                                        child: Padding(
+
+                                          padding: const EdgeInsets.only(
+
+                                              top: 8,
+
+                                              left: 30,
+
+                                              right: 30
+
+                                          ),
+
+                                          child: ElevatedButton(
+
+                                            onPressed: () {
+
+                                            },
+
+                                            style: ElevatedButton.styleFrom(
+
+                                                shape: RoundedRectangleBorder(
+
+                                                    borderRadius: BorderRadius.circular(10)
+
+                                                ),
+
+                                                backgroundColor: Colors.grey[100]
+
+                                            ),
+
+                                            child: const Text(
+
+                                              "Seleccionar imagen de feed",
+
+                                              style: TextStyle(
+
+                                                fontWeight: FontWeight.bold,
+
+                                              ),
+
+                                            ),
+
+                                          ),
+
+                                        ),
+
+                                      ),
+
+                                      SliverToBoxAdapter(
+
+                                        child: Padding(
+
+                                          padding: const EdgeInsets.only(
+
+                                              top: 8,
+
+                                              left: 30,
+
+                                              right: 30,
+
+                                              bottom: 30
+
+                                          ),
+
+                                          child: ElevatedButton(
+
+                                            onPressed: () {
+
+                                            },
+                                            style: ElevatedButton.styleFrom(
+
+                                                shape: RoundedRectangleBorder(
+
+                                                    borderRadius: BorderRadius.circular(10)
+
+                                                ),
+
+                                                backgroundColor: Colors.grey[100]
+
+                                            ),
+
+                                            child: const Text(
+
+                                              "Seleccionar tema",
+
+                                              style: TextStyle(
+
+                                                fontWeight: FontWeight.bold,
+
+                                              ),
+
+                                            ),
+
+                                          ),
+
+                                        ),
+
+                                      )
+
+                                    ]
+
+                                ),
+
+                              );
+
+                            },
+
+                            controller: DraggableScrollableController(),
 
                           )
 
-                        ),
-
-                        child: CustomScrollView(
-
-                          controller: scrollController,
-
-                          shrinkWrap: true,
-
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                          physics: const AlwaysScrollableScrollPhysics(),
-
-                          slivers: [
-
-                            SliverToBoxAdapter(
-
-                              child: Padding(
-
-                                padding: const EdgeInsets.only(
-
-                                  top: 30,
-
-                                  left: 30,
-
-                                  right: 30
-
-                                ),
-
-                                child: ElevatedButton(
-
-                                  onPressed: () {
-
-                                  },
-
-                                  style: ElevatedButton.styleFrom(
-
-                                    shape: RoundedRectangleBorder(
-
-                                      borderRadius: BorderRadius.circular(10)
-
-                                    ),
-
-                                    backgroundColor: Colors.grey[100]
-
-                                  ),
-
-                                  child: const Text(
-
-                                    "Seleccionar foto de perfil",
-
-                                    style: TextStyle(
-
-                                      fontWeight: FontWeight.bold,
-
-                                    ),
-
-                                  ),
-
-                                ),
-
-                              ),
-
-                            ),
-
-                            SliverToBoxAdapter(
-
-                              child: Padding(
-
-                                padding: const EdgeInsets.only(
-
-                                    top: 8,
-
-                                    left: 30,
-
-                                    right: 30
-
-                                ),
-
-                                child: ElevatedButton(
-
-                                  onPressed: () {
-
-                                  },
-
-                                  style: ElevatedButton.styleFrom(
-
-                                      shape: RoundedRectangleBorder(
-
-                                          borderRadius: BorderRadius.circular(10)
-
-                                      ),
-
-                                      backgroundColor: Colors.grey[100]
-
-                                  ),
-
-                                  child: const Text(
-
-                                    "Seleccionar imagen de feed",
-
-                                    style: TextStyle(
-
-                                      fontWeight: FontWeight.bold,
-
-                                    ),
-
-                                  ),
-
-                                ),
-
-                              ),
-
-                            ),
-
-                            SliverToBoxAdapter(
-
-                              child: Padding(
-
-                                padding: const EdgeInsets.only(
-
-                                  top: 8,
-
-                                  left: 30,
-
-                                  right: 30,
-
-                                  bottom: 30
-
-                                ),
-
-                                child: ElevatedButton(
-
-                                  onPressed: () {
-
-                                  },
-                                  style: ElevatedButton.styleFrom(
-
-                                      shape: RoundedRectangleBorder(
-
-                                          borderRadius: BorderRadius.circular(10)
-
-                                      ),
-
-                                      backgroundColor: Colors.grey[100]
-
-                                  ),
-
-                                  child: const Text(
-
-                                    "Seleccionar tema",
-
-                                    style: TextStyle(
-
-                                      fontWeight: FontWeight.bold,
-
-                                    ),
-
-                                  ),
-
-                                ),
-
-                              ),
-
-                            )
-
-                          ]
-
-                        ),
-
                       );
 
-                    },
+                    }
 
-                    controller: DraggableScrollableController(),
+                    return Container(
 
-                  )
+                      alignment: Alignment.center,
+
+                      child: const CircularProgressIndicator(),
+
+                    );
+
+                  },
+
+                );
+
+              }else{
+
+                return Container(
+
+                  alignment: Alignment.center,
+
+                  child: const CircularProgressIndicator(),
 
                 );
 
               }
 
-              return Container(
-
-                alignment: Alignment.center,
-
-                child: const CircularProgressIndicator(),
-
-              );
-
             },
 
           );
 
-        }else{
-
-          return Container(
-
-            alignment: Alignment.center,
-
-            child: const CircularProgressIndicator(),
-
-          );
-
         }
+
+        return Container(
+
+          alignment: Alignment.center,
+
+          child: const CircularProgressIndicator()
+
+        );
 
       },
 

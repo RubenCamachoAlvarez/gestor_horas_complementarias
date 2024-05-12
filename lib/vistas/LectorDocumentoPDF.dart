@@ -53,8 +53,40 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
   late DocumentReference<Map<String, dynamic>> referenciaComprobante;
 
+  late String mensajeBotonInferior;
+
+  late SvgPicture iconoFlatingActionButton;
+
+  late Map<String, dynamic> datosComprobante;
+
+  void inicializarElementosInterfaz(){
+
+    if(Sesion.usuario is Estudiante && widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE){
+
+      iconoFlatingActionButton = SvgPicture.asset("./assets/images/IconoVisualizarRevision.svg");
+
+      mensajeBotonInferior = "Cerrar";
+
+    }else if(widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE) {
+
+      iconoFlatingActionButton = SvgPicture.asset("./assets/images/IconoModificarRevision.svg");
+
+      mensajeBotonInferior = "Modificar revision";
+
+    }else{
+
+      iconoFlatingActionButton = SvgPicture.asset("./assets/images/IconoEnviarRevision.svg");
+
+      mensajeBotonInferior = "Publicar revisión";
+
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    inicializarElementosInterfaz();
 
     return Scaffold(
 
@@ -386,7 +418,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
             referenciaComprobante = snapshot.data!.docs.elementAt(0).reference;
 
-            Map<String, dynamic> datosComprobante = snapshot.data!.docs.elementAt(0).data();
+            datosComprobante = snapshot.data!.docs.elementAt(0).data();
 
             if(datosComprobante["status_comprobante"] != StatusComprobante.PENDIENTE) {
 
@@ -563,7 +595,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                 builder: (context) => StatefulBuilder(
 
-                  builder: (context, setState) {
+                  builder: (context, setStateBS) {
 
                     return Container(
 
@@ -631,7 +663,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                 onSelected: (_) {
 
-                                  setState((){
+                                  setStateBS((){
 
                                     status = !status;
 
@@ -671,7 +703,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                 onSelected: (_) {
 
-                                  setState((){
+                                  setStateBS((){
 
                                     status = !status;
 
@@ -713,7 +745,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                             onChanged: (entrada){
 
-                              setState((){
+                              setStateBS((){
 
                                 if(status) {
 
@@ -822,39 +854,84 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                       //Aqui se inserta el codigo para cuando se hace una modificacion (update) del documento que representa al comprobante en cuestion.
 
+                                      //Si el comprobante ya estaba aceptado previamente.
+                                      if(widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
+
+                                        if(status) { //Si el comprobante permanece como aceptado.
+
+                                          await referenciaComprobante.update({
+
+                                            "horas_validez" : int.parse(numeroHorasValidez)
+
+                                          });
 
 
-                                    }else{
+                                        }else{ //Si el comprobante ha cambiado su status a rechazado.
 
-                                      //Aqui va el codigo cuando se revisa por primera vez el comprobante.
+                                          DocumentReference<Map<String, dynamic>> nuevaReferenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({
 
-                                      DocumentReference<Map<String, dynamic>> referenciaJustificacion;
+                                            "mensaje_justificacion" : mensajeJustificacionRechazo
 
-                                      Map<String, dynamic> datosActualizacion = <String, dynamic> {};
+                                          });
 
-                                      if(!status) {
+                                          await referenciaComprobante.update({
 
-                                        referenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({"mensaje_justificacion" : mensajeJustificacionRechazo});
+                                            "horas_validez" : FieldValue.delete(),
 
-                                        datosActualizacion["justificacion_rechazo"] = referenciaJustificacion;
+                                            "justificacion_rechazo" : nuevaReferenciaJustificacion,
 
-                                        datosActualizacion["status_comprobante"] = StatusComprobante.RECHAZADO;
+                                            "status_comprobante" : StatusComprobante.RECHAZADO
 
-                                      }else{
+                                          });
 
-                                        datosActualizacion["horas_validez"] = int.parse(numeroHorasValidez);
+                                          widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO;
 
-                                        datosActualizacion["status_comprobante"] = StatusComprobante.ACEPTADO;
+                                        }
+
+                                      }else{//Si el comprobante estaba rechazado previamente.
+
+                                        DocumentReference<Map<String, dynamic>> referenciaJustificacionRechazo = datosComprobante["justificacion_rechazo"];
+
+                                        if(status) { //Si la nueva revision establece que el estado del comprobante fue aceptado.
+
+                                          await referenciaComprobante.update({
+
+                                            "justificacion_rechazo" : FieldValue.delete(),
+
+                                            "horas_validez" : int.parse(numeroHorasValidez),
+
+                                            "status_comprobante" : StatusComprobante.ACEPTADO
+
+                                          });
+
+                                          await referenciaJustificacionRechazo.delete();
+
+                                          widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO;
+
+
+                                        }else{ //Si la nueva revision establece que el estado del comprobante se mantiene como rechazado.
+
+                                          await referenciaJustificacionRechazo.update(
+
+                                            {
+
+                                              "mensaje_justificacion" : mensajeJustificacionRechazo
+
+                                            }
+
+                                          );
+
+                                        }
 
                                       }
 
-                                      referenciaComprobante.update(datosActualizacion).then((_) {
+                                      Navigator.of(context).pop();
 
-                                        widget.comprobante.statusComprobante = datosActualizacion["status_comprobante"];
+                                      setState(() {
 
+                                        datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
 
-
-                                        Navigator.of(context).pop();
+                                        inicializarElementosInterfaz();
 
                                         ScaffoldMessenger.of(context).showSnackBar(
 
@@ -893,6 +970,84 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
                                             )
 
                                         );
+
+                                      });
+
+                                    }else{
+
+                                      //Aqui va el codigo cuando se revisa por primera vez el comprobante.
+
+                                      DocumentReference<Map<String, dynamic>> referenciaJustificacion;
+
+                                      Map<String, dynamic> datosActualizacion = <String, dynamic> {};
+
+                                      if(!status) {
+
+                                        referenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({"mensaje_justificacion" : mensajeJustificacionRechazo});
+
+                                        datosActualizacion["justificacion_rechazo"] = referenciaJustificacion;
+
+                                        datosActualizacion["status_comprobante"] = StatusComprobante.RECHAZADO;
+
+                                      }else{
+
+                                        datosActualizacion["horas_validez"] = int.parse(numeroHorasValidez);
+
+                                        datosActualizacion["status_comprobante"] = StatusComprobante.ACEPTADO;
+
+                                      }
+
+                                      referenciaComprobante.update(datosActualizacion).then((_) {
+
+                                        Navigator.of(context).pop();
+
+                                        setState(() {
+
+                                          widget.comprobante.statusComprobante = datosActualizacion["status_comprobante"];
+
+                                          datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
+
+                                          inicializarElementosInterfaz();
+
+                                          ScaffoldMessenger.of(context).showSnackBar(
+
+                                              SnackBar(
+
+                                                backgroundColor: Colors.amber,
+
+                                                content: const Text(
+
+                                                  "Se ha actualizado el status del comprobante",
+
+                                                  textAlign: TextAlign.center,
+
+                                                  style: TextStyle(
+
+                                                    fontWeight: FontWeight.bold,
+
+                                                    color: Colors.white,
+
+                                                  ),
+
+                                                ),
+
+                                                duration: const Duration(seconds: 3),
+
+                                                padding: const EdgeInsets.all(20),
+
+                                                behavior: SnackBarBehavior.floating,
+
+                                                shape: RoundedRectangleBorder(
+
+                                                    borderRadius: BorderRadius.circular(10)
+
+                                                ),
+
+                                              )
+
+                                          );
+
+                                        });
 
                                       }).catchError((error){
 
@@ -1020,11 +1175,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
             ),
 
-            child: (Sesion.usuario is Estudiante) ? SvgPicture.asset("./assets/images/IconoEnviarRevision.svg", width: 40, height: 40,) :
-
-            (Sesion.usuario is Encargado && widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE) ?
-
-            SvgPicture.asset("./assets/images/IconoModificarRevision.svg", width: 40, height: 40,) : SvgPicture.asset("./assets/images/IconoEnviarRevision.svg", width: 40, height: 40,),
+            child: iconoFlatingActionButton
 
           ),
 
