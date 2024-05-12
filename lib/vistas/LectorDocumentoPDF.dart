@@ -884,7 +884,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                           });
 
-                                          widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO;
+                                          widget.comprobante.statusComprobante = StatusComprobante.RECHAZADO;
 
                                         }
 
@@ -893,6 +893,8 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
                                         DocumentReference<Map<String, dynamic>> referenciaJustificacionRechazo = datosComprobante["justificacion_rechazo"];
 
                                         if(status) { //Si la nueva revision establece que el estado del comprobante fue aceptado.
+
+                                          await referenciaJustificacionRechazo.delete();
 
                                           await referenciaComprobante.update({
 
@@ -904,9 +906,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                           });
 
-                                          await referenciaJustificacionRechazo.delete();
-
-                                          widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO;
+                                          widget.comprobante.statusComprobante = StatusComprobante.ACEPTADO;
 
 
                                         }else{ //Si la nueva revision establece que el estado del comprobante se mantiene como rechazado.
@@ -999,13 +999,15 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                       referenciaComprobante.update(datosActualizacion).then((_) {
 
+                                        widget.comprobante.statusComprobante = datosActualizacion["status_comprobante"];
+
+                                        datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
+
+                                        print("NUEVO ESTADO DEL COMPROBANTE: ${widget.comprobante.statusComprobante.id}");
+
                                         Navigator.of(context).pop();
 
                                         setState(() {
-
-                                          widget.comprobante.statusComprobante = datosActualizacion["status_comprobante"];
-
-                                          datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
 
                                           inicializarElementosInterfaz();
 
