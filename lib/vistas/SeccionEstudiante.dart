@@ -9,20 +9,20 @@ import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
 import "package:gestor_de_horas_complementarias/vistas/LectorDocumentoPDF.dart";
 import "package:gestor_de_horas_complementarias/vistas/PerfilUsuario.dart";
 
-class DashboardEstudianteWidget extends StatefulWidget {
+class SeccionEstudianteWidget extends StatefulWidget {
 
-  DashboardEstudianteWidget({super.key, required this.estudiante});
+  SeccionEstudianteWidget({super.key, required this.estudiante});
 
   Estudiante estudiante;
 
   @override
-  DashboardEstudianteState createState() => DashboardEstudianteState();
+  SeccionEstudianteState createState() => SeccionEstudianteState();
 
 }
 
-class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
+class SeccionEstudianteState extends State<SeccionEstudianteWidget> {
 
-  DashboardEstudianteState();
+  SeccionEstudianteState();
 
   StreamBuilder<QuerySnapshot<Map<String, dynamic>>> crearPaginaVisualizacionComprobantes(Stream<QuerySnapshot<Map<String, dynamic>>> funcionObtenerComprobantes) {
 
@@ -367,11 +367,19 @@ class DashboardEstudianteState extends State<DashboardEstudianteWidget> {
 
                                   foregroundColor: Colors.transparent,
 
-                                  backgroundColor: (snapshot.data == null) ? Colors.white : Colors.transparent,
+                                  backgroundColor: Colors.transparent,
 
                                   radius: radioCircleAvatar,
 
-                                  child: (snapshot.data == null) ? Image.asset("/images/Profile.png", fit: BoxFit.fill) : ClipOval(
+                                  child: (snapshot.data == null) ? ClipOval(
+
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                                    child: SvgPicture.asset("./assets/images/PerfilUsuario.svg", fit: BoxFit.fill),
+
+                                  )
+
+                                  : ClipOval(
 
                                     clipBehavior: Clip.antiAliasWithSaveLayer,
 

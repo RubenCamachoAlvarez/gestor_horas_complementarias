@@ -59,5 +59,11 @@ class Encargado extends Usuario {
     }
 
   }
+  
+  Stream<QuerySnapshot<Map<String, dynamic>>> obtenerEstudiantes() {
+    
+    return BaseDeDatos.conexion.collection("Usuarios").where("rol", isEqualTo: Roles.ESTUDIANTE).where("carrera", isEqualTo: carrera).snapshots();
+    
+  }
 
 }

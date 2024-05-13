@@ -85,6 +85,8 @@ flutter:
     - assets/images/IconoModificarRevision.svg
     - assets/images/IconoVisualizarRevision.svg
     - assets/images/ImagenUsuario.png
+    - assets/images/PerfilUsuario.svg
+    - assets/images/PerfilUsuarioSeccionEncargado.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

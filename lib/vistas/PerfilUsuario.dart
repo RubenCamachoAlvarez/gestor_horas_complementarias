@@ -3,6 +3,7 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart";
 import "package:flutter/material.dart";
 import "package:flutter/cupertino.dart";
+import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
 import "package:gestor_de_horas_complementarias/datos/Usuario.dart";
@@ -25,21 +26,6 @@ class PerfilUsuarioWidget extends StatefulWidget {
 class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
   PerfilUsuarioState();
-
-  Future<Map<String, Uint8List?>> cargarImagenesUsuario() async {
-
-    Uint8List? bytesImagenUsuario;
-
-    Uint8List? bytesImagenFeed;
-
-    Map<String, Uint8List?> imagenesUsuario = <String, Uint8List>{};
-
-    bytesImagenUsuario = await BaseDeDatos.almacenamiento.ref().child("Foto_perfil_usuarios/${widget.usuario.numero}/Profile.jpg").getData();
-
-    imagenesUsuario["foto_perfil"] = bytesImagenUsuario;
-
-    return imagenesUsuario;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +52,13 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
           Uint8List? imagenUsuario = snapshot.data;
 
-
           return  StreamBuilder(
 
             stream: (widget.usuario is Estudiante) ? (widget.usuario as Estudiante).obtenerComprobantesAceptados() : null,
 
             builder: (context, snapshot) {
 
-              if(snapshot.connectionState == ConnectionState.active){
+              if(snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.none){
 
                 if(widget.usuario is Estudiante && snapshot.data != null) {
 
@@ -547,11 +532,17 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
                                         foregroundColor: Colors.transparent,
 
-                                        backgroundColor: (imagenUsuario == null) ? Colors.white : Colors.transparent,
+                                        backgroundColor: Colors.transparent,
 
                                         radius: 60,
 
-                                        child: (imagenUsuario == null) ? Image.asset("./assets/images/Profile.png", fit: BoxFit.fill) : ClipOval(
+                                        child: (imagenUsuario == null) ? ClipOval(
+
+                                          clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                                          child: SvgPicture.asset("./assets/images/PerfilUsuario.svg", fit: BoxFit.fill),
+
+                                        ) : ClipOval(
 
                                           clipBehavior: Clip.antiAliasWithSaveLayer,
 
