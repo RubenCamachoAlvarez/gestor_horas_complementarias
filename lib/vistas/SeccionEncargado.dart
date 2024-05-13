@@ -1,8 +1,8 @@
-import "dart:typed_data";
-
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_svg/flutter_svg.dart";
+import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
 import "package:gestor_de_horas_complementarias/datos/Encargado.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
@@ -24,6 +24,8 @@ class SeccionEncargadoWidget extends StatefulWidget {
 }
 
 class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
+
+  TextEditingController controladorCampoBusqueda = TextEditingController();
 
   int indiceVista = 0;
 
@@ -70,229 +72,261 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
     return imagenesUsuario;
 
   }
-  
+
   @override
-  void initState(){
-    
-    super.initState();
+  Widget build(BuildContext context) {
 
     Random random = Random(DateTime.now().microsecondsSinceEpoch);
 
-    vistas.add(
+    return DefaultTabController(length: 2, child: Scaffold(
 
-      LayoutBuilder(
+      body: TabBarView(
 
-        builder: (context, constraints) {
+        children: [
 
-          double altoDispositivo = constraints.maxHeight;
+          LayoutBuilder(
 
-          double anchoDispositivo = constraints.maxWidth;
+            builder: (context, constraints) {
 
-          double altoAppBar = altoDispositivo * 0.2;
+              double altoDispositivo = constraints.maxHeight;
 
-          double altoBody = altoDispositivo * 0.6;
+              double anchoDispositivo = constraints.maxWidth;
 
-          Size dimensionSeccionBusqueda = const Size.fromHeight(kToolbarHeight);
+              double altoAppBar = altoDispositivo * 0.15;
 
-          return Scaffold(
+              double altoBody = altoDispositivo * 0.85;
 
-              backgroundColor: Colors.grey[100],
+              double paddingGridView = anchoDispositivo * 0.05;
 
-              appBar: AppBar(
+              double espaciadoEntreElementos = anchoDispositivo * 0.02;
 
-                toolbarHeight: altoAppBar,
+              Size dimensionSeccionBusqueda = const Size.fromHeight(kToolbarHeight);
 
-                flexibleSpace: Container(
+              return Scaffold(
 
-                  width: anchoDispositivo,
+                  backgroundColor: Colors.grey[100],
 
-                  height: altoAppBar,
+                  appBar: AppBar(
 
-                  decoration: const BoxDecoration(
+                    toolbarHeight: altoAppBar,
 
-                    gradient:  LinearGradient(
+                    flexibleSpace: Container(
 
-                        colors: [
+                      width: anchoDispositivo,
 
-                          Color.fromARGB(255, 27, 76, 222),
+                      height: altoAppBar,
 
-                          Colors.indigo,
+                      decoration: const BoxDecoration(
 
-                        ],
+                        gradient:  LinearGradient(
 
-                        begin: Alignment.topCenter,
+                            colors: [
 
-                        end: Alignment.bottomCenter
+                              Color.fromARGB(255, 27, 76, 222),
 
-                    ),
+                              Colors.indigo,
 
-                  ),
+                            ],
 
-                ),
+                            begin: Alignment.topCenter,
 
-                bottom: PreferredSize(
-
-                  preferredSize: dimensionSeccionBusqueda,
-
-                  child: Container(
-
-                    padding: EdgeInsets.all(dimensionSeccionBusqueda.height * 0.15),
-
-                    alignment: Alignment.center,
-
-                    color: Colors.grey[100],
-
-                    height: dimensionSeccionBusqueda.height,
-
-                    width: anchoDispositivo,
-
-                    child: Container(
-
-                      alignment: Alignment.center,
-
-                      color: Colors.grey[100],
-
-                      child: TextField(
-
-                        style: TextStyle(
-
-                          color: Colors.grey[700],
-
-                          overflow: TextOverflow.fade,
-
-                          fontWeight: FontWeight.bold,
-
-                        ),
-
-                        textAlign: TextAlign.center,
-
-                        textAlignVertical: TextAlignVertical.center,
-
-                        decoration: InputDecoration(
-
-                          contentPadding: const EdgeInsets.all(0),
-
-                          border: OutlineInputBorder(
-
-                            borderRadius: BorderRadius.circular(15),
-
-                            gapPadding: 0,
-
-                            borderSide: BorderSide.none
-
-                          ),
-
-                          filled: true,
-
-                          fillColor: Colors.grey[300],
-
-                          hintText: "Búsqueda de estudiantes",
-
-                          hintStyle: TextStyle(
-
-                            fontWeight: FontWeight.bold,
-
-                            overflow: TextOverflow.ellipsis,
-
-                            color: Colors.grey[700]
-
-                          ),
-
-                          hintFadeDuration: const Duration(milliseconds: 200),
-
-                          hintMaxLines: 1
+                            end: Alignment.bottomCenter
 
                         ),
 
                       ),
 
-                    )
+                    ),
+
+                    bottom: PreferredSize(
+
+                      preferredSize: dimensionSeccionBusqueda,
+
+                      child: Container(
+
+                          padding: EdgeInsets.all(dimensionSeccionBusqueda.height * 0.15),
+
+                          alignment: Alignment.center,
+
+                          color: Colors.grey[100],
+
+                          height: dimensionSeccionBusqueda.height,
+
+                          width: anchoDispositivo,
+
+                          child: Container(
+
+                            alignment: Alignment.center,
+
+                            color: Colors.grey[100],
+
+                            child: TextField(
+
+                              controller: controladorCampoBusqueda,
+
+                              onChanged: (patron){
+
+                                setState((){
+
+                                  controladorCampoBusqueda.text;
+
+                                });
+
+                              },
+
+                              inputFormatters: [
+
+                                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]'))
+
+                              ],
+
+                              style: TextStyle(
+
+                                color: Colors.grey[700],
+
+                                overflow: TextOverflow.fade,
+
+                                fontWeight: FontWeight.bold,
+
+                              ),
+
+                              textAlign: TextAlign.center,
+
+                              textAlignVertical: TextAlignVertical.center,
+
+                              decoration: InputDecoration(
+
+                                  contentPadding: const EdgeInsets.all(0),
+
+                                  suffixIcon: const Icon(Icons.search_rounded),
+
+                                  suffixIconColor: DatosApp.colorApp,
+
+                                  border: OutlineInputBorder(
+
+                                      borderRadius: BorderRadius.circular(15),
+
+                                      gapPadding: 0,
+
+                                      borderSide: BorderSide.none
+
+                                  ),
+
+                                  filled: true,
+
+                                  fillColor: Colors.grey[300],
+
+                                  hintText: "Búsqueda de estudiantes",
+
+                                  hintStyle: TextStyle(
+
+                                      fontWeight: FontWeight.bold,
+
+                                      overflow: TextOverflow.ellipsis,
+
+                                      color: Colors.grey[700]
+
+                                  ),
+
+                                  hintFadeDuration: const Duration(milliseconds: 200),
+
+                                  hintMaxLines: 1
+
+                              ),
+
+                            ),
+
+                          )
+
+                      ),
+
+                    ),
 
                   ),
 
-                ),
+                  body: StreamBuilder(
 
-              ),
+                    stream: (Sesion.usuario as Encargado).obtenerEstudiantes(),
 
-              body: StreamBuilder(
+                    builder: (context, snapshot) {
 
-                stream: (Sesion.usuario as Encargado).obtenerEstudiantes(),
+                      if(snapshot.connectionState == ConnectionState.active) {
 
-                builder: (context, snapshot) {
+                        List<QueryDocumentSnapshot<Map<String, dynamic>>> consultaEstudiantes = snapshot.data!.docs;
 
-                  if(snapshot.connectionState == ConnectionState.active) {
+                        List<Estudiante> estudiantes = <Estudiante>[];
 
-                    List<QueryDocumentSnapshot<Map<String, dynamic>>> consultaEstudiantes = snapshot.data!.docs;
+                        consultaEstudiantes.forEach((documentoEstudiante) {
 
-                    List<Estudiante> estudiantes = <Estudiante>[];
+                          Map<String, dynamic> datosEstudiante = documentoEstudiante.data();
 
-                    consultaEstudiantes.forEach((documentoEstudiante) {
+                          Map<String, dynamic> datosPersonalesEstudiante = datosEstudiante["datos_personales"];
 
-                      Map<String, dynamic> datosEstudiante = documentoEstudiante.data();
+                          String numeroCuenta = documentoEstudiante.id;
 
-                      Map<String, dynamic> datosPersonalesEstudiante = datosEstudiante["datos_personales"];
+                          estudiantes.add(Estudiante(numeroCuenta, datosPersonalesEstudiante["nombre"], datosPersonalesEstudiante["apellido_paterno"], datosPersonalesEstudiante["apellido_materno"], (datosPersonalesEstudiante["fecha_nacimiento"] as Timestamp).toDate(), datosEstudiante["carrera"]));
 
-                      String numeroCuenta = documentoEstudiante.id;
+                        });
 
-                      estudiantes.add(Estudiante(numeroCuenta, datosPersonalesEstudiante["nombre"], datosPersonalesEstudiante["apellido_paterno"], datosPersonalesEstudiante["apellido_materno"], (datosPersonalesEstudiante["fecha_nacimiento"] as Timestamp).toDate(), datosEstudiante["carrera"]));
+                        return FutureBuilder(
 
-                    });
+                          future: cargarImagenPerfilEstudiantes(estudiantes),
 
-                    return FutureBuilder(
+                          builder: (context, snapshot) {
 
-                      future: cargarImagenPerfilEstudiantes(estudiantes),
+                            if(snapshot.connectionState == ConnectionState.done) {
 
-                      builder: (context, snapshot) {
+                              List<Uint8List?> imagenPerfilEstudiantes = snapshot.data!;
 
-                        if(snapshot.connectionState == ConnectionState.done) {
+                              return GridView.builder(
 
-                          List<Uint8List?> imagenPerfilEstudiantes = snapshot.data!;
+                                padding: EdgeInsets.all(paddingGridView),
 
-                          return GridView.builder(
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: espaciadoEntreElementos, crossAxisSpacing: espaciadoEntreElementos),
 
-                            padding: const EdgeInsets.all(25),
+                                itemCount: consultaEstudiantes.length,
 
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 10, crossAxisSpacing: 10),
-
-                            itemCount: consultaEstudiantes.length,
-
-                            itemBuilder: (context, index) => LayoutBuilder(
-
-                              builder: (context, constraints) {
-
-                                if(coloresAsignados.length == listaColores.length) {
-
-                                  coloresAsignados.clear();
-
-                                }
-
-                                while(!coloresAsignados.add(listaColores[random.nextInt(listaColores.length)]));
-
-                                return LayoutBuilder(
+                                itemBuilder: (context, index) => LayoutBuilder(
 
                                   builder: (context, constraints) {
 
                                     double medidaLadoBoton = constraints.maxWidth;
 
-                                    double medidaPaddingBoton = medidaLadoBoton * 0.1;
+                                    double medidaPaddingBoton = medidaLadoBoton * 0.05;
 
                                     double medidaUtilLadoBoton = medidaLadoBoton - (medidaPaddingBoton * 2);
 
-                                    double altoContenedorImagenEstudiante = medidaUtilLadoBoton * 0.7;
+                                    double altoContenedorImagenEstudiante = medidaUtilLadoBoton * 0.65;
 
-                                    double altoContenedorNombreEstudiante = medidaUtilLadoBoton * 0.3;
+                                    double altoContenedorNombreEstudiante = medidaUtilLadoBoton * 0.25;
+
+                                    if(coloresAsignados.length == listaColores.length) {
+
+                                      coloresAsignados.clear();
+
+                                    }
+
+                                    while(!coloresAsignados.add(listaColores[random.nextInt(listaColores.length)]));
 
                                     return FloatingActionButton(
 
                                       heroTag: index,
 
-                                      backgroundColor: coloresAsignados.elementAt(coloresAsignados.length - 1),
+                                      shape: RoundedRectangleBorder(
 
-                                      onPressed: (){
+                                          borderRadius: BorderRadius.circular(40),
 
+                                          side: BorderSide.none
 
-                                        Navigator.of(context).push(MaterialPageRoute(builder:  (context) => SeccionEstudianteWidget(estudiante: estudiantes[index],)));
+                                      ),
 
+                                      //backgroundColor: coloresAsignados.elementAt(coloresAsignados.length - 1),
+
+                                      backgroundColor: Colors.grey[200],
+
+                                      onPressed: () {
+
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeccionEstudianteWidget(estudiante: estudiantes[index],),));
 
                                       },
 
@@ -328,9 +362,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                                     child: SvgPicture.asset("./assets/images/PerfilUsuarioSeccionEncargado.svg", fit: BoxFit.fill,),
 
-                                                  )
-
-                                                      :ClipOval(
+                                                  ):ClipOval(
 
                                                     clipBehavior: Clip.antiAliasWithSaveLayer,
 
@@ -350,9 +382,9 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                                 width: medidaUtilLadoBoton,
 
-                                                child: const Text(
+                                                child: Text(
 
-                                                  "Nombre del estudiante",
+                                                  estudiantes[index].nombreCompleto(),
 
                                                   textAlign: TextAlign.center,
 
@@ -362,7 +394,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                                   style: TextStyle(
 
-                                                      color: Colors.white,
+                                                      color: Colors.grey[700],
 
                                                       fontWeight: FontWeight.bold
 
@@ -382,100 +414,108 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                   },
 
-                                );
-
-                              },
-
-                            ),
+                                ),
 
 
-                          );
+                              );
 
-                        }
+                            }
 
-                        return Container(
+                            return Container(
 
-                            alignment: Alignment.center,
+                                alignment: Alignment.center,
 
-                            child: const CircularProgressIndicator()
+                                child: const CircularProgressIndicator()
+
+                            );
+
+                          },
 
                         );
 
-                      },
+                      }
 
-                    );
+                      return Container(
 
-                  }
+                          alignment: Alignment.center,
 
-                  return Container(
+                          child: const CircularProgressIndicator()
 
-                      alignment: Alignment.center,
+                      );
 
-                      child: const CircularProgressIndicator()
+                    },
 
-                  );
+                  )
 
-                },
+              );
 
-              )
-
-          );
-
-        },
-
-      )
-
-    );
-    
-    vistas.add(PerfilUsuarioWidget(usuario: widget.encargado));
-    
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-
-      body: vistas[indiceVista],
-
-      bottomNavigationBar: BottomNavigationBar(
-
-        currentIndex: indiceVista,
-
-        items: const [
-
-          BottomNavigationBarItem(
-
-            icon: Icon(Icons.groups),
-
-            label: "Estudiantes"
+            },
 
           ),
 
-          BottomNavigationBarItem(
-
-            icon: Icon(Icons.account_circle),
-
-            label: "Mi perfil"
-
-          )
+          PerfilUsuarioWidget(usuario: widget.encargado)
 
         ],
 
-        onTap: (value) {
+      ),
 
-          setState(() {
+      bottomNavigationBar: PreferredSize(
 
-            indiceVista = value;
+        preferredSize: const Size.fromHeight(kToolbarHeight),
 
-          });
+        child: Container(
 
-        },
+            color: Colors.white,
+
+            child: TabBar(
+
+              indicatorColor: Colors.grey[200],
+
+              indicatorSize: TabBarIndicatorSize.tab,
+
+              dividerColor: Colors.grey[200],
+
+              automaticIndicatorColorAdjustment: true,
+
+              tabAlignment: TabAlignment.fill,
+
+              indicator: BoxDecoration(
+
+                  color: Colors.grey[200],
+
+                  borderRadius: const BorderRadius.only(
+
+                      topRight: Radius.circular(20),
+
+                      topLeft: Radius.circular(20)
+
+                  )
+
+              ),
+
+              tabs: [
+
+                Tab(
+
+                    icon: SvgPicture.asset("./assets/images/IconoAceptado.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
+
+                ),
+
+                Tab(
+
+                    icon: SvgPicture.asset("./assets/images/IconoPendiente.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
+
+                ),
+
+              ],
+
+            )
+
+        ),
 
       ),
 
-    );
+    ));
 
 
   }
