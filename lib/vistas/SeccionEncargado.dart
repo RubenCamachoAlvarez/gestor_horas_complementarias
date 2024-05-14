@@ -27,6 +27,8 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
   TextEditingController controladorCampoBusqueda = TextEditingController();
 
+  late void Function(void Function()) repintarSeccionListaEstudiantes;
+
   int indiceVista = 0;
 
   Set<Color> coloresAsignados = <Color>{};
@@ -48,6 +50,10 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
   ];
 
   List<Widget> vistas = [];
+
+  List<Estudiante> estudiantes = [];
+
+  List<Uint8List?> imagenPerfilEstudiantes = [];
 
   Future<List<Uint8List?>> cargarImagenPerfilEstudiantes(List<Estudiante> estudiantes) async {
 
@@ -166,9 +172,21 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                               onChanged: (patron){
 
-                                setState((){
+                                patron = patron.trim();
 
-                                  controladorCampoBusqueda.text;
+                                repintarSeccionListaEstudiantes((){
+
+                                  print("COINCIDIENDO PATRONES");
+
+                                  RegExp regex = RegExp(patron);
+
+                                  for(Estudiante estudiante in estudiantes) {
+
+                                    print("${estudiante.nombre} -> ${regex.hasMatch(estudiante.nombreCompleto())}");
+
+                                  }
+
+                                  print("-------------------------");
 
                                 });
 
@@ -254,7 +272,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                         List<QueryDocumentSnapshot<Map<String, dynamic>>> consultaEstudiantes = snapshot.data!.docs;
 
-                        List<Estudiante> estudiantes = <Estudiante>[];
+                        estudiantes.clear();
 
                         consultaEstudiantes.forEach((documentoEstudiante) {
 
@@ -276,146 +294,158 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                             if(snapshot.connectionState == ConnectionState.done) {
 
-                              List<Uint8List?> imagenPerfilEstudiantes = snapshot.data!;
+                              imagenPerfilEstudiantes.clear();
 
-                              return GridView.builder(
+                              imagenPerfilEstudiantes = snapshot.data!;
 
-                                padding: EdgeInsets.all(paddingGridView),
+                              return StatefulBuilder(
 
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: espaciadoEntreElementos, crossAxisSpacing: espaciadoEntreElementos),
+                                builder: (context, setStateGV) {
 
-                                itemCount: consultaEstudiantes.length,
+                                  repintarSeccionListaEstudiantes = setStateGV;
 
-                                itemBuilder: (context, index) => LayoutBuilder(
+                                  return GridView.builder(
 
-                                  builder: (context, constraints) {
+                                    padding: EdgeInsets.all(paddingGridView),
 
-                                    double medidaLadoBoton = constraints.maxWidth;
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: espaciadoEntreElementos, crossAxisSpacing: espaciadoEntreElementos),
 
-                                    double medidaPaddingBoton = medidaLadoBoton * 0.05;
+                                    itemCount: consultaEstudiantes.length,
 
-                                    double medidaUtilLadoBoton = medidaLadoBoton - (medidaPaddingBoton * 2);
+                                    itemBuilder: (context, index) => LayoutBuilder(
 
-                                    double altoContenedorImagenEstudiante = medidaUtilLadoBoton * 0.65;
+                                      builder: (context, constraints) {
 
-                                    double altoContenedorNombreEstudiante = medidaUtilLadoBoton * 0.25;
+                                        double medidaLadoBoton = constraints.maxWidth;
 
-                                    if(coloresAsignados.length == listaColores.length) {
+                                        double medidaPaddingBoton = medidaLadoBoton * 0.05;
 
-                                      coloresAsignados.clear();
+                                        double medidaUtilLadoBoton = medidaLadoBoton - (medidaPaddingBoton * 2);
 
-                                    }
+                                        double altoContenedorImagenEstudiante = medidaUtilLadoBoton * 0.65;
 
-                                    while(!coloresAsignados.add(listaColores[random.nextInt(listaColores.length)]));
+                                        double altoContenedorNombreEstudiante = medidaUtilLadoBoton * 0.25;
 
-                                    return FloatingActionButton(
+                                        if(coloresAsignados.length == listaColores.length) {
 
-                                      heroTag: index,
+                                          coloresAsignados.clear();
 
-                                      shape: RoundedRectangleBorder(
+                                        }
 
-                                          borderRadius: BorderRadius.circular(40),
+                                        while(!coloresAsignados.add(listaColores[random.nextInt(listaColores.length)]));
 
-                                          side: BorderSide.none
+                                        return FloatingActionButton(
 
-                                      ),
+                                          heroTag: index,
 
-                                      //backgroundColor: coloresAsignados.elementAt(coloresAsignados.length - 1),
+                                          shape: RoundedRectangleBorder(
 
-                                      backgroundColor: Colors.grey[200],
+                                              borderRadius: BorderRadius.circular(40),
 
-                                      onPressed: () {
+                                              side: BorderSide.none
 
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeccionEstudianteWidget(estudiante: estudiantes[index],),));
+                                          ),
 
-                                      },
+                                          //backgroundColor: coloresAsignados.elementAt(coloresAsignados.length - 1),
 
-                                      child: Padding(
+                                          backgroundColor: Colors.grey[200],
 
-                                          padding: EdgeInsets.all(medidaPaddingBoton),
+                                          onPressed: () {
 
-                                          child: Column(
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeccionEstudianteWidget(estudiante: estudiantes[index],),));
 
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                          },
 
-                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                          child: Padding(
 
-                                            children: [
+                                              padding: EdgeInsets.all(medidaPaddingBoton),
 
-                                              Container(
+                                              child: Column(
 
-                                                alignment: Alignment.center,
+                                                mainAxisAlignment: MainAxisAlignment.center,
 
-                                                height: altoContenedorImagenEstudiante,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
 
-                                                width: medidaUtilLadoBoton,
+                                                children: [
 
-                                                child: CircleAvatar(
+                                                  Container(
 
-                                                  backgroundColor: Colors.transparent,
+                                                    alignment: Alignment.center,
 
-                                                  radius: altoContenedorImagenEstudiante * 0.5,
+                                                    height: altoContenedorImagenEstudiante,
 
-                                                  child: (imagenPerfilEstudiantes[index] == null) ? ClipOval(
+                                                    width: medidaUtilLadoBoton,
 
-                                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                                    child: CircleAvatar(
 
-                                                    child: SvgPicture.asset("./assets/images/PerfilUsuarioSeccionEncargado.svg", fit: BoxFit.fill,),
+                                                      backgroundColor: Colors.transparent,
 
-                                                  ):ClipOval(
+                                                      radius: altoContenedorImagenEstudiante * 0.5,
 
-                                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                                      child: (imagenPerfilEstudiantes[index] == null) ? ClipOval(
 
-                                                    child: Image.memory(imagenPerfilEstudiantes[index]!, fit: BoxFit.fill),
+                                                        clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                                  ),
+                                                        child: SvgPicture.asset("./assets/images/PerfilUsuarioSeccionEncargado.svg", fit: BoxFit.fill,),
 
-                                                ),
+                                                      ):ClipOval(
 
-                                              ),
+                                                        clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                              Container(
+                                                        child: Image.memory(imagenPerfilEstudiantes[index]!, fit: BoxFit.fill),
 
-                                                alignment: Alignment.center,
+                                                      ),
 
-                                                height: altoContenedorNombreEstudiante,
-
-                                                width: medidaUtilLadoBoton,
-
-                                                child: Text(
-
-                                                  estudiantes[index].nombreCompleto(),
-
-                                                  textAlign: TextAlign.center,
-
-                                                  overflow: TextOverflow.fade,
-
-                                                  maxLines: 2,
-
-                                                  style: TextStyle(
-
-                                                      color: Colors.grey[700],
-
-                                                      fontWeight: FontWeight.bold
+                                                    ),
 
                                                   ),
 
-                                                ),
+                                                  Container(
+
+                                                    alignment: Alignment.center,
+
+                                                    height: altoContenedorNombreEstudiante,
+
+                                                    width: medidaUtilLadoBoton,
+
+                                                    child: Text(
+
+                                                      estudiantes[index].nombreCompleto(),
+
+                                                      textAlign: TextAlign.center,
+
+                                                      overflow: TextOverflow.fade,
+
+                                                      maxLines: 2,
+
+                                                      style: TextStyle(
+
+                                                          color: Colors.grey[700],
+
+                                                          fontWeight: FontWeight.bold
+
+                                                      ),
+
+                                                    ),
+
+                                                  )
+
+                                                ],
 
                                               )
 
-                                            ],
+                                          ),
 
-                                          )
+                                        );
 
-                                      ),
+                                      },
 
-                                    );
+                                    ),
 
-                                  },
 
-                                ),
+                                  );
 
+                                }
 
                               );
 
@@ -517,9 +547,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
     ));
 
-
   }
-
-
-
 }
+
+
