@@ -5,9 +5,9 @@ import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
 import "package:gestor_de_horas_complementarias/datos/Encargado.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
+import "package:gestor_de_horas_complementarias/helpers/OperacionesArchivos.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
 import "package:gestor_de_horas_complementarias/vistas/PerfilUsuario.dart";
-import "dart:math";
 
 import "package:gestor_de_horas_complementarias/vistas/SeccionEstudiante.dart";
 
@@ -31,29 +31,53 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
   int indiceVista = 0;
 
-  Set<Color> coloresAsignados = <Color>{};
-
-  List<Color> listaColores = <Color>[
-
-    Colors.redAccent,
-
-    Colors.amber,
-
-    Colors.orange,
-
-    Colors.teal,
-
-    Colors.purple,
-
-    Colors.pinkAccent,
-
-  ];
-
   List<Widget> vistas = [];
 
-  List<Estudiante> estudiantes = [];
+  Map<Estudiante, Uint8List?> datosEstudiantes = <Estudiante, Uint8List?>{};
 
-  List<Uint8List?> imagenPerfilEstudiantes = [];
+  Map<Estudiante, Uint8List?> estudiantesFiltrados = <Estudiante, Uint8List?>{};
+
+  void eventoCampoBusqueda(){
+
+    String contenido = controladorCampoBusqueda.text.trim().toLowerCase();
+
+    if(contenido.isNotEmpty) {
+
+      repintarSeccionListaEstudiantes((){
+
+        filtrarEstudiantes(contenido);
+
+      });
+
+    }else{
+
+      repintarSeccionListaEstudiantes((){
+
+        estudiantesFiltrados = Map.from(datosEstudiantes);
+
+      });
+
+    }
+
+  }
+
+  void filtrarEstudiantes(String patron) {
+
+    estudiantesFiltrados.clear();
+
+    RegExp patronBusqueda = RegExp(patron);
+
+    for(Estudiante estudiante in datosEstudiantes.keys) {
+
+      if(patronBusqueda.hasMatch(estudiante.nombreCompleto().toLowerCase())) {
+
+        estudiantesFiltrados[estudiante] = datosEstudiantes[estudiante];
+
+      }
+
+    }
+
+  }
 
   Future<List<Uint8List?>> cargarImagenPerfilEstudiantes(List<Estudiante> estudiantes) async {
 
@@ -82,8 +106,6 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
   @override
   Widget build(BuildContext context) {
 
-    Random random = Random(DateTime.now().microsecondsSinceEpoch);
-
     return DefaultTabController(length: 2, child: Scaffold(
 
       body: TabBarView(
@@ -98,9 +120,9 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
               double anchoDispositivo = constraints.maxWidth;
 
-              double altoAppBar = altoDispositivo * 0.15;
+              double altoAppBar = altoDispositivo * 0.08;
 
-              double altoBody = altoDispositivo * 0.85;
+              double altoBody = altoDispositivo * 0.92;
 
               double paddingGridView = anchoDispositivo * 0.05;
 
@@ -110,7 +132,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
               return Scaffold(
 
-                  backgroundColor: Colors.grey[100],
+                  backgroundColor: Colors.grey[50],
 
                   appBar: AppBar(
 
@@ -170,25 +192,9 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                               controller: controladorCampoBusqueda,
 
-                              onChanged: (patron){
+                              onChanged: (value) {
 
-                                patron = patron.trim();
-
-                                repintarSeccionListaEstudiantes((){
-
-                                  print("COINCIDIENDO PATRONES");
-
-                                  RegExp regex = RegExp(patron);
-
-                                  for(Estudiante estudiante in estudiantes) {
-
-                                    print("${estudiante.nombre} -> ${regex.hasMatch(estudiante.nombreCompleto())}");
-
-                                  }
-
-                                  print("-------------------------");
-
-                                });
+                                eventoCampoBusqueda();
 
                               },
 
@@ -272,7 +278,9 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                         List<QueryDocumentSnapshot<Map<String, dynamic>>> consultaEstudiantes = snapshot.data!.docs;
 
-                        estudiantes.clear();
+                        datosEstudiantes.clear();
+
+                        List<Estudiante> estudiantesCargados = <Estudiante>[];
 
                         consultaEstudiantes.forEach((documentoEstudiante) {
 
@@ -282,27 +290,29 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                           String numeroCuenta = documentoEstudiante.id;
 
-                          estudiantes.add(Estudiante(numeroCuenta, datosPersonalesEstudiante["nombre"], datosPersonalesEstudiante["apellido_paterno"], datosPersonalesEstudiante["apellido_materno"], (datosPersonalesEstudiante["fecha_nacimiento"] as Timestamp).toDate(), datosEstudiante["carrera"]));
+                          estudiantesCargados.add(Estudiante(numeroCuenta, datosPersonalesEstudiante["nombre"], datosPersonalesEstudiante["apellido_paterno"], datosPersonalesEstudiante["apellido_materno"], (datosPersonalesEstudiante["fecha_nacimiento"] as Timestamp).toDate(), datosEstudiante["carrera"]));
 
                         });
 
                         return FutureBuilder(
 
-                          future: cargarImagenPerfilEstudiantes(estudiantes),
+                          future: cargarImagenPerfilEstudiantes(estudiantesCargados),
 
                           builder: (context, snapshot) {
 
                             if(snapshot.connectionState == ConnectionState.done) {
 
-                              imagenPerfilEstudiantes.clear();
+                               List<Uint8List?> imagenPerfilEstudiantes = snapshot.data!;
 
-                              imagenPerfilEstudiantes = snapshot.data!;
+                               datosEstudiantes = Map.fromIterables(estudiantesCargados, imagenPerfilEstudiantes);
 
-                              return StatefulBuilder(
+                               return StatefulBuilder(
 
                                 builder: (context, setStateGV) {
 
                                   repintarSeccionListaEstudiantes = setStateGV;
+
+                                  eventoCampoBusqueda();
 
                                   return GridView.builder(
 
@@ -310,7 +320,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: espaciadoEntreElementos, crossAxisSpacing: espaciadoEntreElementos),
 
-                                    itemCount: consultaEstudiantes.length,
+                                    itemCount: estudiantesFiltrados.length,
 
                                     itemBuilder: (context, index) => LayoutBuilder(
 
@@ -326,33 +336,23 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                         double altoContenedorNombreEstudiante = medidaUtilLadoBoton * 0.25;
 
-                                        if(coloresAsignados.length == listaColores.length) {
-
-                                          coloresAsignados.clear();
-
-                                        }
-
-                                        while(!coloresAsignados.add(listaColores[random.nextInt(listaColores.length)]));
-
                                         return FloatingActionButton(
 
                                           heroTag: index,
 
                                           shape: RoundedRectangleBorder(
 
-                                              borderRadius: BorderRadius.circular(40),
+                                              borderRadius: BorderRadius.circular(30),
 
                                               side: BorderSide.none
 
                                           ),
 
-                                          //backgroundColor: coloresAsignados.elementAt(coloresAsignados.length - 1),
-
                                           backgroundColor: Colors.grey[200],
 
                                           onPressed: () {
 
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeccionEstudianteWidget(estudiante: estudiantes[index],),));
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeccionEstudianteWidget(estudiante: estudiantesFiltrados.keys.toList()[index],),));
 
                                           },
 
@@ -382,7 +382,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                                       radius: altoContenedorImagenEstudiante * 0.5,
 
-                                                      child: (imagenPerfilEstudiantes[index] == null) ? ClipOval(
+                                                      child: (estudiantesFiltrados.values.toList()[index] == null) ? ClipOval(
 
                                                         clipBehavior: Clip.antiAliasWithSaveLayer,
 
@@ -392,7 +392,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                                         clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                                        child: Image.memory(imagenPerfilEstudiantes[index]!, fit: BoxFit.fill),
+                                                        child: Image.memory(estudiantesFiltrados.values.toList()[index]!, fit: BoxFit.fill),
 
                                                       ),
 
@@ -410,7 +410,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                                     child: Text(
 
-                                                      estudiantes[index].nombreCompleto(),
+                                                      estudiantesFiltrados.keys.toList()[index].nombreCompleto(),
 
                                                       textAlign: TextAlign.center,
 
@@ -489,35 +489,168 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
       ),
 
+      floatingActionButton: FloatingActionButton(
+
+        onPressed: () async {
+
+          List<String>? datosPersonalesEstudiantes = await OperacionesArchivos.leerArchivoCSV();
+
+          if(datosPersonalesEstudiantes != null) {
+
+            ScaffoldMessenger.of(context).showSnackBar(
+
+                SnackBar(
+
+                  backgroundColor: Colors.orange,
+
+                  duration: const Duration(seconds: 5),
+
+                  content: const Text(
+
+                    "Subiendo estudiantes",
+
+                    textAlign: TextAlign.center,
+
+                    style: TextStyle(
+
+                      fontWeight: FontWeight.bold,
+
+                      color: Colors.white,
+
+                    ),
+
+                  ),
+
+                  padding: const EdgeInsets.all(20),
+
+                  behavior: SnackBarBehavior.floating,
+
+                  shape: RoundedRectangleBorder(
+
+                      borderRadius: BorderRadius.circular(10)
+
+                  ),
+
+                )
+
+            );
+
+            bool operacionRealizada = await widget.encargado.cargarEstudiantes(datosPersonalesEstudiantes);
+
+            ScaffoldMessenger.of(context).clearSnackBars();
+
+            if(operacionRealizada != null) {
+
+              String mensajeNotificacion = "";
+
+              Color colorNotificacion = Colors.green;
+
+              if (operacionRealizada) {
+
+                mensajeNotificacion = "Han sido cargados correctamente los estudiantes al sistema";
+
+              } else {
+
+                mensajeNotificacion = "Error al cargar los estudiante. Reintente, por favor";
+
+                colorNotificacion = Colors.red;
+
+              }
+
+              ScaffoldMessenger.of(context).showSnackBar(
+
+                  SnackBar(
+
+                    backgroundColor: colorNotificacion,
+
+                    content: Text(
+
+                      mensajeNotificacion,
+
+                      textAlign: TextAlign.center,
+
+                      style: const TextStyle(
+
+                        fontWeight: FontWeight.bold,
+
+                        color: Colors.white,
+
+                      ),
+
+                    ),
+
+                    duration: const Duration(seconds: 3),
+
+                    padding: const EdgeInsets.all(20),
+
+                    behavior: SnackBarBehavior.floating,
+
+                    shape: RoundedRectangleBorder(
+
+                        borderRadius: BorderRadius.circular(10)
+
+                    ),
+
+                  )
+
+              );
+
+            }
+
+          }
+
+        },
+
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+
+        shape: RoundedRectangleBorder(
+
+            borderRadius: BorderRadius.circular(30)
+
+        ),
+
+        child: ClipOval(
+
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+
+          child: SvgPicture.asset("./assets/images/IconoCSV.svg", fit: BoxFit.fill, clipBehavior:
+            Clip.antiAliasWithSaveLayer,),
+
+        )
+
+      ),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
       bottomNavigationBar: PreferredSize(
 
         preferredSize: const Size.fromHeight(kToolbarHeight),
 
         child: Container(
 
-            color: Colors.white,
+            color: Colors.grey[100],
 
             child: TabBar(
 
-              indicatorColor: Colors.grey[200],
+              indicatorColor: Colors.white,
 
               indicatorSize: TabBarIndicatorSize.tab,
 
-              dividerColor: Colors.grey[200],
+              dividerColor: Colors.white,
 
               automaticIndicatorColorAdjustment: true,
 
               tabAlignment: TabAlignment.fill,
 
-              indicator: BoxDecoration(
+              indicator: const BoxDecoration(
 
-                  color: Colors.grey[200],
+                  color: Colors.white,
 
-                  borderRadius: const BorderRadius.only(
+                  borderRadius: BorderRadius.only(
 
-                      topRight: Radius.circular(20),
+                      topRight: Radius.circular(15),
 
-                      topLeft: Radius.circular(20)
+                      topLeft: Radius.circular(15)
 
                   )
 
@@ -527,13 +660,13 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                 Tab(
 
-                    icon: SvgPicture.asset("./assets/images/IconoAceptado.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
+                    icon: SvgPicture.asset("./assets/images/IconoEstudiantes.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
 
                 ),
 
                 Tab(
 
-                    icon: SvgPicture.asset("./assets/images/IconoPendiente.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
+                    icon: SvgPicture.asset("./assets/images/IconoPerfil.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
 
                 ),
 

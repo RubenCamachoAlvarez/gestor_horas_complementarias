@@ -12,51 +12,47 @@ class Encargado extends Usuario {
 
   }
 
-  void cargarEstudiantes() async {
+  Future<bool> cargarEstudiantes(List<String> datosEstudiantes) async {
 
-    List<String>? datosEstudiantes = await OperacionesArchivos.leerArchivoCSV();
+    CollectionReference<Map<String, dynamic>> coleccionUsuario = BaseDeDatos.conexion.collection("Usuarios");
 
-    if(datosEstudiantes != null) {
+    for(String informacionEstudiantes in datosEstudiantes) {
 
-      CollectionReference<Map<String, dynamic>> coleccionUsuario = BaseDeDatos.conexion.collection("Usuarios");
+      List<String> camposEstudiante = informacionEstudiantes.split(",");
 
-      for(String informacionEstudiantes in datosEstudiantes) {
+      DocumentReference<Map<String, dynamic>> referenciaDocumento = coleccionUsuario.doc(camposEstudiante[0]);
 
-        List<String> camposEstudiante = informacionEstudiantes.split(",");
+      DocumentSnapshot consultaDocumento = await referenciaDocumento.get();
 
-        DocumentReference<Map<String, dynamic>> referenciaDocumento = coleccionUsuario.doc(camposEstudiante[0]);
+      if(!consultaDocumento.exists) {
 
-        DocumentSnapshot consultaDocumento = await referenciaDocumento.get();
+        List<String> camposFechaNacimiento = camposEstudiante[4].split("/");
 
-        if(!consultaDocumento.exists) {
+        referenciaDocumento.set({
 
-          List<String> camposFechaNacimiento = camposEstudiante[4].split("/");
+          "carrera" : carrera,
 
-          referenciaDocumento.set({
+          "datos_personales" : {
 
-            "carrera" : carrera,
+            "nombre" : camposEstudiante[1],
 
-            "datos_personales" : {
+            "apellido_paterno" : camposEstudiante[2],
 
-              "nombre" : camposEstudiante[1],
+            "apellido_materno" : camposEstudiante[3],
 
-              "apellido_paterno" : camposEstudiante[2],
+            "fecha_nacimiento" : Timestamp.fromDate(DateTime(int.parse(camposFechaNacimiento[2]), int.parse(camposFechaNacimiento[1]), int.parse(camposFechaNacimiento[0]))),
 
-              "apellido_materno" : camposEstudiante[3],
+          },
 
-              "fecha_nacimiento" : Timestamp.fromDate(DateTime(int.parse(camposFechaNacimiento[2]), int.parse(camposFechaNacimiento[1]), int.parse(camposFechaNacimiento[0]))),
+          "rol" : Roles.ESTUDIANTE,
 
-            },
-
-            "rol" : Roles.ESTUDIANTE,
-
-          });
-
-        }
+        });
 
       }
 
     }
+
+    return true;
 
   }
   

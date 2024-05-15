@@ -7,7 +7,6 @@ import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
 import "package:gestor_de_horas_complementarias/datos/Usuario.dart";
-import "package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
 import "package:gestor_de_horas_complementarias/valores_asignables/Carreras.dart";
 import "package:gestor_de_horas_complementarias/valores_asignables/Roles.dart";
@@ -192,7 +191,7 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
                                               ListTile(
 
-                                                leading: Icon(CupertinoIcons.person_alt, color: temaComponentesInterfaz),
+                                                leading: SvgPicture.asset("./assets/images/IconoPerfil.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
 
                                                 horizontalTitleGap: 30,
 
@@ -236,7 +235,7 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
                                               ListTile(
 
-                                                leading: Icon(Icons.calendar_month, color: temaComponentesInterfaz,),
+                                                leading: SvgPicture.asset("./assets/images/IconoCalendario.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
 
                                                 horizontalTitleGap: 30,
 
@@ -280,7 +279,7 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
                                               ListTile(
 
-                                                leading: Icon(CupertinoIcons.book_fill, color: temaComponentesInterfaz,),
+                                                leading: SvgPicture.asset("./assets/images/IconoLibros.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
 
                                                 horizontalTitleGap: 30,
 
@@ -324,7 +323,7 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
                                               ListTile(
 
-                                                leading: Icon(CupertinoIcons.alarm_fill, color: temaComponentesInterfaz,),
+                                                leading: SvgPicture.asset("./assets/images/IconoReloj.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
 
                                                 horizontalTitleGap: 30,
 
@@ -368,7 +367,7 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
                                               ListTile(
 
-                                                leading: Icon(CupertinoIcons.number_circle_fill, color: temaComponentesInterfaz,),
+                                                leading: SvgPicture.asset("./assets/images/IconoNumeral.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
 
                                                 horizontalTitleGap: 30,
 

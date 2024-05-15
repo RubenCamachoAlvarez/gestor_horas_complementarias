@@ -87,6 +87,13 @@ flutter:
     - assets/images/ImagenUsuario.png
     - assets/images/PerfilUsuario.svg
     - assets/images/PerfilUsuarioSeccionEncargado.svg
+    - assets/images/IconoEstudiantes.svg
+    - assets/images/IconoPerfil.svg
+    - assets/images/IconoCSV.svg
+    - assets/images/IconoCalendario.svg
+    - assets/images/IconoLibro.svg
+    - assets/images/IconoNumeral.svg
+    - assets/images/IconoReloj.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
