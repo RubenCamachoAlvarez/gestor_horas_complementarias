@@ -2,7 +2,6 @@ import "dart:typed_data";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart";
 import "package:flutter/material.dart";
-import "package:flutter/cupertino.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
@@ -25,6 +24,48 @@ class PerfilUsuarioWidget extends StatefulWidget {
 class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
   PerfilUsuarioState();
+
+ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
+
+    return ListTile(
+
+      leading: icono,
+
+      horizontalTitleGap: 30,
+
+      trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+
+      title: Text(titulo),
+
+      subtitle: Text(subtitulo),
+
+      titleTextStyle: TextStyle(
+
+          fontWeight: FontWeight.bold,
+
+          color: DatosApp.colorApp
+
+      ),
+
+      tileColor: Colors.grey[100],
+
+      shape: RoundedRectangleBorder(
+
+          borderRadius: BorderRadius.circular(15)
+
+      ),
+
+      subtitleTextStyle: const TextStyle(
+
+        fontWeight: FontWeight.bold,
+
+        color: Colors.black,
+
+      ),
+
+    );
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,39 +230,112 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
                                             children: [
 
-                                              ListTile(
+                                              crearTileList(SvgPicture.asset("./assets/images/IconoPerfil.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Nombre", widget.usuario.nombreCompleto()),
 
-                                                leading: SvgPicture.asset("./assets/images/IconoPerfil.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
+                                              SizedBox(
 
-                                                horizontalTitleGap: 30,
+                                                height: altoCuerpo * 0.025,
 
-                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                              ),
 
-                                                title: const Text("Nombre"),
+                                              crearTileList(SvgPicture.asset("./assets/images/IconoPerfil.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Nombre", widget.usuario.nombre),
 
-                                                subtitle: Text(widget.usuario.nombreCompleto()),
+                                              SizedBox(
 
-                                                titleTextStyle: TextStyle(
+                                                height: altoCuerpo * 0.025,
+
+                                              ),
+
+
+                                              /*SizedBox(
+
+                                                height: altoCuerpo * 0.025,
+
+                                              ),
+
+                                              LayoutBuilder(
+
+                                                builder: (context, constraints) => ListTile(
+
+                                                  leading: SvgPicture.asset("./assets/images/IconoCalendario.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
+
+                                                  horizontalTitleGap: 30,
+
+                                                  trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+
+                                                  title: const Text("Fecha de nacimiento"),
+
+                                                  subtitle: Text(widget.usuario.cadenaFechaNacimiento()),
+
+                                                  titleTextStyle: TextStyle(
+
+                                                      fontWeight: FontWeight.bold,
+
+                                                      color: temaComponentesInterfaz
+
+                                                  ),
+
+                                                  tileColor: Colors.grey[100],
+
+                                                  shape: RoundedRectangleBorder(
+
+                                                      borderRadius: BorderRadius.circular(15)
+
+                                                  ),
+
+                                                  subtitleTextStyle: const TextStyle(
 
                                                     fontWeight: FontWeight.bold,
 
-                                                    color: temaComponentesInterfaz
+                                                    color: Colors.black,
 
-                                                ),
+                                                  ),
 
-                                                tileColor: Colors.grey[100],
+                                                ),),
 
-                                                shape: RoundedRectangleBorder(
+                                              SizedBox(
 
-                                                    borderRadius: BorderRadius.circular(15)
+                                                height: altoCuerpo * 0.025,
 
-                                                ),
+                                              ),
 
-                                                subtitleTextStyle: const TextStyle(
+                                              LayoutBuilder(
 
-                                                  fontWeight: FontWeight.bold,
+                                                builder: (context, constraints) => ListTile(
 
-                                                  color: Colors.black,
+                                                  leading: SvgPicture.asset("./assets/images/IconoLibros.svg", clipBehavior: Clip.antiAliasWithSaveLayer, height: constraints.maxHeight, width: constraints.maxHeight,),
+
+                                                  horizontalTitleGap: 30,
+
+                                                  trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+
+                                                  title: const Text("Carrera"),
+
+                                                  subtitle: Text(widget.usuario.carrera.id),
+
+                                                  titleTextStyle: TextStyle(
+
+                                                      fontWeight: FontWeight.bold,
+
+                                                      color: temaComponentesInterfaz
+
+                                                  ),
+
+                                                  tileColor: Colors.grey[100],
+
+                                                  shape: RoundedRectangleBorder(
+
+                                                      borderRadius: BorderRadius.circular(15)
+
+                                                  ),
+
+                                                  subtitleTextStyle: const TextStyle(
+
+                                                    fontWeight: FontWeight.bold,
+
+                                                    color: Colors.black,
+
+                                                  ),
 
                                                 ),
 
@@ -233,39 +347,43 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
                                               ),
 
-                                              ListTile(
+                                              LayoutBuilder(
 
-                                                leading: SvgPicture.asset("./assets/images/IconoCalendario.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
+                                                builder: (context, constraints) => ListTile(
 
-                                                horizontalTitleGap: 30,
+                                                  leading: SvgPicture.asset("./assets/images/IconoReloj.svg", clipBehavior: Clip.antiAliasWithSaveLayer, height: constraints.maxHeight, width: constraints.maxHeight),
 
-                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                                  horizontalTitleGap: 30,
 
-                                                title: const Text("Fecha de nacimiento"),
+                                                  trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
 
-                                                subtitle: Text(widget.usuario.cadenaFechaNacimiento()),
+                                                  title: const Text("Ocupación"),
 
-                                                titleTextStyle: TextStyle(
+                                                  subtitle: Text(widget.usuario.rol.id),
+
+                                                  titleTextStyle: TextStyle(
+
+                                                      fontWeight: FontWeight.bold,
+
+                                                      color: temaComponentesInterfaz
+
+                                                  ),
+
+                                                  tileColor: Colors.grey[100],
+
+                                                  shape: RoundedRectangleBorder(
+
+                                                      borderRadius: BorderRadius.circular(15)
+
+                                                  ),
+
+                                                  subtitleTextStyle: const TextStyle(
 
                                                     fontWeight: FontWeight.bold,
 
-                                                    color: temaComponentesInterfaz
+                                                    color: Colors.black,
 
-                                                ),
-
-                                                tileColor: Colors.grey[100],
-
-                                                shape: RoundedRectangleBorder(
-
-                                                    borderRadius: BorderRadius.circular(15)
-
-                                                ),
-
-                                                subtitleTextStyle: const TextStyle(
-
-                                                  fontWeight: FontWeight.bold,
-
-                                                  color: Colors.black,
+                                                  ),
 
                                                 ),
 
@@ -277,131 +395,47 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
                                               ),
 
-                                              ListTile(
+                                              LayoutBuilder(
 
-                                                leading: SvgPicture.asset("./assets/images/IconoLibros.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
+                                                builder: (context, constraints) => ListTile(
 
-                                                horizontalTitleGap: 30,
+                                                  leading: SvgPicture.asset("./assets/images/IconoNumeral.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
 
-                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                                  horizontalTitleGap: 30,
 
-                                                title: const Text("Carrera"),
+                                                  trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
 
-                                                subtitle: Text(widget.usuario.carrera.id),
+                                                  title: Text("Número de ${(widget.usuario.rol == Roles.ESTUDIANTE) ? "cuenta" : "trabajador"}"),
 
-                                                titleTextStyle: TextStyle(
+                                                  subtitle: Text(widget.usuario.numero),
 
-                                                    fontWeight: FontWeight.bold,
+                                                  titleTextStyle: TextStyle(
 
-                                                    color: temaComponentesInterfaz
+                                                      fontWeight: FontWeight.bold,
 
-                                                ),
+                                                      color: temaComponentesInterfaz
 
-                                                tileColor: Colors.grey[100],
+                                                  ),
 
-                                                shape: RoundedRectangleBorder(
+                                                  tileColor: Colors.grey[100],
 
-                                                    borderRadius: BorderRadius.circular(15)
+                                                  shape: RoundedRectangleBorder(
 
-                                                ),
+                                                      borderRadius: BorderRadius.circular(15)
 
-                                                subtitleTextStyle: const TextStyle(
+                                                  ),
 
-                                                  fontWeight: FontWeight.bold,
-
-                                                  color: Colors.black,
-
-                                                ),
-
-                                              ),
-
-                                              SizedBox(
-
-                                                height: altoCuerpo * 0.025,
-
-                                              ),
-
-                                              ListTile(
-
-                                                leading: SvgPicture.asset("./assets/images/IconoReloj.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
-
-                                                horizontalTitleGap: 30,
-
-                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-
-                                                title: const Text("Ocupación"),
-
-                                                subtitle: Text(widget.usuario.rol.id),
-
-                                                titleTextStyle: TextStyle(
+                                                  subtitleTextStyle: const TextStyle(
 
                                                     fontWeight: FontWeight.bold,
 
-                                                    color: temaComponentesInterfaz
+                                                    color: Colors.black,
+
+                                                  ),
 
                                                 ),
 
-                                                tileColor: Colors.grey[100],
-
-                                                shape: RoundedRectangleBorder(
-
-                                                    borderRadius: BorderRadius.circular(15)
-
-                                                ),
-
-                                                subtitleTextStyle: const TextStyle(
-
-                                                  fontWeight: FontWeight.bold,
-
-                                                  color: Colors.black,
-
-                                                ),
-
-                                              ),
-
-                                              SizedBox(
-
-                                                height: altoCuerpo * 0.025,
-
-                                              ),
-
-                                              ListTile(
-
-                                                leading: SvgPicture.asset("./assets/images/IconoNumeral.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
-
-                                                horizontalTitleGap: 30,
-
-                                                trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-
-                                                title: Text("Número de ${(widget.usuario.rol == Roles.ESTUDIANTE) ? "cuenta" : "trabajador"}"),
-
-                                                subtitle: Text(widget.usuario.numero),
-
-                                                titleTextStyle: TextStyle(
-
-                                                    fontWeight: FontWeight.bold,
-
-                                                    color: temaComponentesInterfaz
-
-                                                ),
-
-                                                tileColor: Colors.grey[100],
-
-                                                shape: RoundedRectangleBorder(
-
-                                                    borderRadius: BorderRadius.circular(15)
-
-                                                ),
-
-                                                subtitleTextStyle: const TextStyle(
-
-                                                  fontWeight: FontWeight.bold,
-
-                                                  color: Colors.black,
-
-                                                ),
-
-                                              ),
+                                              ),*/
 
                                               Container(
 
