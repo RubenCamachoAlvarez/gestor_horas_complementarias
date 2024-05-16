@@ -1,12 +1,9 @@
-import "dart:js_interop";
-
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/Comprobante.dart";
 import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
-import "package:gestor_de_horas_complementarias/datos/Encargado.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
 import "package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
@@ -110,7 +107,9 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
             onPressed: (){
 
-              double medidaLadoCard = anchoBody * 0.5;
+              double medidaLadoCard = anchoBody * 0.6;
+
+              double padding = medidaLadoCard * 0.08;
 
               showDialog(
 
@@ -132,7 +131,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                         child: Container(
 
-                          padding: const EdgeInsets.all(20),
+                          padding: EdgeInsets.all(padding),
 
                           alignment: Alignment.center,
 
@@ -148,205 +147,243 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                           ),
 
-                          child: Center(
+                          child: LayoutBuilder(
 
-                            child: Column(
+                            builder: (context, constraints) {
 
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              double altoDialog = constraints.maxHeight;
 
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              double anchoDialog = constraints.maxWidth;
 
-                              children: [
+                              double altoElemento = altoDialog * 0.3;
 
-                                Expanded(
+                              return Center(
 
-                                  child: Theme(
+                                child: Column(
 
-                                    data: ThemeData(
+                                  mainAxisAlignment: MainAxisAlignment.center,
 
-                                      textSelectionTheme: const TextSelectionThemeData(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
 
-                                        selectionColor: Colors.amber,
+                                  children: [
 
-                                      )
+                                    SizedBox(
 
-                                    ),
+                                      width: anchoDialog,
 
-                                    child: TextField(
+                                      height: altoElemento,
 
-                                      readOnly: true,
+                                      child: Theme(
 
-                                      maxLines: 1,
+                                        data: ThemeData(
 
-                                      minLines: 1,
+                                            textSelectionTheme: const TextSelectionThemeData(
 
-                                      textAlign: TextAlign.center,
+                                              selectionColor: Colors.amber,
 
-                                      style: TextStyle(
-
-                                          color: Colors.grey[700],
-
-                                          fontWeight: FontWeight.bold
-
-                                      ),
-
-                                      decoration: InputDecoration(
-
-                                        border: OutlineInputBorder(
-
-                                            borderRadius: BorderRadius.circular(10),
-
-                                            borderSide: BorderSide.none
+                                            )
 
                                         ),
 
-                                        filled: true,
+                                        child: TextField(
 
-                                        fillColor: Colors.grey[100],
+                                          readOnly: true,
 
-                                        prefixIcon: Icon(Icons.description_rounded, color: DatosApp.colorApp),
+                                          maxLines: 1,
+
+                                          minLines: 1,
+
+                                          textAlign: TextAlign.center,
+
+                                          style: TextStyle(
+
+                                              color: Colors.grey[700],
+
+                                              fontWeight: FontWeight.bold
+
+                                          ),
+
+                                          decoration: InputDecoration(
+
+                                            border: OutlineInputBorder(
+
+                                                borderRadius: BorderRadius.circular(10),
+
+                                                borderSide: BorderSide.none
+
+                                            ),
+
+                                            filled: true,
+
+                                            fillColor: Colors.grey[100],
+
+                                            prefixIcon: Icon(Icons.description_rounded, color: DatosApp.colorApp),
+
+                                          ),
+
+                                          controller: TextEditingController(text: widget.comprobante.nombre),
+
+                                        ),
 
                                       ),
 
-                                      controller: TextEditingController(text: widget.comprobante.nombre),
+                                    ),
+
+                                    SizedBox(
+
+                                      height: altoDialog * 0.05,
 
                                     ),
 
-                                  ),
+                                    SizedBox(
+
+                                        width: anchoDialog,
+
+                                        height: altoElemento,
+
+                                        child: Theme(
+
+                                          data: ThemeData(
+
+                                            textSelectionTheme: const TextSelectionThemeData(
+
+                                              selectionColor: Colors.amber,
+
+                                            ),
+
+                                          ),
+
+                                          child: TextField(
+
+                                            readOnly: true,
+
+                                            maxLines: 1,
+
+                                            minLines: 1,
+
+                                            textAlign: TextAlign.center,
+
+                                            style: TextStyle(
+
+                                                color: Colors.grey[700],
+
+                                                fontWeight: FontWeight.bold
+
+                                            ),
+
+                                            decoration: InputDecoration(
+
+                                              border: OutlineInputBorder(
+
+                                                  borderRadius: BorderRadius.circular(15),
+
+                                                  borderSide: BorderSide.none
+
+                                              ),
+
+                                              filled: true,
+
+                                              fillColor: Colors.grey[100],
+
+                                              prefixIcon: Icon(Icons.calendar_month, color: DatosApp.colorApp,),
+
+                                            ),
+
+                                            controller: TextEditingController(text: widget.comprobante.cadenaFechaSubida()),
+
+                                          ),
+
+                                        )
+
+                                    ),
+
+                                    SizedBox(
+
+                                      height: altoDialog * 0.05,
+
+                                    ),
+
+                                    SizedBox(
+
+                                      width: anchoDialog,
+
+                                      height: altoElemento,
+
+                                      child: Theme(
+
+                                        data: ThemeData(
+
+                                            textSelectionTheme: const TextSelectionThemeData(
+
+                                                selectionColor: Colors.amber
+
+                                            )
+
+                                        ),
+
+                                        child: TextField(
+
+                                          readOnly: true,
+
+                                          maxLines: 1,
+
+                                          minLines: 1,
+
+                                          textAlign: TextAlign.center,
+
+                                          style: TextStyle(
+
+                                              color: Colors.grey[700],
+
+                                              fontWeight: FontWeight.bold
+
+                                          ),
+
+                                          decoration: InputDecoration(
+
+                                            border: OutlineInputBorder(
+
+                                                borderRadius: BorderRadius.circular(15),
+
+                                                borderSide: BorderSide.none
+
+                                            ),
+
+                                            filled: true,
+
+                                            fillColor: Colors.grey[100],
+
+                                            prefixIcon: Icon(Icons.account_circle, color: DatosApp.colorApp),
+
+                                          ),
+
+                                          controller: TextEditingController(text: widget.comprobante.estudiantePropietario.nombreCompleto()),
+
+                                        ),
+
+                                      ),
+
+                                    )
+
+                                  ],
 
                                 ),
 
-                                Expanded(
+                              );
 
-                                  child: Theme(
-
-                                    data: ThemeData(
-
-                                      textSelectionTheme: const TextSelectionThemeData(
-
-                                        selectionColor: Colors.amber,
-
-                                      ),
-
-                                    ),
-
-                                    child: TextField(
-
-                                      readOnly: true,
-
-                                      maxLines: 1,
-
-                                      minLines: 1,
-
-                                      textAlign: TextAlign.center,
-
-                                      style: TextStyle(
-
-                                          color: Colors.grey[700],
-
-                                          fontWeight: FontWeight.bold
-
-                                      ),
-
-                                      decoration: InputDecoration(
-
-                                        border: OutlineInputBorder(
-
-                                            borderRadius: BorderRadius.circular(15),
-
-                                            borderSide: BorderSide.none
-
-                                        ),
-
-                                        filled: true,
-
-                                        fillColor: Colors.grey[100],
-
-                                        prefixIcon: Icon(Icons.calendar_month, color: DatosApp.colorApp,),
-
-                                      ),
-
-                                      controller: TextEditingController(text: widget.comprobante.cadenaFechaSubida()),
-
-                                    ),
-
-                                  )
-
-                                ),
-
-                                Expanded(
-
-                                  child: Theme(
-
-                                    data: ThemeData(
-
-                                      textSelectionTheme: const TextSelectionThemeData(
-
-                                        selectionColor: Colors.amber
-
-                                      )
-
-                                    ),
-
-                                    child: TextField(
-
-                                      readOnly: true,
-
-                                      maxLines: 1,
-
-                                      minLines: 1,
-
-                                      textAlign: TextAlign.center,
-
-                                      style: TextStyle(
-
-                                          color: Colors.grey[700],
-
-                                          fontWeight: FontWeight.bold
-
-                                      ),
-
-                                      decoration: InputDecoration(
-
-                                        border: OutlineInputBorder(
-
-                                            borderRadius: BorderRadius.circular(15),
-
-                                            borderSide: BorderSide.none
-
-                                        ),
-
-                                        filled: true,
-
-                                        fillColor: Colors.grey[100],
-
-                                        prefixIcon: Icon(Icons.account_circle, color: DatosApp.colorApp),
-
-                                      ),
-
-                                      controller: TextEditingController(text: widget.comprobante.estudiantePropietario.nombreCompleto()),
-
-                                    ),
-
-                                  ),
-
-                                )
-
-                              ],
-
-                            ),
+                            },
 
                           ),
 
-                        ),
+                        )
 
                       ),
                       
                       Positioned(
 
-                        top: (altoBody * 0.5) - (medidaLadoCard * 0.47),
+                        top: (altoBody * 0.5) - (medidaLadoCard * 0.5),
 
-                        left: anchoBody * 0.73,
+                        left: anchoBody * 0.75,
 
                         child: GestureDetector(
 
@@ -438,7 +475,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                     anchoBody = constraints.maxWidth;
 
-                    altoBottomSheet = altoBody * 0.3;
+                    altoBottomSheet = altoBody * 0.35;
 
                     paddingBottomSheet = altoBottomSheet * 0.1468;
 
@@ -577,37 +614,33 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
       ),
 
-      floatingActionButton: //(Sesion.usuario is Estudiante && widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? null :
+      floatingActionButton: (Sesion.usuario is Estudiante && widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? null :
 
-        SizedBox(
+        FloatingActionButton(
 
-          width: 60,
+          backgroundColor: Colors.white,
 
-          height: 60,
+          onPressed: () {
 
-          child: FloatingActionButton(
+            showModalBottomSheet(
 
-            onPressed: (){
+              context: context,
 
-              showModalBottomSheet(
+              builder: (context) => StatefulBuilder(
 
-                context: context,
+                builder: (context, setStateBS) {
 
-                builder: (context) => StatefulBuilder(
-
-                  builder: (context, setStateBS) {
-
-                    return Container(
+                  return Container(
 
                       padding: EdgeInsets.only(
 
-                        right: paddingBottomSheet,
+                          right: paddingBottomSheet,
 
-                        left: paddingBottomSheet,
+                          left: paddingBottomSheet,
 
-                        top: paddingBottomSheet,
+                          top: paddingBottomSheet,
 
-                        bottom: paddingBottomSheet * 0.5
+                          bottom: paddingBottomSheet * 0.5
 
                       ),
 
@@ -633,95 +666,103 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                         children: [
 
-                          Row(
+                          SizedBox(
 
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            height: altoAreaUtilBottomSheet * 0.25,
 
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                            width: anchoBody,
 
-                            children: [
+                            child: Row(
 
-                              ChoiceChip(
+                              mainAxisAlignment: MainAxisAlignment.center,
 
-                                label: const Text("Aceptar"),
+                              crossAxisAlignment: CrossAxisAlignment.center,
 
-                                selectedColor: Colors.green,
+                              children: [
 
-                                backgroundColor: Colors.grey[200],
+                                ChoiceChip(
 
-                                selected: status,
+                                  label: const Text("Aceptar"),
 
-                                checkmarkColor: Colors.white,
+                                  selectedColor: Colors.green,
 
-                                labelStyle: TextStyle(
+                                  backgroundColor: Colors.grey[200],
 
-                                    color: (status) ? colorFuenteNoSeleccion : colorFuenteSeleccion,
+                                  selected: status,
 
-                                    fontWeight: FontWeight.bold
+                                  checkmarkColor: Colors.white,
 
-                                ),
+                                  labelStyle: TextStyle(
 
-                                onSelected: (_) {
+                                      color: (status) ? colorFuenteNoSeleccion : colorFuenteSeleccion,
 
-                                  setStateBS((){
+                                      fontWeight: FontWeight.bold
 
-                                    status = !status;
+                                  ),
 
-                                    controladorTextField.text = numeroHorasValidez;
+                                  onSelected: (_) {
 
-                                  });
+                                    setStateBS((){
 
-                                },
+                                      status = !status;
 
-                              ),
+                                      controladorTextField.text = numeroHorasValidez;
 
-                              SizedBox(
+                                    });
 
-                                width: anchoBody * 0.05,
-
-                              ),
-
-                              ChoiceChip(
-
-                                label: const Text("Rechazar"),
-
-                                selectedColor: Colors.red,
-
-                                backgroundColor: Colors.grey[200],
-
-                                checkmarkColor: Colors.white,
-
-                                labelStyle: TextStyle(
-
-                                    color: (!status) ? colorFuenteNoSeleccion : colorFuenteSeleccion,
-
-                                    fontWeight: FontWeight.bold
+                                  },
 
                                 ),
 
-                                selected: !status,
+                                SizedBox(
 
-                                onSelected: (_) {
+                                  width: anchoBody * 0.05,
 
-                                  setStateBS((){
+                                ),
 
-                                    status = !status;
+                                ChoiceChip(
 
-                                    controladorTextField.text = mensajeJustificacionRechazo;
+                                  label: const Text("Rechazar"),
 
-                                  });
+                                  selectedColor: Colors.red,
 
-                                },
+                                  backgroundColor: Colors.grey[200],
 
-                              )
+                                  checkmarkColor: Colors.white,
 
-                            ],
+                                  labelStyle: TextStyle(
+
+                                      color: (!status) ? colorFuenteNoSeleccion : colorFuenteSeleccion,
+
+                                      fontWeight: FontWeight.bold
+
+                                  ),
+
+                                  selected: !status,
+
+                                  onSelected: (_) {
+
+                                    setStateBS((){
+
+                                      status = !status;
+
+                                      controladorTextField.text = mensajeJustificacionRechazo;
+
+                                    });
+
+                                  },
+
+                                )
+
+                              ],
+
+                            ),
 
                           ),
 
                           SizedBox(
 
-                            height: altoAreaUtilBottomSheet * 0.05,
+                            height: altoAreaUtilBottomSheet * 0.01,
 
                           ),
 
@@ -729,103 +770,103 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                           SizedBox(
 
-                            height: altoAreaUtilBottomSheet * 0.1,
+                            height: altoAreaUtilBottomSheet * 0.05,
 
                           ),
 
                           TextField(
 
-                            maxLines: 1,
+                              maxLines: 1,
 
-                            minLines: 1,
+                              minLines: 1,
 
-                            controller: controladorTextField,
+                              controller: controladorTextField,
 
-                            inputFormatters: (status) ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)] : null,
+                              inputFormatters: (status) ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)] : null,
 
-                            onChanged: (entrada){
+                              onChanged: (entrada){
 
-                              setStateBS((){
+                                setStateBS((){
 
-                                if(status) {
+                                  if(status) {
 
-                                  numeroHorasValidez = entrada;
+                                    numeroHorasValidez = entrada;
 
-                                }else{
+                                  }else{
 
-                                  mensajeJustificacionRechazo = entrada;
+                                    mensajeJustificacionRechazo = entrada;
 
-                                }
+                                  }
 
-                              });
+                                });
 
-                            },
+                              },
 
-                            style: TextStyle(
+                              style: TextStyle(
 
-                                color: Colors.grey[700],
+                                  color: Colors.grey[700],
 
-                                fontWeight: FontWeight.bold
-
-                            ),
-
-                            decoration: InputDecoration(
-
-                              prefixIcon: Padding(
-
-                                padding: EdgeInsets.only(
-
-                                  left: (anchoBody - (paddingBottomSheet * 2)) * 0.025,
-
-                                ),
-
-                                child: Icon((status) ? Icons.numbers_rounded : Icons.message, color: DatosApp.colorApp),
+                                  fontWeight: FontWeight.bold
 
                               ),
 
-                              hintText: (status) ? "Cantidad de horas de validez" : "Justificacion de rechazo",
+                              decoration: InputDecoration(
 
-                              hintFadeDuration: const Duration(milliseconds: 200),
+                                  prefixIcon: Padding(
 
-                              hintStyle: TextStyle(
+                                    padding: EdgeInsets.only(
 
-                                color: Colors.grey[700],
+                                      left: (anchoBody - (paddingBottomSheet * 2)) * 0.025,
 
-                                fontWeight: FontWeight.bold
+                                    ),
+
+                                    child: Icon((status) ? Icons.numbers_rounded : Icons.message, color: DatosApp.colorApp),
+
+                                  ),
+
+                                  hintText: (status) ? "Cantidad de horas de validez" : "Justificacion de rechazo",
+
+                                  hintFadeDuration: const Duration(milliseconds: 200),
+
+                                  hintStyle: TextStyle(
+
+                                      color: Colors.grey[700],
+
+                                      fontWeight: FontWeight.bold
+
+                                  ),
+
+                                  border: OutlineInputBorder(
+
+                                      borderRadius: BorderRadius.circular(15),
+
+                                      borderSide: BorderSide.none
+
+                                  ),
+
+                                  filled: true,
+
+                                  fillColor: Colors.grey[300],
+
+                                  constraints: BoxConstraints(
+
+                                    maxHeight: altoAreaUtilBottomSheet * 0.25,
+
+                                    maxWidth: double.infinity,
+
+                                    minHeight: altoAreaUtilBottomSheet * 0.25,
+
+                                    minWidth: double.infinity,
+
+                                  )
 
                               ),
 
-                              border: OutlineInputBorder(
+                              textAlign: TextAlign.center,
 
-                                  borderRadius: BorderRadius.circular(15),
+                              textAlignVertical: TextAlignVertical.center,
 
-                                  borderSide: BorderSide.none
-
-                              ),
-
-                              filled: true,
-
-                              fillColor: Colors.grey[300],
-
-                              constraints: BoxConstraints(
-
-                                maxHeight: altoAreaUtilBottomSheet * 0.25,
-
-                                maxWidth: double.infinity,
-
-                                minHeight: altoAreaUtilBottomSheet * 0.25,
-
-                                minWidth: double.infinity,
-
-                              )
-
-                            ),
-
-                            textAlign: TextAlign.center,
-
-                            textAlignVertical: TextAlignVertical.center,
-
-                            readOnly: false //Sesion.usuario is Estudiante,
+                              readOnly: false //Sesion.usuario is Estudiante,
 
                           ),
 
@@ -837,296 +878,296 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                           SizedBox(
 
-                              width: double.infinity,
+                            width: double.infinity,
 
-                              height: altoAreaUtilBottomSheet * 0.25,
+                            height: altoAreaUtilBottomSheet * 0.25,
 
-                              child: ElevatedButton(
+                            child: ElevatedButton(
 
-                                onPressed: (controladorTextField.text.isEmpty ||
+                              onPressed: (controladorTextField.text.isEmpty ||
                                   ((widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO && controladorTextField.text == datosOriginales) ||
-                                    (widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO && controladorTextField.text == datosOriginales)
+                                      (widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO && controladorTextField.text == datosOriginales)
                                   ))
 
                                   ? null : () async {
 
-                                    if(widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE) {
+                                if(widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE) {
 
-                                      //Aqui se inserta el codigo para cuando se hace una modificacion (update) del documento que representa al comprobante en cuestion.
+                                  //Aqui se inserta el codigo para cuando se hace una modificacion (update) del documento que representa al comprobante en cuestion.
 
-                                      //Si el comprobante ya estaba aceptado previamente.
-                                      if(widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
+                                  //Si el comprobante ya estaba aceptado previamente.
+                                  if(widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
 
-                                        if(status) { //Si el comprobante permanece como aceptado.
+                                    if(status) { //Si el comprobante permanece como aceptado.
 
-                                          await referenciaComprobante.update({
+                                      await referenciaComprobante.update({
 
-                                            "horas_validez" : int.parse(numeroHorasValidez)
-
-                                          });
-
-
-                                        }else{ //Si el comprobante ha cambiado su status a rechazado.
-
-                                          DocumentReference<Map<String, dynamic>> nuevaReferenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({
-
-                                            "mensaje_justificacion" : mensajeJustificacionRechazo
-
-                                          });
-
-                                          await referenciaComprobante.update({
-
-                                            "horas_validez" : FieldValue.delete(),
-
-                                            "justificacion_rechazo" : nuevaReferenciaJustificacion,
-
-                                            "status_comprobante" : StatusComprobante.RECHAZADO
-
-                                          });
-
-                                          widget.comprobante.statusComprobante = StatusComprobante.RECHAZADO;
-
-                                        }
-
-                                      }else{//Si el comprobante estaba rechazado previamente.
-
-                                        DocumentReference<Map<String, dynamic>> referenciaJustificacionRechazo = datosComprobante["justificacion_rechazo"];
-
-                                        if(status) { //Si la nueva revision establece que el estado del comprobante fue aceptado.
-
-                                          await referenciaJustificacionRechazo.delete();
-
-                                          await referenciaComprobante.update({
-
-                                            "justificacion_rechazo" : FieldValue.delete(),
-
-                                            "horas_validez" : int.parse(numeroHorasValidez),
-
-                                            "status_comprobante" : StatusComprobante.ACEPTADO
-
-                                          });
-
-                                          widget.comprobante.statusComprobante = StatusComprobante.ACEPTADO;
-
-
-                                        }else{ //Si la nueva revision establece que el estado del comprobante se mantiene como rechazado.
-
-                                          await referenciaJustificacionRechazo.update(
-
-                                            {
-
-                                              "mensaje_justificacion" : mensajeJustificacionRechazo
-
-                                            }
-
-                                          );
-
-                                        }
-
-                                      }
-
-                                      Navigator.of(context).pop();
-
-                                      setState(() {
-
-                                        datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
-
-                                        inicializarElementosInterfaz();
-
-                                        ScaffoldMessenger.of(context).showSnackBar(
-
-                                            SnackBar(
-
-                                              backgroundColor: Colors.amber,
-
-                                              content: const Text(
-
-                                                "Se ha actualizado el status del comprobante",
-
-                                                textAlign: TextAlign.center,
-
-                                                style: TextStyle(
-
-                                                  fontWeight: FontWeight.bold,
-
-                                                  color: Colors.white,
-
-                                                ),
-
-                                              ),
-
-                                              duration: const Duration(seconds: 3),
-
-                                              padding: const EdgeInsets.all(20),
-
-                                              behavior: SnackBarBehavior.floating,
-
-                                              shape: RoundedRectangleBorder(
-
-                                                  borderRadius: BorderRadius.circular(10)
-
-                                              ),
-
-                                            )
-
-                                        );
+                                        "horas_validez" : int.parse(numeroHorasValidez)
 
                                       });
 
-                                    }else{
 
-                                      //Aqui va el codigo cuando se revisa por primera vez el comprobante.
+                                    }else{ //Si el comprobante ha cambiado su status a rechazado.
 
-                                      DocumentReference<Map<String, dynamic>> referenciaJustificacion;
+                                      DocumentReference<Map<String, dynamic>> nuevaReferenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({
 
-                                      Map<String, dynamic> datosActualizacion = <String, dynamic> {};
-
-                                      if(!status) {
-
-                                        referenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({"mensaje_justificacion" : mensajeJustificacionRechazo});
-
-                                        datosActualizacion["justificacion_rechazo"] = referenciaJustificacion;
-
-                                        datosActualizacion["status_comprobante"] = StatusComprobante.RECHAZADO;
-
-                                      }else{
-
-                                        datosActualizacion["horas_validez"] = int.parse(numeroHorasValidez);
-
-                                        datosActualizacion["status_comprobante"] = StatusComprobante.ACEPTADO;
-
-                                      }
-
-                                      referenciaComprobante.update(datosActualizacion).then((_) {
-
-                                        widget.comprobante.statusComprobante = datosActualizacion["status_comprobante"];
-
-                                        datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
-
-                                        print("NUEVO ESTADO DEL COMPROBANTE: ${widget.comprobante.statusComprobante.id}");
-
-                                        Navigator.of(context).pop();
-
-                                        setState(() {
-
-                                          inicializarElementosInterfaz();
-
-                                          ScaffoldMessenger.of(context).showSnackBar(
-
-                                              SnackBar(
-
-                                                backgroundColor: Colors.amber,
-
-                                                content: const Text(
-
-                                                  "Se ha actualizado el status del comprobante",
-
-                                                  textAlign: TextAlign.center,
-
-                                                  style: TextStyle(
-
-                                                    fontWeight: FontWeight.bold,
-
-                                                    color: Colors.white,
-
-                                                  ),
-
-                                                ),
-
-                                                duration: const Duration(seconds: 3),
-
-                                                padding: const EdgeInsets.all(20),
-
-                                                behavior: SnackBarBehavior.floating,
-
-                                                shape: RoundedRectangleBorder(
-
-                                                    borderRadius: BorderRadius.circular(10)
-
-                                                ),
-
-                                              )
-
-                                          );
-
-                                        });
-
-                                      }).catchError((error){
-
-                                        Navigator.of(context).pop();
-
-                                        ScaffoldMessenger.of(context).showSnackBar(
-
-                                            SnackBar(
-
-                                              backgroundColor: Colors.orange,
-
-                                              content: const Text(
-
-                                                "Ha ocurrido un error en la revisión",
-
-                                                textAlign: TextAlign.center,
-
-                                                style: TextStyle(
-
-                                                  fontWeight: FontWeight.bold,
-
-                                                  color: Colors.white,
-
-                                                ),
-
-                                              ),
-
-                                              duration: const Duration(seconds: 3),
-
-                                              padding: const EdgeInsets.all(20),
-
-                                              behavior: SnackBarBehavior.floating,
-
-                                              shape: RoundedRectangleBorder(
-
-                                                  borderRadius: BorderRadius.circular(10)
-
-                                              ),
-
-                                            )
-
-                                        );
+                                        "mensaje_justificacion" : mensajeJustificacionRechazo
 
                                       });
 
+                                      await referenciaComprobante.update({
+
+                                        "horas_validez" : FieldValue.delete(),
+
+                                        "justificacion_rechazo" : nuevaReferenciaJustificacion,
+
+                                        "status_comprobante" : StatusComprobante.RECHAZADO
+
+                                      });
+
+                                      widget.comprobante.statusComprobante = StatusComprobante.RECHAZADO;
 
                                     }
 
-                                  },
+                                  }else{//Si el comprobante estaba rechazado previamente.
 
-                                style: ElevatedButton.styleFrom(
+                                    DocumentReference<Map<String, dynamic>> referenciaJustificacionRechazo = datosComprobante["justificacion_rechazo"];
 
-                                  backgroundColor: (status) ? Colors.green : Colors.red,
+                                    if(status) { //Si la nueva revision establece que el estado del comprobante fue aceptado.
 
-                                  disabledBackgroundColor: (status) ? Colors.green.shade200 : Colors.red.shade200,
+                                      await referenciaJustificacionRechazo.delete();
 
-                                  shape: RoundedRectangleBorder(
+                                      await referenciaComprobante.update({
 
-                                    borderRadius: BorderRadius.circular(15),
+                                        "justificacion_rechazo" : FieldValue.delete(),
 
-                                  ),
+                                        "horas_validez" : int.parse(numeroHorasValidez),
 
-                                ),
+                                        "status_comprobante" : StatusComprobante.ACEPTADO
 
-                                child: Text(
+                                      });
 
-                                  (widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? "Publicar revisión" : "Modificar revisión",
+                                      widget.comprobante.statusComprobante = StatusComprobante.ACEPTADO;
 
-                                  style: const TextStyle(
 
-                                      color: Colors.white
+                                    }else{ //Si la nueva revision establece que el estado del comprobante se mantiene como rechazado.
 
-                                  ),
+                                      await referenciaJustificacionRechazo.update(
+
+                                          {
+
+                                            "mensaje_justificacion" : mensajeJustificacionRechazo
+
+                                          }
+
+                                      );
+
+                                    }
+
+                                  }
+
+                                  Navigator.of(context).pop();
+
+                                  setState(() {
+
+                                    datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
+
+                                    inicializarElementosInterfaz();
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+
+                                        SnackBar(
+
+                                          backgroundColor: Colors.amber,
+
+                                          content: const Text(
+
+                                            "Se ha actualizado el status del comprobante",
+
+                                            textAlign: TextAlign.center,
+
+                                            style: TextStyle(
+
+                                              fontWeight: FontWeight.bold,
+
+                                              color: Colors.white,
+
+                                            ),
+
+                                          ),
+
+                                          duration: const Duration(seconds: 3),
+
+                                          padding: const EdgeInsets.all(20),
+
+                                          behavior: SnackBarBehavior.floating,
+
+                                          shape: RoundedRectangleBorder(
+
+                                              borderRadius: BorderRadius.circular(10)
+
+                                          ),
+
+                                        )
+
+                                    );
+
+                                  });
+
+                                }else{
+
+                                  //Aqui va el codigo cuando se revisa por primera vez el comprobante.
+
+                                  DocumentReference<Map<String, dynamic>> referenciaJustificacion;
+
+                                  Map<String, dynamic> datosActualizacion = <String, dynamic> {};
+
+                                  if(!status) {
+
+                                    referenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({"mensaje_justificacion" : mensajeJustificacionRechazo});
+
+                                    datosActualizacion["justificacion_rechazo"] = referenciaJustificacion;
+
+                                    datosActualizacion["status_comprobante"] = StatusComprobante.RECHAZADO;
+
+                                  }else{
+
+                                    datosActualizacion["horas_validez"] = int.parse(numeroHorasValidez);
+
+                                    datosActualizacion["status_comprobante"] = StatusComprobante.ACEPTADO;
+
+                                  }
+
+                                  referenciaComprobante.update(datosActualizacion).then((_) {
+
+                                    widget.comprobante.statusComprobante = datosActualizacion["status_comprobante"];
+
+                                    datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
+
+                                    print("NUEVO ESTADO DEL COMPROBANTE: ${widget.comprobante.statusComprobante.id}");
+
+                                    Navigator.of(context).pop();
+
+                                    setState(() {
+
+                                      inicializarElementosInterfaz();
+
+                                      ScaffoldMessenger.of(context).showSnackBar(
+
+                                          SnackBar(
+
+                                            backgroundColor: Colors.amber,
+
+                                            content: const Text(
+
+                                              "Se ha actualizado el status del comprobante",
+
+                                              textAlign: TextAlign.center,
+
+                                              style: TextStyle(
+
+                                                fontWeight: FontWeight.bold,
+
+                                                color: Colors.white,
+
+                                              ),
+
+                                            ),
+
+                                            duration: const Duration(seconds: 3),
+
+                                            padding: const EdgeInsets.all(20),
+
+                                            behavior: SnackBarBehavior.floating,
+
+                                            shape: RoundedRectangleBorder(
+
+                                                borderRadius: BorderRadius.circular(10)
+
+                                            ),
+
+                                          )
+
+                                      );
+
+                                    });
+
+                                  }).catchError((error){
+
+                                    Navigator.of(context).pop();
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+
+                                        SnackBar(
+
+                                          backgroundColor: Colors.orange,
+
+                                          content: const Text(
+
+                                            "Ha ocurrido un error en la revisión",
+
+                                            textAlign: TextAlign.center,
+
+                                            style: TextStyle(
+
+                                              fontWeight: FontWeight.bold,
+
+                                              color: Colors.white,
+
+                                            ),
+
+                                          ),
+
+                                          duration: const Duration(seconds: 3),
+
+                                          padding: const EdgeInsets.all(20),
+
+                                          behavior: SnackBarBehavior.floating,
+
+                                          shape: RoundedRectangleBorder(
+
+                                              borderRadius: BorderRadius.circular(10)
+
+                                          ),
+
+                                        )
+
+                                    );
+
+                                  });
+
+
+                                }
+
+                              },
+
+                              style: ElevatedButton.styleFrom(
+
+                                backgroundColor: (status) ? Colors.green : Colors.red,
+
+                                disabledBackgroundColor: (status) ? Colors.green.shade200 : Colors.red.shade200,
+
+                                shape: RoundedRectangleBorder(
+
+                                  borderRadius: BorderRadius.circular(15),
 
                                 ),
 
                               ),
+
+                              child: Text(
+
+                                (widget.comprobante.statusComprobante == StatusComprobante.PENDIENTE) ? "Publicar revisión" : "Modificar revisión",
+
+                                style: const TextStyle(
+
+                                    color: Colors.white
+
+                                ),
+
+                              ),
+
+                            ),
 
                           ),
 
@@ -1134,54 +1175,63 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                       )
 
-                    );
+                  );
 
-                  },
+                },
 
-                ),
+              ),
 
-                backgroundColor: Colors.white,
+              backgroundColor: Colors.white,
 
-                shape: const RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
 
                   borderRadius: BorderRadius.only(
 
-                    topLeft: Radius.circular(40),
+                      topLeft: Radius.circular(40),
 
-                    topRight: Radius.circular(40)
+                      topRight: Radius.circular(40)
 
                   )
-                ),
+              ),
 
-                constraints: BoxConstraints(
+              constraints: BoxConstraints(
 
-                  maxWidth: anchoBody,
+                maxWidth: anchoBody,
 
-                  maxHeight: altoBottomSheet,
+                maxHeight: altoBottomSheet,
 
-                ),
+              ),
 
-              );
+            );
 
-            },
+          },
 
-            backgroundColor: Colors.white,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
 
-            foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
 
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-
-            shape: RoundedRectangleBorder(
-
-                borderRadius: BorderRadius.circular(30)
-
-            ),
-
-            child: iconoFlatingActionButton
+              borderRadius: BorderRadius.circular(30)
 
           ),
 
-        ),
+          child: ClipOval(
+
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+
+            child: Padding(
+              
+              padding: const EdgeInsets.all(10),
+              
+              child: (Sesion.usuario is Estudiante) ? SvgPicture.asset("./assets/images/IconoVisualizarRevision.svg", fit: BoxFit.fill, clipBehavior:
+              Clip.antiAliasWithSaveLayer,) : ((widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE) ? SvgPicture.asset("./assets/images/IconoModificarRevision.svg", fit: BoxFit.fill, clipBehavior:
+              Clip.antiAliasWithSaveLayer,)  : SvgPicture.asset("./assets/images/IconoEnviarRevision.svg", fit: BoxFit.fill, clipBehavior:
+              Clip.antiAliasWithSaveLayer,)),
+              
+            )
+
+          )
+
+      )
 
     );
 

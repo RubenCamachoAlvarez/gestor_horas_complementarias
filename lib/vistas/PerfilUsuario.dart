@@ -55,11 +55,11 @@ ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
 
       ),
 
-      subtitleTextStyle: const TextStyle(
+      subtitleTextStyle: TextStyle(
 
         fontWeight: FontWeight.bold,
 
-        color: Colors.black,
+        color: Colors.grey[700],
 
       ),
 
@@ -79,8 +79,6 @@ ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
     ValueNotifier<double> notificadorValor = ValueNotifier(0);
 
     int horasObligatoriasCarrera = 0;
-
-    Color temaComponentesInterfaz = DatosApp.colorApp;
 
     return FutureBuilder(
 
@@ -238,7 +236,7 @@ ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
 
                                               ),
 
-                                              crearTileList(SvgPicture.asset("./assets/images/IconoPerfil.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Nombre", widget.usuario.nombre),
+                                              crearTileList(SvgPicture.asset("./assets/images/IconoCalendario.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Fecha de nacimiento", widget.usuario.cadenaFechaNacimiento()),
 
                                               SizedBox(
 
@@ -246,52 +244,7 @@ ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
 
                                               ),
 
-
-                                              /*SizedBox(
-
-                                                height: altoCuerpo * 0.025,
-
-                                              ),
-
-                                              LayoutBuilder(
-
-                                                builder: (context, constraints) => ListTile(
-
-                                                  leading: SvgPicture.asset("./assets/images/IconoCalendario.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
-
-                                                  horizontalTitleGap: 30,
-
-                                                  trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-
-                                                  title: const Text("Fecha de nacimiento"),
-
-                                                  subtitle: Text(widget.usuario.cadenaFechaNacimiento()),
-
-                                                  titleTextStyle: TextStyle(
-
-                                                      fontWeight: FontWeight.bold,
-
-                                                      color: temaComponentesInterfaz
-
-                                                  ),
-
-                                                  tileColor: Colors.grey[100],
-
-                                                  shape: RoundedRectangleBorder(
-
-                                                      borderRadius: BorderRadius.circular(15)
-
-                                                  ),
-
-                                                  subtitleTextStyle: const TextStyle(
-
-                                                    fontWeight: FontWeight.bold,
-
-                                                    color: Colors.black,
-
-                                                  ),
-
-                                                ),),
+                                              crearTileList(SvgPicture.asset("./assets/images/IconoLibro.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Carrera", widget.usuario.carrera.id),
 
                                               SizedBox(
 
@@ -299,47 +252,7 @@ ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
 
                                               ),
 
-                                              LayoutBuilder(
-
-                                                builder: (context, constraints) => ListTile(
-
-                                                  leading: SvgPicture.asset("./assets/images/IconoLibros.svg", clipBehavior: Clip.antiAliasWithSaveLayer, height: constraints.maxHeight, width: constraints.maxHeight,),
-
-                                                  horizontalTitleGap: 30,
-
-                                                  trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-
-                                                  title: const Text("Carrera"),
-
-                                                  subtitle: Text(widget.usuario.carrera.id),
-
-                                                  titleTextStyle: TextStyle(
-
-                                                      fontWeight: FontWeight.bold,
-
-                                                      color: temaComponentesInterfaz
-
-                                                  ),
-
-                                                  tileColor: Colors.grey[100],
-
-                                                  shape: RoundedRectangleBorder(
-
-                                                      borderRadius: BorderRadius.circular(15)
-
-                                                  ),
-
-                                                  subtitleTextStyle: const TextStyle(
-
-                                                    fontWeight: FontWeight.bold,
-
-                                                    color: Colors.black,
-
-                                                  ),
-
-                                                ),
-
-                                              ),
+                                              crearTileList(SvgPicture.asset("./assets/images/IconoReloj.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Ocupación", widget.usuario.rol.id),
 
                                               SizedBox(
 
@@ -347,95 +260,13 @@ ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
 
                                               ),
 
-                                              LayoutBuilder(
-
-                                                builder: (context, constraints) => ListTile(
-
-                                                  leading: SvgPicture.asset("./assets/images/IconoReloj.svg", clipBehavior: Clip.antiAliasWithSaveLayer, height: constraints.maxHeight, width: constraints.maxHeight),
-
-                                                  horizontalTitleGap: 30,
-
-                                                  trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-
-                                                  title: const Text("Ocupación"),
-
-                                                  subtitle: Text(widget.usuario.rol.id),
-
-                                                  titleTextStyle: TextStyle(
-
-                                                      fontWeight: FontWeight.bold,
-
-                                                      color: temaComponentesInterfaz
-
-                                                  ),
-
-                                                  tileColor: Colors.grey[100],
-
-                                                  shape: RoundedRectangleBorder(
-
-                                                      borderRadius: BorderRadius.circular(15)
-
-                                                  ),
-
-                                                  subtitleTextStyle: const TextStyle(
-
-                                                    fontWeight: FontWeight.bold,
-
-                                                    color: Colors.black,
-
-                                                  ),
-
-                                                ),
-
-                                              ),
+                                              crearTileList(SvgPicture.asset("./assets/images/IconoNumeral.svg", width: 20, height: 20, color: DatosApp.colorApp,), (widget.usuario.rol == Roles.ESTUDIANTE) ? "Número de cuenta" : "Número de trabajador", widget.usuario.numero),
 
                                               SizedBox(
 
                                                 height: altoCuerpo * 0.025,
 
                                               ),
-
-                                              LayoutBuilder(
-
-                                                builder: (context, constraints) => ListTile(
-
-                                                  leading: SvgPicture.asset("./assets/images/IconoNumeral.svg", clipBehavior: Clip.antiAliasWithSaveLayer,),
-
-                                                  horizontalTitleGap: 30,
-
-                                                  trailing: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-
-                                                  title: Text("Número de ${(widget.usuario.rol == Roles.ESTUDIANTE) ? "cuenta" : "trabajador"}"),
-
-                                                  subtitle: Text(widget.usuario.numero),
-
-                                                  titleTextStyle: TextStyle(
-
-                                                      fontWeight: FontWeight.bold,
-
-                                                      color: temaComponentesInterfaz
-
-                                                  ),
-
-                                                  tileColor: Colors.grey[100],
-
-                                                  shape: RoundedRectangleBorder(
-
-                                                      borderRadius: BorderRadius.circular(15)
-
-                                                  ),
-
-                                                  subtitleTextStyle: const TextStyle(
-
-                                                    fontWeight: FontWeight.bold,
-
-                                                    color: Colors.black,
-
-                                                  ),
-
-                                                ),
-
-                                              ),*/
 
                                               Container(
 
@@ -573,7 +404,7 @@ ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
 
                                           clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                          child: SvgPicture.asset("./assets/images/PerfilUsuario.svg", fit: BoxFit.fill),
+                                          child: SvgPicture.asset("./assets/images/PerfilUsuarioSeccionEncargado.svg", fit: BoxFit.fill,),
 
                                         ) : ClipOval(
 

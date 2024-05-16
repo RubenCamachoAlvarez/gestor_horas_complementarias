@@ -291,23 +291,7 @@ class SeccionEstudianteState extends State<SeccionEstudianteWidget> {
 
                 toolbarHeight: altoAppBar,
 
-                /*leading: Container(
-
-                  height: altoAppBar,
-
-                  width: ancho * 0.1,
-
-                  padding: const EdgeInsets.all(20),
-
-                  alignment: Alignment.topCenter,
-
-                  child: IconButton(onPressed: (){
-
-
-
-                  }, icon: const Icon(Icons.arrow_circle_left, color: Colors.white)),
-
-                ),*/
+                leading: Container(),
 
                 flexibleSpace: LayoutBuilder(
 
