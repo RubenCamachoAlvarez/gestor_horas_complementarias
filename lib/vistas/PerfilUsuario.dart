@@ -25,6 +25,34 @@ class PerfilUsuarioState extends State<PerfilUsuarioWidget> {
 
   PerfilUsuarioState();
 
+  ValueNotifier<double> notificadorValor = ValueNotifier(0);
+
+  int horasObligatoriasCarrera = 0;
+
+Future<void> consultarProgreso() async {
+
+  horasObligatoriasCarrera = await Carreras.obtenerNumeroHorasObligatorias(widget.usuario.carrera);
+
+  (widget.usuario as Estudiante).obtenerComprobantesAceptados().listen((event) {
+
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> consulta = event.docs;
+
+    int horasValidadas = 0;
+
+    consulta.forEach((datosComprobante) {
+
+      horasValidadas += (datosComprobante.data()["horas_validez"] as int);
+
+    });
+
+    notificadorValor.value = horasValidadas.toDouble();
+
+  });
+
+
+
+}
+
 ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
 
     return ListTile(
@@ -76,620 +104,581 @@ ListTile crearTileList(SvgPicture icono, String titulo, String subtitulo) {
 
     double ancho = MediaQuery.of(context).size.width;
 
-    ValueNotifier<double> notificadorValor = ValueNotifier(0);
+    return Scaffold(
 
-    int horasObligatoriasCarrera = 0;
+        body: SingleChildScrollView(
 
-    return FutureBuilder(
+          clipBehavior: Clip.antiAliasWithSaveLayer,
 
-      future: widget.usuario.cargarImagenUsuario(),
+          child: Center(
 
-      builder: (context, snapshot) {
+              child: Stack(
 
-        if(snapshot.connectionState == ConnectionState.done) {
+                children: [
 
-          Uint8List? imagenUsuario = snapshot.data;
+                  Column(
 
-          return  StreamBuilder(
+                    mainAxisAlignment: MainAxisAlignment.start,
 
-            stream: (widget.usuario is Estudiante) ? (widget.usuario as Estudiante).obtenerComprobantesAceptados() : null,
+                    crossAxisAlignment: CrossAxisAlignment.center,
 
-            builder: (context, snapshot) {
+                    children: [
 
-              if(snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.none){
+                      SizedBox(
 
-                if(widget.usuario is Estudiante && snapshot.data != null) {
+                        height: altoEncabezado,
 
-                  List<QueryDocumentSnapshot<Map<String, dynamic>>> consulta = snapshot.data!.docs;
+                        width: ancho,
 
-                  int horasValidadas = 0;
+                        child: ClipPath(
 
-                  consulta.forEach((datosComprobante) {
+                          clipper: CustomClipperPath(),
 
-                    horasValidadas += (datosComprobante.data()["horas_validez"] as int);
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                  });
+                          child: Container(
 
-                  notificadorValor.value = horasValidadas.toDouble();
+                            decoration: const BoxDecoration(
 
-                }
+                                gradient: LinearGradient(
 
-                return FutureBuilder(
+                                    colors: [
 
-                  future: Carreras.obtenerNumeroHorasObligatorias(widget.usuario.carrera),
+                                      Color.fromARGB(255, 27, 76, 222),
 
-                  builder: (context, snapshot) {
+                                      Colors.indigo,
 
-                    if(snapshot.connectionState == ConnectionState.done) {
+                                    ],
 
+                                    begin: Alignment.topCenter,
 
-                      if(snapshot.data != null) {
-
-                        horasObligatoriasCarrera = snapshot.data!;
-
-                      }
-
-                      return Scaffold(
-
-                          body: SingleChildScrollView(
-
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                            child: Center(
-
-                                child: Stack(
-
-                                  children: [
-
-                                    Column(
-
-                                      mainAxisAlignment: MainAxisAlignment.start,
-
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-
-                                      children: [
-
-                                        SizedBox(
-
-                                          height: altoEncabezado,
-
-                                          width: ancho,
-
-                                          child: ClipPath(
-
-                                            clipper: CustomClipperPath(),
-
-                                            clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                            child: Container(
-
-                                              decoration: const BoxDecoration(
-
-                                                  gradient: LinearGradient(
-
-                                                      colors: [
-
-                                                        Color.fromARGB(255, 27, 76, 222),
-
-                                                        Colors.indigo,
-
-                                                      ],
-
-                                                      begin: Alignment.topCenter,
-
-                                                      end: Alignment.bottomCenter
-
-                                                  )
-
-                                              ),
-
-                                              clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                              width: ancho,
-
-                                              child: (widget.usuario.imagenPerfil == null) ? null : Image.asset(
-
-                                                "/images/Paisajes.jpeg",
-
-                                                fit: BoxFit.fill,
-
-                                              ),
-
-                                            ),
-
-
-                                          ),
-
-                                        ),
-
-                                        Material(
-
-                                          color: Colors.white,
-
-                                          child:  ListView(
-
-                                            shrinkWrap: true,
-
-                                            physics: const NeverScrollableScrollPhysics(),
-
-                                            clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                            padding: const EdgeInsets.only(
-
-                                              right: 30,
-
-                                              left: 30,
-
-                                              top: 60,
-
-                                              bottom: 30,
-
-                                            ),
-
-                                            children: [
-
-                                              crearTileList(SvgPicture.asset("./assets/images/IconoPerfil.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Nombre", widget.usuario.nombreCompleto()),
-
-                                              SizedBox(
-
-                                                height: altoCuerpo * 0.025,
-
-                                              ),
-
-                                              crearTileList(SvgPicture.asset("./assets/images/IconoCalendario.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Fecha de nacimiento", widget.usuario.cadenaFechaNacimiento()),
-
-                                              SizedBox(
-
-                                                height: altoCuerpo * 0.025,
-
-                                              ),
-
-                                              crearTileList(SvgPicture.asset("./assets/images/IconoLibro.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Carrera", widget.usuario.carrera.id),
-
-                                              SizedBox(
-
-                                                height: altoCuerpo * 0.025,
-
-                                              ),
-
-                                              crearTileList(SvgPicture.asset("./assets/images/IconoReloj.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Ocupación", widget.usuario.rol.id),
-
-                                              SizedBox(
-
-                                                height: altoCuerpo * 0.025,
-
-                                              ),
-
-                                              crearTileList(SvgPicture.asset("./assets/images/IconoNumeral.svg", width: 20, height: 20, color: DatosApp.colorApp,), (widget.usuario.rol == Roles.ESTUDIANTE) ? "Número de cuenta" : "Número de trabajador", widget.usuario.numero),
-
-                                              SizedBox(
-
-                                                height: altoCuerpo * 0.025,
-
-                                              ),
-
-                                              Container(
-
-                                                child: (widget.usuario.rol == Roles.ENCARGADO) ? null : Column(
-
-                                                  crossAxisAlignment: CrossAxisAlignment.center,
-
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-
-                                                  children: [
-
-                                                    SizedBox(
-
-                                                      height: altoCuerpo * 0.075,
-
-                                                    ),
-
-                                                    SizedBox(
-
-                                                        height: ancho * 0.35,
-
-                                                        child: DashedCircularProgressBar.aspectRatio(
-
-                                                          aspectRatio: 3, // width ÷ height
-
-                                                          valueNotifier: notificadorValor,
-
-                                                          progress: notificadorValor.value,
-
-                                                          maxProgress: horasObligatoriasCarrera.toDouble(),
-
-                                                          corners: StrokeCap.round,
-
-                                                          foregroundColor: Colors.blue,
-
-                                                          backgroundColor: const Color(0xffeeeeee),
-
-                                                          foregroundStrokeWidth: 15,
-
-                                                          backgroundStrokeWidth: 25,
-
-                                                          animation: true,
-
-                                                          animationDuration: const Duration(seconds: 2),
-
-                                                          child: Center(
-
-                                                            child: ValueListenableBuilder(
-
-                                                                valueListenable: notificadorValor,
-
-                                                                builder: (_, double value, __) => Column(
-
-                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-
-                                                                  mainAxisAlignment: MainAxisAlignment.center,
-
-                                                                  children: [
-
-                                                                    Text(
-
-                                                                      '${value.toInt()}',
-
-                                                                      style: const TextStyle(
-
-                                                                          color: Colors.black,
-
-                                                                          fontWeight: FontWeight.bold,
-
-                                                                          fontSize: 25
-
-                                                                      ),
-
-                                                                    ),
-
-                                                                    Text(
-
-                                                                      (notificadorValor.value == 1) ? "hora" : "horas",
-
-                                                                      style: const TextStyle(
-
-                                                                          color: Colors.grey,
-
-                                                                          fontWeight: FontWeight.bold,
-
-                                                                          fontSize: 10
-
-                                                                      ),
-
-                                                                    ),
-
-                                                                  ],
-
-                                                                )
-
-                                                            ),
-
-                                                          ),
-
-                                                        )
-
-                                                    )
-
-                                                  ],
-
-                                                ),
-
-                                              )
-
-                                            ],
-
-                                          ),
-
-                                        )
-
-                                      ],
-
-                                    ),
-
-                                    Positioned(
-
-                                      right: ancho * 0.5 - 60,
-
-                                      top: altoEncabezado * 0.60,
-
-                                      child: CircleAvatar(
-
-                                        foregroundColor: Colors.transparent,
-
-                                        backgroundColor: Colors.transparent,
-
-                                        radius: 60,
-
-                                        child: (imagenUsuario == null) ? ClipOval(
-
-                                          clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                          child: SvgPicture.asset("./assets/images/PerfilUsuarioSeccionEncargado.svg", fit: BoxFit.fill,),
-
-                                        ) : ClipOval(
-
-                                          clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                          child: Image.memory(imagenUsuario, fit: BoxFit.cover),
-
-                                        ),
-
-                                      ),
-
-                                    ),
-
-                                  ],
+                                    end: Alignment.bottomCenter
 
                                 )
 
                             ),
 
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                            width: ancho,
+
+                            child: (widget.usuario.imagenPerfil == null) ? null : Image.asset(
+
+                              "/images/Paisajes.jpeg",
+
+                              fit: BoxFit.fill,
+
+                            ),
+
                           ),
 
-                          bottomSheet: (widget.usuario != Sesion.usuario) ? null : DraggableScrollableSheet(
 
-                            maxChildSize: 0.3,
+                        ),
 
-                            minChildSize: 0.03,
+                      ),
 
-                            initialChildSize: 0.03,
+                      Material(
 
-                            expand: false,
+                        color: Colors.white,
 
-                            snap: true,
+                        child:  ListView(
 
-                            builder: (context, scrollController) {
+                          shrinkWrap: true,
 
-                              return DecoratedBox(
+                          physics: const NeverScrollableScrollPhysics(),
 
-                                decoration: const BoxDecoration(
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                    color: Colors.white,
+                          padding: const EdgeInsets.only(
 
-                                    boxShadow: [
+                            right: 30,
 
-                                      BoxShadow(
+                            left: 30,
 
-                                        color: Colors.black,
+                            top: 60,
 
-                                        blurRadius: 10,
+                            bottom: 30,
 
-                                        spreadRadius: 1,
+                          ),
 
-                                        offset: Offset(0, 1),
+                          children: [
+
+                            crearTileList(SvgPicture.asset("./assets/images/IconoPerfil.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Nombre", widget.usuario.nombreCompleto()),
+
+                            SizedBox(
+
+                              height: altoCuerpo * 0.025,
+
+                            ),
+
+                            crearTileList(SvgPicture.asset("./assets/images/IconoCalendario.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Fecha de nacimiento", widget.usuario.cadenaFechaNacimiento()),
+
+                            SizedBox(
+
+                              height: altoCuerpo * 0.025,
+
+                            ),
+
+                            crearTileList(SvgPicture.asset("./assets/images/IconoLibro.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Carrera", widget.usuario.carrera.id),
+
+                            SizedBox(
+
+                              height: altoCuerpo * 0.025,
+
+                            ),
+
+                            crearTileList(SvgPicture.asset("./assets/images/IconoReloj.svg", width: 20, height: 20, color: DatosApp.colorApp,), "Ocupación", widget.usuario.rol.id),
+
+                            SizedBox(
+
+                              height: altoCuerpo * 0.025,
+
+                            ),
+
+                            crearTileList(SvgPicture.asset("./assets/images/IconoNumeral.svg", width: 20, height: 20, color: DatosApp.colorApp,), (widget.usuario.rol == Roles.ESTUDIANTE) ? "Número de cuenta" : "Número de trabajador", widget.usuario.numero),
+
+                            SizedBox(
+
+                              height: altoCuerpo * 0.025,
+
+                            ),
+
+                            Container(
+
+                              child: (widget.usuario.rol == Roles.ENCARGADO) ? null : Column(
+
+                                crossAxisAlignment: CrossAxisAlignment.center,
+
+                                mainAxisAlignment: MainAxisAlignment.start,
+
+                                children: [
+
+                                  SizedBox(
+
+                                    height: altoCuerpo * 0.075,
+
+                                  ),
+
+                                  SizedBox(
+
+                                      height: ancho * 0.35,
+
+                                      child: FutureBuilder(
+
+                                        future: consultarProgreso(),
+
+                                        builder: (context, snapshot) {
+
+                                          if(snapshot.connectionState == ConnectionState.done) {
+
+                                            print("Termino con exito");
+
+                                            print(horasObligatoriasCarrera);
+
+                                            print(notificadorValor.value);
+
+                                            return DashedCircularProgressBar.aspectRatio(
+
+                                              aspectRatio: 3, // width ÷ height
+
+                                              valueNotifier: notificadorValor,
+
+                                              progress: notificadorValor.value,
+
+                                              maxProgress: horasObligatoriasCarrera.toDouble(),
+
+                                              corners: StrokeCap.round,
+
+                                              foregroundColor: Colors.blue,
+
+                                              backgroundColor: const Color(0xffeeeeee),
+
+                                              foregroundStrokeWidth: 15,
+
+                                              backgroundStrokeWidth: 25,
+
+                                              animation: true,
+
+                                              animationDuration: const Duration(seconds: 5),
+
+                                              child: Center(
+
+                                                child: ValueListenableBuilder(
+
+                                                    valueListenable: notificadorValor,
+
+                                                    builder: (_, double value, __) => Column(
+
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+
+                                                      children: [
+
+                                                        Text(
+
+                                                          '${value.toInt()}',
+
+                                                          style: const TextStyle(
+
+                                                              color: Colors.black,
+
+                                                              fontWeight: FontWeight.bold,
+
+                                                              fontSize: 25
+
+                                                          ),
+
+                                                        ),
+
+                                                        Text(
+
+                                                          (notificadorValor.value == 1) ? "hora" : "horas",
+
+                                                          style: const TextStyle(
+
+                                                              color: Colors.grey,
+
+                                                              fontWeight: FontWeight.bold,
+
+                                                              fontSize: 10
+
+                                                          ),
+
+                                                        ),
+
+                                                      ],
+
+                                                    )
+
+                                                ),
+
+                                              ),
+
+                                            );
+
+                                          }
+
+                                          return Container();
+
+                                        },
 
                                       )
 
-                                    ],
+                                  )
 
-                                    borderRadius: BorderRadius.only(
+                                ],
 
-                                        topLeft: Radius.circular(22),
+                              ),
 
-                                        topRight: Radius.circular(22)
+                            )
 
-                                    )
+                          ],
 
-                                ),
+                        ),
 
-                                child: CustomScrollView(
+                      )
 
-                                    controller: scrollController,
+                    ],
 
-                                    shrinkWrap: true,
+                  ),
 
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                  Positioned(
 
-                                    physics: const AlwaysScrollableScrollPhysics(),
+                    right: ancho * 0.5 - 60,
 
-                                    slivers: [
+                    top: altoEncabezado * 0.60,
 
-                                      SliverToBoxAdapter(
+                    child: CircleAvatar(
 
-                                        child: Padding(
+                      foregroundColor: Colors.transparent,
 
-                                          padding: const EdgeInsets.only(
+                      backgroundColor: Colors.transparent,
 
-                                              top: 30,
+                      radius: 60,
 
-                                              left: 30,
+                      child: FutureBuilder(
 
-                                              right: 30
+                        future: widget.usuario.cargarImagenUsuario(),
 
-                                          ),
+                        builder: (context, snapshot) {
 
-                                          child: ElevatedButton(
+                          if(snapshot.connectionState == ConnectionState.done) {
 
-                                            onPressed: () {
+                            Uint8List? imagenUsuario = snapshot.data;
 
-                                            },
+                            if(imagenUsuario != null) {
 
-                                            style: ElevatedButton.styleFrom(
+                              return ClipOval(
 
-                                                shape: RoundedRectangleBorder(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                                                    borderRadius: BorderRadius.circular(10)
-
-                                                ),
-
-                                                backgroundColor: Colors.grey[100]
-
-                                            ),
-
-                                            child: const Text(
-
-                                              "Seleccionar foto de perfil",
-
-                                              style: TextStyle(
-
-                                                fontWeight: FontWeight.bold,
-
-                                              ),
-
-                                            ),
-
-                                          ),
-
-                                        ),
-
-                                      ),
-
-                                      SliverToBoxAdapter(
-
-                                        child: Padding(
-
-                                          padding: const EdgeInsets.only(
-
-                                              top: 8,
-
-                                              left: 30,
-
-                                              right: 30
-
-                                          ),
-
-                                          child: ElevatedButton(
-
-                                            onPressed: () {
-
-                                            },
-
-                                            style: ElevatedButton.styleFrom(
-
-                                                shape: RoundedRectangleBorder(
-
-                                                    borderRadius: BorderRadius.circular(10)
-
-                                                ),
-
-                                                backgroundColor: Colors.grey[100]
-
-                                            ),
-
-                                            child: const Text(
-
-                                              "Seleccionar imagen de feed",
-
-                                              style: TextStyle(
-
-                                                fontWeight: FontWeight.bold,
-
-                                              ),
-
-                                            ),
-
-                                          ),
-
-                                        ),
-
-                                      ),
-
-                                      SliverToBoxAdapter(
-
-                                        child: Padding(
-
-                                          padding: const EdgeInsets.only(
-
-                                              top: 8,
-
-                                              left: 30,
-
-                                              right: 30,
-
-                                              bottom: 30
-
-                                          ),
-
-                                          child: ElevatedButton(
-
-                                            onPressed: () {
-
-                                            },
-                                            style: ElevatedButton.styleFrom(
-
-                                                shape: RoundedRectangleBorder(
-
-                                                    borderRadius: BorderRadius.circular(10)
-
-                                                ),
-
-                                                backgroundColor: Colors.grey[100]
-
-                                            ),
-
-                                            child: const Text(
-
-                                              "Seleccionar tema",
-
-                                              style: TextStyle(
-
-                                                fontWeight: FontWeight.bold,
-
-                                              ),
-
-                                            ),
-
-                                          ),
-
-                                        ),
-
-                                      )
-
-                                    ]
-
-                                ),
+                                child: Image.memory(imagenUsuario, fit: BoxFit.cover),
 
                               );
 
-                            },
+                            }
 
-                            controller: DraggableScrollableController(),
+                          }
 
-                          )
+                          return ClipOval(
 
-                      );
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                    }
+                            child: SvgPicture.asset("./assets/images/PerfilUsuarioSeccionEncargado.svg", fit: BoxFit.fill,),
 
-                    return Container(
+                          );
 
-                      alignment: Alignment.center,
+                        },
 
-                      child: const CircularProgressIndicator(),
+                      ),
 
-                    );
+                      /*(imagenUsuario == null) ? ClipOval(
 
-                  },
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                );
+                                    child: SvgPicture.asset("./assets/images/PerfilUsuarioSeccionEncargado.svg", fit: BoxFit.fill,),
 
-              }else{
+                                  ) : ClipOval(
 
-                return Container(
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
 
-                  alignment: Alignment.center,
+                                    child: Image.memory(imagenUsuario, fit: BoxFit.cover),
 
-                  child: const CircularProgressIndicator(),
+                                  ),*/
 
-                );
+                    ),
 
-              }
+                  ),
 
-            },
+                ],
 
-          );
+              )
 
-        }
+          ),
 
-        return Container(
+        ),
 
-          alignment: Alignment.center,
+        bottomSheet: (widget.usuario != Sesion.usuario) ? null : DraggableScrollableSheet(
 
-          child: const CircularProgressIndicator()
+          maxChildSize: 0.3,
 
-        );
+          minChildSize: 0.03,
 
-      },
+          initialChildSize: 0.03,
+
+          expand: false,
+
+          snap: true,
+
+          builder: (context, scrollController) {
+
+            return DecoratedBox(
+
+              decoration: const BoxDecoration(
+
+                  color: Colors.white,
+
+                  boxShadow: [
+
+                    BoxShadow(
+
+                      color: Colors.black,
+
+                      blurRadius: 10,
+
+                      spreadRadius: 1,
+
+                      offset: Offset(0, 1),
+
+                    )
+
+                  ],
+
+                  borderRadius: BorderRadius.only(
+
+                      topLeft: Radius.circular(22),
+
+                      topRight: Radius.circular(22)
+
+                  )
+
+              ),
+
+              child: CustomScrollView(
+
+                  controller: scrollController,
+
+                  shrinkWrap: true,
+
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                  physics: const AlwaysScrollableScrollPhysics(),
+
+                  slivers: [
+
+                    SliverToBoxAdapter(
+
+                      child: Padding(
+
+                        padding: const EdgeInsets.only(
+
+                            top: 30,
+
+                            left: 30,
+
+                            right: 30
+
+                        ),
+
+                        child: ElevatedButton(
+
+                          onPressed: () {
+
+                          },
+
+                          style: ElevatedButton.styleFrom(
+
+                              shape: RoundedRectangleBorder(
+
+                                  borderRadius: BorderRadius.circular(10)
+
+                              ),
+
+                              backgroundColor: Colors.grey[100]
+
+                          ),
+
+                          child: const Text(
+
+                            "Seleccionar foto de perfil",
+
+                            style: TextStyle(
+
+                              fontWeight: FontWeight.bold,
+
+                            ),
+
+                          ),
+
+                        ),
+
+                      ),
+
+                    ),
+
+                    SliverToBoxAdapter(
+
+                      child: Padding(
+
+                        padding: const EdgeInsets.only(
+
+                            top: 8,
+
+                            left: 30,
+
+                            right: 30
+
+                        ),
+
+                        child: ElevatedButton(
+
+                          onPressed: () {
+
+                          },
+
+                          style: ElevatedButton.styleFrom(
+
+                              shape: RoundedRectangleBorder(
+
+                                  borderRadius: BorderRadius.circular(10)
+
+                              ),
+
+                              backgroundColor: Colors.grey[100]
+
+                          ),
+
+                          child: const Text(
+
+                            "Seleccionar imagen de feed",
+
+                            style: TextStyle(
+
+                              fontWeight: FontWeight.bold,
+
+                            ),
+
+                          ),
+
+                        ),
+
+                      ),
+
+                    ),
+
+                    SliverToBoxAdapter(
+
+                      child: Padding(
+
+                        padding: const EdgeInsets.only(
+
+                            top: 8,
+
+                            left: 30,
+
+                            right: 30,
+
+                            bottom: 30
+
+                        ),
+
+                        child: ElevatedButton(
+
+                          onPressed: () {
+
+                          },
+                          style: ElevatedButton.styleFrom(
+
+                              shape: RoundedRectangleBorder(
+
+                                  borderRadius: BorderRadius.circular(10)
+
+                              ),
+
+                              backgroundColor: Colors.grey[100]
+
+                          ),
+
+                          child: const Text(
+
+                            "Seleccionar tema",
+
+                            style: TextStyle(
+
+                              fontWeight: FontWeight.bold,
+
+                            ),
+
+                          ),
+
+                        ),
+
+                      ),
+
+                    )
+
+                  ]
+
+              ),
+
+            );
+
+          },
+
+          controller: DraggableScrollableController(),
+
+        )
 
     );
 

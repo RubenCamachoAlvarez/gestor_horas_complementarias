@@ -98,6 +98,8 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
     return Scaffold(
 
+      resizeToAvoidBottomInset: false,
+
       appBar: AppBar(
 
         leading: IconButton(

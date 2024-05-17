@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestor_de_horas_complementarias/datos/Encargado.dart';
-import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
-import 'package:gestor_de_horas_complementarias/vistas/Login.dart';
-import 'package:gestor_de_horas_complementarias/vistas/SeccionEncargado.dart';
-import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
-import 'package:gestor_de_horas_complementarias/vistas/SeccionEstudiante.dart';
+import 'package:gestor_de_horas_complementarias/datos/DatosApp.dart';
 
 class App extends StatelessWidget {
 
@@ -33,7 +28,9 @@ class App extends StatelessWidget {
 
       ),
 
-      home: const LoginWidget(),
+      home: DatosApp.navegador.pagina,
+
+      //home: const LoginWidget(),
 
       //home: SeccionEncargadoWidget(encargado: (Sesion.usuario! as Encargado)),
 

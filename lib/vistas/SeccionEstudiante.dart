@@ -2,6 +2,7 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:gestor_de_horas_complementarias/datos/Comprobante.dart";
+import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
 import "package:gestor_de_horas_complementarias/datos/Encargado.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
 import "package:gestor_de_horas_complementarias/helpers/OperacionesArchivos.dart";
@@ -70,47 +71,39 @@ class SeccionEstudianteState extends State<SeccionEstudianteWidget> {
 
                       onPressed: () async {
 
-                        Navigator.of(context).push(
+                        DatosApp.navegador.agregarVista(FutureBuilder(
 
-                            MaterialPageRoute(
+                          future: widget.estudiante.descargarComprobante(datosComprobante["nombre"]),
 
-                              builder: (context) => FutureBuilder(
+                          builder: (context, snapshot) {
 
-                                future: widget.estudiante.descargarComprobante(datosComprobante["nombre"]),
+                            if(snapshot.connectionState == ConnectionState.done) {
 
-                                builder: (context, snapshot) {
+                              Comprobante? comprobante = snapshot.data;
 
-                                  if(snapshot.connectionState == ConnectionState.done) {
+                              if(comprobante != null) {
 
-                                    Comprobante? comprobante = snapshot.data;
+                                return LectorDocumentoPDFWidget(comprobante: comprobante);
 
-                                    if(comprobante != null) {
+                              }else{
 
-                                      return LectorDocumentoPDFWidget(comprobante: comprobante);
+                                Navigator.of(context).pop();
 
-                                    }else{
+                              }
 
-                                      Navigator.of(context).pop();
+                            }
 
-                                    }
+                            return Container(
 
-                                  }
+                              color: Colors.white,
 
-                                  return Container(
+                              alignment: Alignment.center,
 
-                                    color: Colors.white70,
+                              child: const CircularProgressIndicator(),
 
-                                    alignment: Alignment.center,
+                            );
 
-                                    child: const CircularProgressIndicator(),
-
-                                  );
-
-                                },),
-
-                            )
-
-                        );
+                          },));
 
                       },
 
@@ -246,9 +239,11 @@ class SeccionEstudianteState extends State<SeccionEstudianteWidget> {
 
         return Container(
 
-            alignment: Alignment.center,
+          color: Colors.grey[100],
 
-            child: const CircularProgressIndicator()
+          alignment: Alignment.center,
+
+          child: const CircularProgressIndicator()
 
         );
 
@@ -271,350 +266,342 @@ class SeccionEstudianteState extends State<SeccionEstudianteWidget> {
     //El alto de la seccion donde sera mostrado el contenido sera el 80% restante del alto de la pantalla.
     double altoContenido = alto * 0.8;
 
-    return FutureBuilder(
+    return DefaultTabController(
 
-      future: widget.estudiante.cargarImagenUsuario(),
+        length: 3,
 
-      builder: (context, snapshot) {
+        child: Scaffold(
 
-        if(snapshot.connectionState == ConnectionState.done) {
+          backgroundColor: Colors.grey[100],
 
-          return DefaultTabController(
+          appBar: AppBar(
 
-            length: 3,
+            toolbarHeight: altoAppBar,
 
-            child: Scaffold(
+            leading: Container(),
 
-              backgroundColor: Colors.grey[100],
+            flexibleSpace: LayoutBuilder(
 
-              appBar: AppBar(
+              builder: (context, constraints) {
 
-                toolbarHeight: altoAppBar,
+                double altoRegionFlexible = constraints.maxHeight;
 
-                leading: Container(),
+                double anchoRegionFlexible = constraints.maxWidth;
 
-                flexibleSpace: LayoutBuilder(
+                double altoTabBar = const Size.fromHeight(kToolbarHeight).height;
 
-                  builder: (context, constraints) {
+                double radioCircleAvatar = (altoRegionFlexible - altoTabBar) * 0.4;
 
-                    double altoRegionFlexible = constraints.maxHeight;
+                return Container(
 
-                    double anchoRegionFlexible = constraints.maxWidth;
+                    decoration: const BoxDecoration(
 
-                    double altoTabBar = const Size.fromHeight(kToolbarHeight).height;
+                        gradient: LinearGradient(
 
-                    double radioCircleAvatar = (altoRegionFlexible - altoTabBar) * 0.4;
+                            colors: [
 
-                    return Container(
+                              Color.fromARGB(255, 27, 76, 222),
 
-                        decoration: const BoxDecoration(
+                              Colors.indigo,
 
-                            gradient: LinearGradient(
+                            ],
 
-                                colors: [
+                            begin: Alignment.topCenter,
 
-                                  Color.fromARGB(255, 27, 76, 222),
+                            end: Alignment.bottomCenter
 
-                                  Colors.indigo,
+                        )
 
-                                ],
+                    ),
 
-                                begin: Alignment.topCenter,
+                    alignment: Alignment.center,
 
-                                end: Alignment.bottomCenter
+                    child: Stack(
 
-                            )
+                      children: [
 
-                        ),
+                        Positioned(
 
-                        alignment: Alignment.center,
+                          right: anchoRegionFlexible * 0.5 - radioCircleAvatar,
 
-                        child: Stack(
+                          top: (altoRegionFlexible - altoTabBar) * 0.2,
 
-                          children: [
+                          child: GestureDetector(
 
-                            Positioned(
+                            onTap: () {
 
-                              right: anchoRegionFlexible * 0.5 - radioCircleAvatar,
+                              DatosApp.navegador.agregarVista(PerfilUsuarioWidget(usuario: widget.estudiante));
 
-                              top: (altoRegionFlexible - altoTabBar) * 0.2,
+                            },
 
-                              child: GestureDetector(
+                            child: CircleAvatar(
 
-                                onTap: () {
+                              foregroundColor: Colors.transparent,
 
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => PerfilUsuarioWidget(usuario: widget.estudiante),));
+                              backgroundColor: Colors.transparent,
+
+                              radius: radioCircleAvatar,
+
+                              child: FutureBuilder(
+
+                                future: widget.estudiante.cargarImagenUsuario(),
+
+                                builder: (context, snapshot) {
+
+                                  if(snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
+
+                                    return ClipOval(
+
+                                      clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                                      child: Image.memory(snapshot.data!, fit: BoxFit.cover),
+
+                                    );
+
+                                  }
+
+                                  return ClipOval(
+
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                                    child: SvgPicture.asset("./assets/images/PerfilUsuarioSeccionEncargado.svg", fit: BoxFit.fill),
+
+                                  );
 
                                 },
 
-                                child: CircleAvatar(
-
-                                  foregroundColor: Colors.transparent,
-
-                                  backgroundColor: Colors.transparent,
-
-                                  radius: radioCircleAvatar,
-
-                                  child: (snapshot.data == null) ? ClipOval(
-
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                    child: SvgPicture.asset("./assets/images/PerfilUsuario.svg", fit: BoxFit.fill),
-
-                                  )
-
-                                  : ClipOval(
-
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                                    child: Image.memory(snapshot.data!, fit: BoxFit.cover),
-
-                                  ),
-
-                                ),
-
                               ),
 
-                            )
+                            ),
 
-                          ],
+                          ),
 
                         )
 
-                    );
+                      ],
 
-                  },
+                    )
+
+                );
+
+              },
 
 
-                ),
+            ),
 
-                bottom: PreferredSize(
+            bottom: PreferredSize(
 
-                  preferredSize: const Size.fromHeight(kToolbarHeight),
+              preferredSize: const Size.fromHeight(kToolbarHeight),
 
-                  child: Container(
+              child: Container(
 
-                      color: Colors.white,
+                  color: Colors.white,
 
-                      child: TabBar(
+                  child: TabBar(
 
-                        indicatorColor: Colors.grey[100],
+                    indicatorColor: Colors.grey[100],
 
-                        indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorSize: TabBarIndicatorSize.tab,
 
-                        dividerColor: Colors.grey[100],
+                    dividerColor: Colors.grey[100],
 
-                        automaticIndicatorColorAdjustment: true,
+                    automaticIndicatorColorAdjustment: true,
 
-                        tabAlignment: TabAlignment.fill,
+                    tabAlignment: TabAlignment.fill,
 
-                        indicator: BoxDecoration(
+                    indicator: BoxDecoration(
 
-                            color: Colors.grey[100],
+                        color: Colors.grey[100],
 
-                            borderRadius: const BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
 
-                                topRight: Radius.circular(20),
+                            topRight: Radius.circular(20),
 
-                                topLeft: Radius.circular(20)
+                            topLeft: Radius.circular(20)
 
-                            )
+                        )
 
-                        ),
+                    ),
 
-                        tabs: [
+                    tabs: [
 
-                          Tab(
+                      Tab(
 
-                              icon: SvgPicture.asset("./assets/images/IconoAceptado.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
+                          icon: SvgPicture.asset("./assets/images/IconoAceptado.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
 
-                          ),
+                      ),
 
-                          Tab(
+                      Tab(
 
-                              icon: SvgPicture.asset("./assets/images/IconoPendiente.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
+                          icon: SvgPicture.asset("./assets/images/IconoPendiente.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
 
-                          ),
+                      ),
 
-                          Tab(
+                      Tab(
 
-                              icon: SvgPicture.asset("./assets/images/IconoRechazado.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
-
-                          )
-
-                        ],
+                          icon: SvgPicture.asset("./assets/images/IconoRechazado.svg", clipBehavior: Clip.antiAliasWithSaveLayer,)
 
                       )
 
-                  ),
+                    ],
 
-                ),
-
-              ),
-
-              body: TabBarView(
-
-                children: [
-
-                  crearPaginaVisualizacionComprobantes(widget.estudiante.obtenerComprobantesAceptados()),
-
-                  crearPaginaVisualizacionComprobantes(widget.estudiante.obtenerComprobantesPendientes()),
-
-                  crearPaginaVisualizacionComprobantes(widget.estudiante.obtenerComprobantesRechazados()),
-
-                ],
+                  )
 
               ),
 
-              floatingActionButton: (Sesion.usuario is Encargado) ? null : FloatingActionButton(
+            ),
 
-                onPressed: () async {
+          ),
 
-                  Map<String, dynamic>? datosComprobante = await OperacionesArchivos.seleccionarComprobantePDF();
+          body: TabBarView(
 
-                  if(datosComprobante != null) {
+            children: [
 
-                    ScaffoldMessenger.of(context).showSnackBar(
+              crearPaginaVisualizacionComprobantes(widget.estudiante.obtenerComprobantesAceptados()),
 
-                        SnackBar(
+              crearPaginaVisualizacionComprobantes(widget.estudiante.obtenerComprobantesPendientes()),
 
-                          backgroundColor: Colors.orange,
+              crearPaginaVisualizacionComprobantes(widget.estudiante.obtenerComprobantesRechazados()),
 
-                          duration: const Duration(seconds: 5),
+            ],
 
-                          content: const Text(
+          ),
 
-                            "Subiendo comprobante. Por favor espere.",
+          floatingActionButton: (Sesion.usuario is Encargado) ? null : FloatingActionButton(
 
-                            textAlign: TextAlign.center,
+            onPressed: () async {
 
-                            style: TextStyle(
+              Map<String, dynamic>? datosComprobante = await OperacionesArchivos.seleccionarComprobantePDF();
 
-                              fontWeight: FontWeight.bold,
+              if(datosComprobante != null) {
 
-                              color: Colors.white,
+                ScaffoldMessenger.of(context).showSnackBar(
 
-                            ),
+                    SnackBar(
 
-                          ),
+                      backgroundColor: Colors.orange,
 
-                          padding: const EdgeInsets.all(20),
+                      duration: const Duration(seconds: 5),
 
-                          behavior: SnackBarBehavior.floating,
+                      content: const Text(
 
-                          shape: RoundedRectangleBorder(
+                        "Subiendo comprobante. Por favor espere.",
 
-                              borderRadius: BorderRadius.circular(10)
+                        textAlign: TextAlign.center,
 
-                          ),
+                        style: TextStyle(
 
-                        )
+                          fontWeight: FontWeight.bold,
 
-                    );
+                          color: Colors.white,
 
-                    bool? operacionRealizada = await widget.estudiante.cargarComprobante(datosComprobante);
+                        ),
 
-                    ScaffoldMessenger.of(context).clearSnackBars();
+                      ),
 
-                    if(operacionRealizada != null) {
+                      padding: const EdgeInsets.all(20),
 
-                      String mensajeNotificacion = "";
+                      behavior: SnackBarBehavior.floating,
 
-                      Color colorNotificacion = Colors.green;
+                      shape: RoundedRectangleBorder(
 
-                      if (operacionRealizada) {
+                          borderRadius: BorderRadius.circular(10)
 
-                        mensajeNotificacion = "Los archivos han sido cargados correctamente";
+                      ),
 
-                      } else {
+                    )
 
-                        mensajeNotificacion = "Ha ocurrido un error al cargar los archivos";
+                );
 
-                        colorNotificacion = Colors.red;
+                bool? operacionRealizada = await widget.estudiante.cargarComprobante(datosComprobante);
 
-                      }
+                ScaffoldMessenger.of(context).clearSnackBars();
 
-                      ScaffoldMessenger.of(context).showSnackBar(
+                if(operacionRealizada != null) {
 
-                          SnackBar(
+                  String mensajeNotificacion = "";
 
-                            backgroundColor: colorNotificacion,
+                  Color colorNotificacion = Colors.green;
 
-                            content: Text(
+                  if (operacionRealizada) {
 
-                              mensajeNotificacion,
+                    mensajeNotificacion = "Los archivos han sido cargados correctamente";
 
-                              textAlign: TextAlign.center,
+                  } else {
 
-                              style: const TextStyle(
+                    mensajeNotificacion = "Ha ocurrido un error al cargar los archivos";
 
-                                fontWeight: FontWeight.bold,
-
-                                color: Colors.white,
-
-                              ),
-
-                            ),
-
-                            duration: const Duration(seconds: 3),
-
-                            padding: const EdgeInsets.all(20),
-
-                            behavior: SnackBarBehavior.floating,
-
-                            shape: RoundedRectangleBorder(
-
-                                borderRadius: BorderRadius.circular(10)
-
-                            ),
-
-                          )
-
-                      );
-
-                    }
+                    colorNotificacion = Colors.red;
 
                   }
 
-                },
+                  ScaffoldMessenger.of(context).showSnackBar(
 
-                backgroundColor: Colors.red,
+                      SnackBar(
 
-                clipBehavior: Clip.antiAliasWithSaveLayer,
+                        backgroundColor: colorNotificacion,
 
-                shape: RoundedRectangleBorder(
+                        content: Text(
 
-                    borderRadius: BorderRadius.circular(30)
+                          mensajeNotificacion,
 
-                ),
+                          textAlign: TextAlign.center,
 
-                child: Padding(
+                          style: const TextStyle(
 
-                  padding: const EdgeInsets.all(10),
+                            fontWeight: FontWeight.bold,
 
-                  child: SvgPicture.asset("./assets/images/Icono.svg", fit: BoxFit.fill,),
+                            color: Colors.white,
 
-                ),
+                          ),
 
-              ),
+                        ),
 
-              floatingActionButtonLocation: (Sesion.usuario is Encargado) ? null : FloatingActionButtonLocation.centerFloat,
+                        duration: const Duration(seconds: 3),
 
-            )
+                        padding: const EdgeInsets.all(20),
 
-          );
+                        behavior: SnackBarBehavior.floating,
 
-        }
+                        shape: RoundedRectangleBorder(
 
-        return Container(
+                            borderRadius: BorderRadius.circular(10)
 
-          alignment: Alignment.center,
+                        ),
 
-          child: const CircularProgressIndicator(),
+                      )
 
-        );
+                  );
 
-      },
+                }
+
+              }
+
+            },
+
+            backgroundColor: Colors.red,
+
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+
+            shape: RoundedRectangleBorder(
+
+                borderRadius: BorderRadius.circular(30)
+
+            ),
+
+            child: Padding(
+
+              padding: const EdgeInsets.all(10),
+
+              child: SvgPicture.asset("./assets/images/Icono.svg", fit: BoxFit.fill,),
+
+            ),
+
+          ),
+
+          floatingActionButtonLocation: (Sesion.usuario is Encargado) ? null : FloatingActionButtonLocation.centerFloat,
+
+        )
 
     );
 

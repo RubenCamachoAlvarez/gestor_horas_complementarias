@@ -352,7 +352,7 @@ class SeccionEncargadoState extends State<SeccionEncargadoWidget> {
 
                                           onPressed: () {
 
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeccionEstudianteWidget(estudiante: estudiantesFiltrados.keys.toList()[index],),));
+                                            DatosApp.navegador.agregarVista(SeccionEstudianteWidget(estudiante: estudiantesFiltrados.keys.toList()[index],));
 
                                           },
 

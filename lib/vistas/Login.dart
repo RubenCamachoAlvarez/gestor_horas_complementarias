@@ -44,6 +44,8 @@ class LoginWidgetState extends State<LoginWidget> {
 
     return Scaffold(
 
+      resizeToAvoidBottomInset: false,
+
       body: SingleChildScrollView(
 
         clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -316,7 +318,17 @@ class LoginWidgetState extends State<LoginWidget> {
 
                             readOnly: campoPasswordSoloLectura,
 
+                            style: TextStyle(
+
+                                fontWeight: FontWeight.bold,
+
+                                color: Colors.grey[700]
+
+                            ),
+
                             canRequestFocus: !campoPasswordSoloLectura,
+
+                            keyboardType: TextInputType.number,
 
                             onChanged: (value) {
 
@@ -442,17 +454,59 @@ class LoginWidgetState extends State<LoginWidget> {
 
                             onPressed: botonIniciarSesionHabilitado ? () async {
 
-                              if(await Sesion.iniciarSesion(controladorCampoNumero.text, controladorCampoPassword.text)) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+
+                                  SnackBar(
+
+                                    backgroundColor: DatosApp.colorApp,
+
+                                    content: const Text(
+
+                                      "Iniciando sesión",
+
+                                      textAlign: TextAlign.center,
+
+                                      style: TextStyle(
+
+                                        fontWeight: FontWeight.bold,
+
+                                        color: Colors.white,
+
+                                      ),
+
+                                    ),
+
+                                    duration: const Duration(seconds: 3),
+
+                                    padding: const EdgeInsets.all(20),
+
+                                    behavior: SnackBarBehavior.floating,
+
+                                    shape: RoundedRectangleBorder(
+
+                                        borderRadius: BorderRadius.circular(10)
+
+                                    ),
+
+                                  )
+
+                              );
+
+                              bool acceso = await Sesion.iniciarSesion(controladorCampoNumero.text, controladorCampoPassword.text);
+
+                              ScaffoldMessenger.of(context).clearSnackBars();
+
+                              if(acceso) {
 
                                 if(Sesion.usuario != null) {
 
                                   if(Sesion.usuario!.rol == Roles.ESTUDIANTE) {
 
-                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SeccionEstudianteWidget(estudiante: (Sesion.usuario as Estudiante)),));
+                                    DatosApp.navegador.reemplazarVista(0, SeccionEstudianteWidget(estudiante: (Sesion.usuario as Estudiante)));
 
                                   }else if(Sesion.usuario!.rol == Roles.ENCARGADO) {
 
-                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SeccionEncargadoWidget(encargado: (Sesion.usuario as Encargado)),));
+                                    DatosApp.navegador.reemplazarVista(0, SeccionEncargadoWidget(encargado: (Sesion.usuario as Encargado)));
 
                                   }
 
