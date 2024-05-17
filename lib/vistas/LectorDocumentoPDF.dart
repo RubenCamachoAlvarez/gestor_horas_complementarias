@@ -102,7 +102,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
           onPressed: (){
 
-            Navigator.of(context).pop();
+            DatosApp.navegador.removerVista();
 
           },
 
