@@ -7,6 +7,7 @@ import "package:gestor_de_horas_complementarias/datos/DatosApp.dart";
 import "package:gestor_de_horas_complementarias/datos/Estudiante.dart";
 import "package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart";
 import "package:gestor_de_horas_complementarias/helpers/Sesion.dart";
+import "package:gestor_de_horas_complementarias/valores_asignables/Roles.dart";
 import "package:gestor_de_horas_complementarias/valores_asignables/StatusComprobante.dart";
 import "package:syncfusion_flutter_core/theme.dart";
 import "package:syncfusion_flutter_pdfviewer/pdfviewer.dart";
@@ -82,6 +83,16 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+    altoBody = MediaQuery.of(context).size.height;
+
+    anchoBody = MediaQuery.of(context).size.width;
+
+    altoBottomSheet = altoBody * 0.3;
+
+    paddingBottomSheet = altoBottomSheet * 0.1;
+
+    altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
 
     inicializarElementosInterfaz();
 
@@ -467,36 +478,18 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                 controladorTextField.text = datosOriginales = numeroHorasValidez;
 
-                return LayoutBuilder(
+                return SfPdfViewerTheme(
 
-                  builder: (context, constraints) {
+                    data: SfPdfViewerThemeData(
 
-                    altoBody = constraints.maxHeight;
+                        backgroundColor: Colors.grey[200]
+                    ),
 
-                    anchoBody = constraints.maxWidth;
+                    child: SfPdfViewer.memory(
 
-                    altoBottomSheet = altoBody * 0.35;
+                      widget.comprobante.bytes,
 
-                    paddingBottomSheet = altoBottomSheet * 0.1468;
-
-                    altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
-
-                    return SfPdfViewerTheme(
-
-                        data: SfPdfViewerThemeData(
-
-                            backgroundColor: Colors.grey[200]
-                        ),
-
-                        child: SfPdfViewer.memory(
-
-                          widget.comprobante.bytes,
-
-                        )
-
-                    );
-
-                  },
+                    )
 
                 );
 
@@ -518,36 +511,18 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                       controladorTextField.text = datosOriginales = mensajeJustificacionRechazo;
 
-                      return LayoutBuilder(
+                      return SfPdfViewerTheme(
 
-                        builder: (context, constraints) {
+                          data: SfPdfViewerThemeData(
 
-                          altoBody = constraints.maxHeight;
+                              backgroundColor: Colors.grey[200]
+                          ),
 
-                          anchoBody = constraints.maxWidth;
+                          child: SfPdfViewer.memory(
 
-                          altoBottomSheet = altoBody * 0.3;
+                            widget.comprobante.bytes,
 
-                          paddingBottomSheet = altoBottomSheet * 0.1468;
-
-                          altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
-
-                          return SfPdfViewerTheme(
-
-                              data: SfPdfViewerThemeData(
-
-                                  backgroundColor: Colors.grey[200]
-                              ),
-
-                              child: SfPdfViewer.memory(
-
-                                widget.comprobante.bytes,
-
-                              )
-
-                          );
-
-                        },
+                          )
 
                       );
 
@@ -567,36 +542,18 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
             }
 
-           return LayoutBuilder(
+           return SfPdfViewerTheme(
 
-             builder: (context, constraints) {
+               data: SfPdfViewerThemeData(
 
-               altoBody = constraints.maxHeight;
+                   backgroundColor: Colors.grey[200]
+               ),
 
-               anchoBody = constraints.maxWidth;
+               child: SfPdfViewer.memory(
 
-               altoBottomSheet = altoBody * 0.3;
+                 widget.comprobante.bytes,
 
-               paddingBottomSheet = altoBottomSheet * 0.1468;
-
-               altoAreaUtilBottomSheet = altoBottomSheet - (paddingBottomSheet * 1.5);
-
-               return SfPdfViewerTheme(
-
-                   data: SfPdfViewerThemeData(
-
-                       backgroundColor: Colors.grey[200]
-                   ),
-
-                   child: SfPdfViewer.memory(
-
-                     widget.comprobante.bytes,
-
-                   )
-
-               );
-
-             },
+               )
 
            );
 
@@ -678,7 +635,9 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                               crossAxisAlignment: CrossAxisAlignment.center,
 
-                              children: [
+                              children: (Sesion.usuario!.rol == Roles.ENCARGADO)
+
+                              ? [
 
                                 ChoiceChip(
 
@@ -751,6 +710,31 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
                                     });
 
                                   },
+
+                                )
+
+                              ]
+
+                              :[
+
+                                ChoiceChip(
+
+                                  label: Text((status) ? "Aceptado" : "Rechazado"),
+
+                                  selected: true, selectedColor: (status) ? Colors.green : Colors.red,
+
+                                  checkmarkColor: Colors.white,
+
+                                  labelStyle: const TextStyle(
+
+                                    color: Colors.white,
+
+                                    fontWeight: FontWeight.bold
+
+                                ),
+
+                                  onSelected: (_){},
+
 
                                 )
 
@@ -876,7 +860,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                           ),
 
-                          SizedBox(
+                          (Sesion.usuario!.rol == Roles.ENCARGADO) ? SizedBox(
 
                             width: double.infinity,
 
@@ -1169,6 +1153,46 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                             ),
 
+                          ) : SizedBox(
+
+                            width: double.infinity,
+
+                            height: altoAreaUtilBottomSheet * 0.25,
+
+                            child: ElevatedButton(
+
+                              onPressed: () {
+
+                                Navigator.of(context).pop();
+
+                              },
+
+                              style: ElevatedButton.styleFrom(
+
+                                backgroundColor: DatosApp.colorApp,
+
+                                shape: RoundedRectangleBorder(
+
+                                  borderRadius: BorderRadius.circular(15),
+
+                                ),
+
+                              ),
+
+                              child: const Text(
+
+                                "Cerrar",
+
+                                style: TextStyle(
+
+                                    color: Colors.white
+
+                                ),
+
+                              ),
+
+                            )
+
                           ),
 
                         ],
@@ -1185,13 +1209,14 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
               shape: const RoundedRectangleBorder(
 
-                  borderRadius: BorderRadius.only(
+                borderRadius: BorderRadius.only(
 
-                      topLeft: Radius.circular(40),
+                  topLeft: Radius.circular(40),
 
-                      topRight: Radius.circular(40)
+                  topRight: Radius.circular(40)
 
-                  )
+                )
+
               ),
 
               constraints: BoxConstraints(
