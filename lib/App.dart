@@ -33,11 +33,11 @@ class App extends StatelessWidget {
 
       ),
 
-      //home: const LoginWidget(),
+      home: const LoginWidget(),
 
       //home: SeccionEncargadoWidget(encargado: (Sesion.usuario! as Encargado)),
 
-      home: SeccionEstudianteWidget(estudiante: (Sesion.usuario! as Estudiante),),
+      //home: SeccionEstudianteWidget(estudiante: (Sesion.usuario! as Estudiante),),
 
       debugShowCheckedModeBanner: false,
 

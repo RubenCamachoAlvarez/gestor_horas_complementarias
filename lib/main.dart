@@ -23,7 +23,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await Sesion.iniciarSesion("421084898", "");
+  //await Sesion.iniciarSesion("421084898", "");
   
   //await Sesion.iniciarSesion("56789038", "");
 

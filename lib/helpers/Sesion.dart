@@ -17,29 +17,41 @@ class Sesion {
 
       if(datos.exists) {
 
-        Map<String, dynamic> datosPersonales = datos.get("datos_personales");
+        Map<String, dynamic> datosPersonales = datos.data()!["datos_personales"];
 
-        if((datos["rol"] as DocumentReference<Map<String, dynamic>>).id == "Encargado"){
+        DateTime fechaNacimiento = (datosPersonales["fecha_nacimiento"] as Timestamp).toDate();
 
-          print("Logueado como Encargado");
+        String cadenaFechaNacimiento = "${fechaNacimiento.day}${fechaNacimiento.month}${fechaNacimiento.year}";
 
-          usuario = Encargado(numero, datosPersonales["nombre"], datosPersonales["apellido_paterno"], datosPersonales["apellido_materno"],
-              (datosPersonales["fecha_nacimiento"] as Timestamp).toDate(), datos["carrera"]);
+        print(cadenaFechaNacimiento);
 
-        }else{
+        if(password == cadenaFechaNacimiento){
 
-          print("Logueado como estudiante");
+          if((datos["rol"] as DocumentReference<Map<String, dynamic>>).id == "Encargado"){
 
-          usuario = Estudiante(numero, datosPersonales["nombre"], datosPersonales["apellido_paterno"], datosPersonales["apellido_materno"],
-              (datosPersonales["fecha_nacimiento"] as Timestamp).toDate(), datos["carrera"]);
+            print("Logueado como Encargado");
+
+            usuario = Encargado(numero, datosPersonales["nombre"], datosPersonales["apellido_paterno"], datosPersonales["apellido_materno"],
+                (datosPersonales["fecha_nacimiento"] as Timestamp).toDate(), datos["carrera"]);
+
+          }else{
+
+            print("Logueado como estudiante");
+
+            usuario = Estudiante(numero, datosPersonales["nombre"], datosPersonales["apellido_paterno"], datosPersonales["apellido_materno"],
+                (datosPersonales["fecha_nacimiento"] as Timestamp).toDate(), datos["carrera"]);
+
+          }
+
+          usuario!.rol = datos["rol"];
+
+          return true;
 
         }
 
-        usuario!.rol = datos["rol"];
-
       }
 
-      return true;
+      return false;
 
   }
 

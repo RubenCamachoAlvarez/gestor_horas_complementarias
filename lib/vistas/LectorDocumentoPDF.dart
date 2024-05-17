@@ -128,193 +128,117 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                 builder: (context) {
 
-                  return Stack(
+                  return Dialog(
 
-                    fit: StackFit.expand,
+                      alignment: Alignment.center,
 
-                    alignment: Alignment.center,
+                      child: Container(
 
-                    children: [
-
-                      Dialog(
+                        padding: EdgeInsets.all(padding),
 
                         alignment: Alignment.center,
 
-                        child: Container(
+                        width: medidaLadoCard,
 
-                          padding: EdgeInsets.all(padding),
+                        height: medidaLadoCard,
 
-                          alignment: Alignment.center,
+                        decoration: BoxDecoration(
 
-                          width: medidaLadoCard,
+                            color: Colors.white,
 
-                          height: medidaLadoCard,
+                            borderRadius: BorderRadius.circular(15)
 
-                          decoration: BoxDecoration(
+                        ),
 
-                              color: Colors.white,
+                        child: LayoutBuilder(
 
-                              borderRadius: BorderRadius.circular(15)
+                          builder: (context, constraints) {
 
-                          ),
+                            double altoDialog = constraints.maxHeight;
 
-                          child: LayoutBuilder(
+                            double anchoDialog = constraints.maxWidth;
 
-                            builder: (context, constraints) {
+                            double altoElemento = altoDialog * 0.3;
 
-                              double altoDialog = constraints.maxHeight;
+                            return Center(
 
-                              double anchoDialog = constraints.maxWidth;
+                              child: Column(
 
-                              double altoElemento = altoDialog * 0.3;
+                                mainAxisAlignment: MainAxisAlignment.center,
 
-                              return Center(
+                                crossAxisAlignment: CrossAxisAlignment.center,
 
-                                child: Column(
+                                children: [
 
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  SizedBox(
 
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                    width: anchoDialog,
 
-                                  children: [
+                                    height: altoElemento,
 
-                                    SizedBox(
+                                    child: Theme(
 
-                                      width: anchoDialog,
+                                      data: ThemeData(
 
-                                      height: altoElemento,
+                                          textSelectionTheme: const TextSelectionThemeData(
 
-                                      child: Theme(
+                                            selectionColor: Colors.amber,
 
-                                        data: ThemeData(
+                                          )
 
-                                            textSelectionTheme: const TextSelectionThemeData(
+                                      ),
 
-                                              selectionColor: Colors.amber,
+                                      child: TextField(
 
-                                            )
+                                        readOnly: true,
+
+                                        maxLines: 1,
+
+                                        minLines: 1,
+
+                                        textAlign: TextAlign.center,
+
+                                        style: TextStyle(
+
+                                            color: Colors.grey[700],
+
+                                            fontWeight: FontWeight.bold
 
                                         ),
 
-                                        child: TextField(
+                                        decoration: InputDecoration(
 
-                                          readOnly: true,
+                                          border: OutlineInputBorder(
 
-                                          maxLines: 1,
+                                              borderRadius: BorderRadius.circular(10),
 
-                                          minLines: 1,
-
-                                          textAlign: TextAlign.center,
-
-                                          style: TextStyle(
-
-                                              color: Colors.grey[700],
-
-                                              fontWeight: FontWeight.bold
+                                              borderSide: BorderSide.none
 
                                           ),
 
-                                          decoration: InputDecoration(
+                                          filled: true,
 
-                                            border: OutlineInputBorder(
+                                          fillColor: Colors.grey[100],
 
-                                                borderRadius: BorderRadius.circular(10),
-
-                                                borderSide: BorderSide.none
-
-                                            ),
-
-                                            filled: true,
-
-                                            fillColor: Colors.grey[100],
-
-                                            prefixIcon: Icon(Icons.description_rounded, color: DatosApp.colorApp),
-
-                                          ),
-
-                                          controller: TextEditingController(text: widget.comprobante.nombre),
+                                          prefixIcon: Icon(Icons.description_rounded, color: DatosApp.colorApp),
 
                                         ),
+
+                                        controller: TextEditingController(text: widget.comprobante.nombre),
 
                                       ),
 
                                     ),
 
-                                    SizedBox(
+                                  ),
 
-                                      height: altoDialog * 0.05,
+                                  SizedBox(
 
-                                    ),
+                                    height: altoDialog * 0.05,
 
-                                    SizedBox(
+                                  ),
 
-                                        width: anchoDialog,
-
-                                        height: altoElemento,
-
-                                        child: Theme(
-
-                                          data: ThemeData(
-
-                                            textSelectionTheme: const TextSelectionThemeData(
-
-                                              selectionColor: Colors.amber,
-
-                                            ),
-
-                                          ),
-
-                                          child: TextField(
-
-                                            readOnly: true,
-
-                                            maxLines: 1,
-
-                                            minLines: 1,
-
-                                            textAlign: TextAlign.center,
-
-                                            style: TextStyle(
-
-                                                color: Colors.grey[700],
-
-                                                fontWeight: FontWeight.bold
-
-                                            ),
-
-                                            decoration: InputDecoration(
-
-                                              border: OutlineInputBorder(
-
-                                                  borderRadius: BorderRadius.circular(15),
-
-                                                  borderSide: BorderSide.none
-
-                                              ),
-
-                                              filled: true,
-
-                                              fillColor: Colors.grey[100],
-
-                                              prefixIcon: Icon(Icons.calendar_month, color: DatosApp.colorApp,),
-
-                                            ),
-
-                                            controller: TextEditingController(text: widget.comprobante.cadenaFechaSubida()),
-
-                                          ),
-
-                                        )
-
-                                    ),
-
-                                    SizedBox(
-
-                                      height: altoDialog * 0.05,
-
-                                    ),
-
-                                    SizedBox(
+                                  SizedBox(
 
                                       width: anchoDialog,
 
@@ -324,11 +248,11 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                         data: ThemeData(
 
-                                            textSelectionTheme: const TextSelectionThemeData(
+                                          textSelectionTheme: const TextSelectionThemeData(
 
-                                                selectionColor: Colors.amber
+                                            selectionColor: Colors.amber,
 
-                                            )
+                                          ),
 
                                         ),
 
@@ -364,59 +288,97 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                             fillColor: Colors.grey[100],
 
-                                            prefixIcon: Icon(Icons.account_circle, color: DatosApp.colorApp),
+                                            prefixIcon: Icon(Icons.calendar_month, color: DatosApp.colorApp,),
 
                                           ),
 
-                                          controller: TextEditingController(text: widget.comprobante.estudiantePropietario.nombreCompleto()),
+                                          controller: TextEditingController(text: widget.comprobante.cadenaFechaSubida()),
 
                                         ),
 
+                                      )
+
+                                  ),
+
+                                  SizedBox(
+
+                                    height: altoDialog * 0.05,
+
+                                  ),
+
+                                  SizedBox(
+
+                                    width: anchoDialog,
+
+                                    height: altoElemento,
+
+                                    child: Theme(
+
+                                      data: ThemeData(
+
+                                          textSelectionTheme: const TextSelectionThemeData(
+
+                                              selectionColor: Colors.amber
+
+                                          )
+
                                       ),
 
-                                    )
+                                      child: TextField(
 
-                                  ],
+                                        readOnly: true,
 
-                                ),
+                                        maxLines: 1,
 
-                              );
+                                        minLines: 1,
 
-                            },
+                                        textAlign: TextAlign.center,
 
-                          ),
+                                        style: TextStyle(
 
-                        )
+                                            color: Colors.grey[700],
 
-                      ),
-                      
-                      Positioned(
+                                            fontWeight: FontWeight.bold
 
-                        top: (altoBody * 0.5) - (medidaLadoCard * 0.5),
+                                        ),
 
-                        left: anchoBody * 0.75,
+                                        decoration: InputDecoration(
 
-                        child: GestureDetector(
+                                          border: OutlineInputBorder(
 
-                          onTap: (){
+                                              borderRadius: BorderRadius.circular(15),
 
-                            Navigator.of(context).pop();
+                                              borderSide: BorderSide.none
+
+                                          ),
+
+                                          filled: true,
+
+                                          fillColor: Colors.grey[100],
+
+                                          prefixIcon: Icon(Icons.account_circle, color: DatosApp.colorApp),
+
+                                        ),
+
+                                        controller: TextEditingController(text: widget.comprobante.estudiantePropietario.nombreCompleto()),
+
+                                      ),
+
+                                    ),
+
+                                  )
+
+                                ],
+
+                              ),
+
+                            );
 
                           },
 
-                          child: SvgPicture.asset(
-
-                            "./assets/images/IconoBotonCerrar.svg",
-
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-
-                          ),
-
-                        )
+                        ),
 
                       )
-
-                    ],
 
                   );
 
@@ -625,7 +587,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                           SizedBox(
 
-                            height: altoAreaUtilBottomSheet * 0.25,
+                            height: altoAreaUtilBottomSheet * 0.2,
 
                             width: anchoBody,
 
@@ -834,11 +796,11 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                   constraints: BoxConstraints(
 
-                                    maxHeight: altoAreaUtilBottomSheet * 0.25,
+                                    maxHeight: altoAreaUtilBottomSheet * 0.35,
 
                                     maxWidth: double.infinity,
 
-                                    minHeight: altoAreaUtilBottomSheet * 0.25,
+                                    minHeight: altoAreaUtilBottomSheet * 0.35,
 
                                     minWidth: double.infinity,
 
@@ -850,7 +812,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                               textAlignVertical: TextAlignVertical.center,
 
-                              readOnly: false //Sesion.usuario is Estudiante,
+                              readOnly: Sesion.usuario!.rol == Roles.ESTUDIANTE
 
                           ),
 

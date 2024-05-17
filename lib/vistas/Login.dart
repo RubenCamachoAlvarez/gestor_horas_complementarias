@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gestor_de_horas_complementarias/datos/DatosApp.dart';
+import 'package:gestor_de_horas_complementarias/datos/Encargado.dart';
+import 'package:gestor_de_horas_complementarias/datos/Estudiante.dart';
 import 'package:gestor_de_horas_complementarias/helpers/BaseDeDatos.dart';
 import 'package:gestor_de_horas_complementarias/helpers/Sesion.dart';
+import 'package:gestor_de_horas_complementarias/valores_asignables/Roles.dart';
+import 'package:gestor_de_horas_complementarias/vistas/SeccionEncargado.dart';
+import 'package:gestor_de_horas_complementarias/vistas/SeccionEstudiante.dart';
 
 class LoginWidget extends StatefulWidget {
 
@@ -95,7 +102,7 @@ class LoginWidgetState extends State<LoginWidget> {
 
                           Padding(
 
-                            padding: EdgeInsets.all(altoAppBar * 0.10),
+                            padding: EdgeInsets.all(altoAppBar * 0.05),
 
                             child: const Text(
 
@@ -162,6 +169,14 @@ class LoginWidgetState extends State<LoginWidget> {
                           TextField(
 
                             clipBehavior: Clip.antiAliasWithSaveLayer,
+
+                            style: TextStyle(
+
+                              fontWeight: FontWeight.bold,
+
+                              color: Colors.grey[700]
+
+                            ),
 
                             textAlign: TextAlign.center,
 
@@ -259,19 +274,19 @@ class LoginWidgetState extends State<LoginWidget> {
 
                               ),
 
-                              hintStyle: const TextStyle(
+                              hintStyle: TextStyle(
 
                                   fontWeight: FontWeight.bold,
 
-                                  color: Colors.black
+                                  color: Colors.grey[700]
 
                               ),
 
-                              prefixIcon: const Icon(
+                              prefixIcon: Icon(
 
                                 Icons.person,
 
-                                color: Colors.black,
+                                color: DatosApp.colorApp,
 
                               ),
 
@@ -285,7 +300,7 @@ class LoginWidgetState extends State<LoginWidget> {
 
                                   borderSide: BorderSide.none
 
-                              )
+                              ),
 
                             ),
 
@@ -293,7 +308,7 @@ class LoginWidgetState extends State<LoginWidget> {
 
                           SizedBox(
 
-                            height: altoBody * 0.05,
+                            height: altoBody * 0.025,
 
                           ),
 
@@ -375,19 +390,19 @@ class LoginWidgetState extends State<LoginWidget> {
 
                               ),
 
-                              hintStyle: const TextStyle(
+                              hintStyle: TextStyle(
 
                                   fontWeight: FontWeight.bold,
 
-                                  color: Colors.black
+                                  color: Colors.grey[700]
 
                               ),
 
-                              prefixIcon: const Icon(
+                              prefixIcon: Icon(
 
-                                Icons.info,
+                                Icons.info_rounded,
 
-                                color: Colors.black,
+                                color: DatosApp.colorApp,
 
                               ),
 
@@ -425,9 +440,67 @@ class LoginWidgetState extends State<LoginWidget> {
 
                           ElevatedButton(
 
-                            onPressed: botonIniciarSesionHabilitado ? () {
+                            onPressed: botonIniciarSesionHabilitado ? () async {
 
-                              print("Boton de login");
+                              if(await Sesion.iniciarSesion(controladorCampoNumero.text, controladorCampoPassword.text)) {
+
+                                if(Sesion.usuario != null) {
+
+                                  if(Sesion.usuario!.rol == Roles.ESTUDIANTE) {
+
+                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SeccionEstudianteWidget(estudiante: (Sesion.usuario as Estudiante)),));
+
+                                  }else if(Sesion.usuario!.rol == Roles.ENCARGADO) {
+
+                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SeccionEncargadoWidget(encargado: (Sesion.usuario as Encargado)),));
+
+                                  }
+
+                                }
+
+
+                              }else{
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+
+                                  SnackBar(
+
+                                      backgroundColor: Colors.red,
+
+                                      content: const Text(
+
+                                        "Verifica tus credenciales",
+
+                                        textAlign: TextAlign.center,
+
+                                        style: TextStyle(
+
+                                          fontWeight: FontWeight.bold,
+
+                                          color: Colors.white,
+
+                                        ),
+
+                                      ),
+
+                                      duration: const Duration(seconds: 3),
+
+                                      padding: const EdgeInsets.all(20),
+
+                                      behavior: SnackBarBehavior.floating,
+
+                                      shape: RoundedRectangleBorder(
+
+                                          borderRadius: BorderRadius.circular(10)
+
+                                      ),
+
+                                    )
+
+                                );
+
+                              }
+
 
                             } : null,
 
