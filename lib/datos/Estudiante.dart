@@ -105,6 +105,18 @@ class Estudiante extends Usuario {
 
         comprobante = Comprobante(nombre: datos["nombre"], bytes: bytesDocumento, estudiantePropietario: this, fechaSubida: datos["fecha_subida"], statusComprobante: datos["status_comprobante"]);
 
+        if(comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
+
+          comprobante.horasValidez = datos["horas_validez"];
+
+        }else if(comprobante.statusComprobante == StatusComprobante.RECHAZADO) {
+
+          DocumentReference<Map<String, dynamic>> referenciaJustificacion = datos["justificacion_rechazo"];
+
+          comprobante.justificacionRechazo = (await referenciaJustificacion.get()).data()!["mensaje_justificacion"];
+
+        }
+
       }
 
     }

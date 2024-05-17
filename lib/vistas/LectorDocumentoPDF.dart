@@ -49,13 +49,9 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
   String datosOriginales = "";
 
-  late DocumentReference<Map<String, dynamic>> referenciaComprobante;
-
   late String mensajeBotonInferior;
 
   late SvgPicture iconoFlatingActionButton;
-
-  late Map<String, dynamic> datosComprobante;
 
   void inicializarElementosInterfaz(){
 
@@ -98,7 +94,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
     return Scaffold(
 
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
 
       appBar: AppBar(
 
@@ -420,118 +416,18 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
       ),
 
-      body: FutureBuilder(
+      body: SfPdfViewerTheme(
 
-        future: BaseDeDatos.conexion.collection("Comprobantes").where("nombre", isEqualTo: widget.comprobante.nombre).get(),
+          data: SfPdfViewerThemeData(
 
-        builder: (context, snapshot) {
+              backgroundColor: Colors.grey[200]
+          ),
 
-          if(snapshot.connectionState == ConnectionState.done) {
+          child: SfPdfViewer.memory(
 
-            referenciaComprobante = snapshot.data!.docs.elementAt(0).reference;
+            widget.comprobante.bytes,
 
-            datosComprobante = snapshot.data!.docs.elementAt(0).data();
-
-            if(datosComprobante["status_comprobante"] != StatusComprobante.PENDIENTE) {
-
-              if(datosComprobante["status_comprobante"] == StatusComprobante.ACEPTADO) {
-
-                status = true;
-
-                numeroHorasValidez = (datosComprobante["horas_validez"] as int).toString();
-
-                controladorTextField.text = datosOriginales = numeroHorasValidez;
-
-                return SfPdfViewerTheme(
-
-                    data: SfPdfViewerThemeData(
-
-                        backgroundColor: Colors.grey[200]
-                    ),
-
-                    child: SfPdfViewer.memory(
-
-                      widget.comprobante.bytes,
-
-                    )
-
-                );
-
-              }else if(datosComprobante["status_comprobante"] == StatusComprobante.RECHAZADO){
-
-                status = false;
-
-                return FutureBuilder(
-
-                  future: (datosComprobante["justificacion_rechazo"] as DocumentReference<Map<String, dynamic>>).get(),
-
-                  builder: (context, snapshot) {
-
-                    if(snapshot.connectionState == ConnectionState.done) {
-
-                      Map<String, dynamic> datosJustificacionRechazo = snapshot.data!.data()!;
-
-                      mensajeJustificacionRechazo = datosJustificacionRechazo["mensaje_justificacion"];
-
-                      controladorTextField.text = datosOriginales = mensajeJustificacionRechazo;
-
-                      return SfPdfViewerTheme(
-
-                          data: SfPdfViewerThemeData(
-
-                              backgroundColor: Colors.grey[200]
-                          ),
-
-                          child: SfPdfViewer.memory(
-
-                            widget.comprobante.bytes,
-
-                          )
-
-                      );
-
-                    }
-
-                    return Container(
-
-                        alignment: Alignment.center,
-
-                        child: const CircularProgressIndicator()
-
-                    );
-
-                  },);
-
-              }
-
-            }
-
-           return SfPdfViewerTheme(
-
-               data: SfPdfViewerThemeData(
-
-                   backgroundColor: Colors.grey[200]
-               ),
-
-               child: SfPdfViewer.memory(
-
-                 widget.comprobante.bytes,
-
-               )
-
-           );
-
-          }
-
-          return Container(
-
-            alignment: Alignment.center,
-
-            child: const CircularProgressIndicator()
-
-          );
-
-        },
+          )
 
       ),
 
@@ -541,7 +437,25 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
           backgroundColor: Colors.white,
 
-          onPressed: () {
+          onPressed: () async {
+
+            if(widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
+
+              datosOriginales = controladorTextField.text = widget.comprobante.horasValidez!.toString();
+
+              status = true;
+
+            }else if(widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO) {
+
+              status = false;
+
+              datosOriginales = controladorTextField.text = widget.comprobante.justificacionRechazo!;
+
+            }
+
+            DocumentReference<Map<String, dynamic>> referenciaComprobante = (await BaseDeDatos.conexion.collection("Comprobantes").where("propietario", isEqualTo: widget.comprobante.estudiantePropietario.referenciaUsuario).where("nombre", isEqualTo: widget.comprobante.nombre).get()).docs.elementAt(0).reference;
+
+            print(referenciaComprobante.id);
 
             showModalBottomSheet(
 
@@ -601,7 +515,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                               children: (Sesion.usuario!.rol == Roles.ENCARGADO)
 
-                              ? [
+                                  ? [
 
                                 ChoiceChip(
 
@@ -679,7 +593,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                               ]
 
-                              :[
+                                  :[
 
                                 ChoiceChip(
 
@@ -691,11 +605,11 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                   labelStyle: const TextStyle(
 
-                                    color: Colors.white,
+                                      color: Colors.white,
 
-                                    fontWeight: FontWeight.bold
+                                      fontWeight: FontWeight.bold
 
-                                ),
+                                  ),
 
                                   onSelected: (_){},
 
@@ -854,7 +768,6 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                       });
 
-
                                     }else{ //Si el comprobante ha cambiado su status a rechazado.
 
                                       DocumentReference<Map<String, dynamic>> nuevaReferenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({
@@ -878,6 +791,10 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
                                     }
 
                                   }else{//Si el comprobante estaba rechazado previamente.
+
+                                    QuerySnapshot<Map<String, dynamic>> consulta =  await BaseDeDatos.conexion.collection("Comprobantes").where("propietario", isEqualTo: widget.comprobante.estudiantePropietario.referenciaUsuario).where("nombre", isEqualTo: widget.comprobante.nombre).get();
+
+                                    Map<String, dynamic> datosComprobante = consulta.docs.elementAt(0).data();
 
                                     DocumentReference<Map<String, dynamic>> referenciaJustificacionRechazo = datosComprobante["justificacion_rechazo"];
 
@@ -919,6 +836,20 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
                                   setState(() {
 
                                     datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
+
+                                    if(widget.comprobante.statusComprobante == StatusComprobante.ACEPTADO) {
+
+                                      widget.comprobante.horasValidez = int.parse(numeroHorasValidez);
+
+                                      widget.comprobante.justificacionRechazo = null;
+
+                                    }else if(widget.comprobante.statusComprobante == StatusComprobante.RECHAZADO){
+
+                                      widget.comprobante.justificacionRechazo = mensajeJustificacionRechazo;
+
+                                      widget.comprobante.horasValidez = null;
+
+                                    }
 
                                     inicializarElementosInterfaz();
 
@@ -974,11 +905,19 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                     referenciaJustificacion = await BaseDeDatos.conexion.collection("Justificaciones_Rechazos").add({"mensaje_justificacion" : mensajeJustificacionRechazo});
 
+                                    widget.comprobante.justificacionRechazo = mensajeJustificacionRechazo;
+
+                                    widget.comprobante.statusComprobante = StatusComprobante.RECHAZADO;
+
                                     datosActualizacion["justificacion_rechazo"] = referenciaJustificacion;
 
                                     datosActualizacion["status_comprobante"] = StatusComprobante.RECHAZADO;
 
                                   }else{
+
+                                    widget.comprobante.horasValidez = int.parse(numeroHorasValidez);
+
+                                    widget.comprobante.statusComprobante = StatusComprobante.ACEPTADO;
 
                                     datosActualizacion["horas_validez"] = int.parse(numeroHorasValidez);
 
@@ -988,11 +927,7 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                                   referenciaComprobante.update(datosActualizacion).then((_) {
 
-                                    widget.comprobante.statusComprobante = datosActualizacion["status_comprobante"];
-
                                     datosOriginales = (status) ? numeroHorasValidez : mensajeJustificacionRechazo;
-
-                                    print("NUEVO ESTADO DEL COMPROBANTE: ${widget.comprobante.statusComprobante.id}");
 
                                     Navigator.of(context).pop();
 
@@ -1119,43 +1054,43 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
                           ) : SizedBox(
 
-                            width: double.infinity,
+                              width: double.infinity,
 
-                            height: altoAreaUtilBottomSheet * 0.25,
+                              height: altoAreaUtilBottomSheet * 0.25,
 
-                            child: ElevatedButton(
+                              child: ElevatedButton(
 
-                              onPressed: () {
+                                onPressed: () {
 
-                                Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
 
-                              },
+                                },
 
-                              style: ElevatedButton.styleFrom(
+                                style: ElevatedButton.styleFrom(
 
-                                backgroundColor: DatosApp.colorApp,
+                                  backgroundColor: DatosApp.colorApp,
 
-                                shape: RoundedRectangleBorder(
+                                  shape: RoundedRectangleBorder(
 
-                                  borderRadius: BorderRadius.circular(15),
+                                    borderRadius: BorderRadius.circular(15),
 
-                                ),
-
-                              ),
-
-                              child: const Text(
-
-                                "Cerrar",
-
-                                style: TextStyle(
-
-                                    color: Colors.white
+                                  ),
 
                                 ),
 
-                              ),
+                                child: const Text(
 
-                            )
+                                  "Cerrar",
+
+                                  style: TextStyle(
+
+                                      color: Colors.white
+
+                                  ),
+
+                                ),
+
+                              )
 
                           ),
 
@@ -1173,13 +1108,13 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
               shape: const RoundedRectangleBorder(
 
-                borderRadius: BorderRadius.only(
+                  borderRadius: BorderRadius.only(
 
-                  topLeft: Radius.circular(40),
+                      topLeft: Radius.circular(40),
 
-                  topRight: Radius.circular(40)
+                      topRight: Radius.circular(40)
 
-                )
+                  )
 
               ),
 
@@ -1205,18 +1140,18 @@ class LectorDocumentoPDFState extends State<LectorDocumentoPDFWidget> {
 
           child: ClipOval(
 
-            clipBehavior: Clip.antiAliasWithSaveLayer,
+              clipBehavior: Clip.antiAliasWithSaveLayer,
 
-            child: Padding(
-              
-              padding: const EdgeInsets.all(10),
-              
-              child: (Sesion.usuario is Estudiante) ? SvgPicture.asset("./assets/images/IconoVisualizarRevision.svg", fit: BoxFit.fill, clipBehavior:
-              Clip.antiAliasWithSaveLayer,) : ((widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE) ? SvgPicture.asset("./assets/images/IconoModificarRevision.svg", fit: BoxFit.fill, clipBehavior:
-              Clip.antiAliasWithSaveLayer,)  : SvgPicture.asset("./assets/images/IconoEnviarRevision.svg", fit: BoxFit.fill, clipBehavior:
-              Clip.antiAliasWithSaveLayer,)),
-              
-            )
+              child: Padding(
+
+                padding: const EdgeInsets.all(10),
+
+                child: (Sesion.usuario is Estudiante) ? SvgPicture.asset("./assets/images/IconoVisualizarRevision.svg", fit: BoxFit.fill, clipBehavior:
+                Clip.antiAliasWithSaveLayer,) : ((widget.comprobante.statusComprobante != StatusComprobante.PENDIENTE) ? SvgPicture.asset("./assets/images/IconoModificarRevision.svg", fit: BoxFit.fill, clipBehavior:
+                Clip.antiAliasWithSaveLayer,)  : SvgPicture.asset("./assets/images/IconoEnviarRevision.svg", fit: BoxFit.fill, clipBehavior:
+                Clip.antiAliasWithSaveLayer,)),
+
+              )
 
           )
 

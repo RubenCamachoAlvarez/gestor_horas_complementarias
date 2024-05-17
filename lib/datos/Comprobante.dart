@@ -19,6 +19,10 @@ class Comprobante {
 
   DocumentReference statusComprobante;
 
+  String? justificacionRechazo;
+
+  int? horasValidez;
+
   @override
   String toString() {
 
